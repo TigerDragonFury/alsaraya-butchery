@@ -76,6 +76,7 @@ export default async function handler(req, res) {
                         },
                         house: ""
                     },
+                    phone: formattedPhone,
                     comment: orderData.notes || ''
                 },
                 items: orderData.items.map(item => ({

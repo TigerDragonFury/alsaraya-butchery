@@ -81,6 +81,7 @@ exports.handler = async (event, context) => {
                         },
                         house: ""
                     },
+                    phone: formattedPhone,
                     comment: orderData.notes || ''
                 },
                 items: orderData.items.map(item => ({
