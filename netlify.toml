@@ -25,13 +25,6 @@
   to = "/.netlify/functions/create-iiko-order"
   status = 200
 
-# SPA fallback (optional, for future routing)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
 # Headers for security
 [[headers]]
   for = "/*"
