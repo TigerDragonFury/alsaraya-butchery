@@ -79,9 +79,9 @@ exports.handler = async (event, context) => {
                             classifierId: "00000000-0000-0000-0000-000000000000",
                             name: orderData.address
                         },
-                        house: ""
+                        house: "",
+                        phone: formattedPhone
                     },
-                    phone: formattedPhone,
                     comment: orderData.notes || ''
                 },
                 items: orderData.items.map(item => ({
