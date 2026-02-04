@@ -53,6 +53,7 @@ class IikoIntegration {
                 return {
                     success: true,
                     orderId: data.orderId,
+                    fallbackMode: data.fallbackMode || false,
                     message: 'Order received by iiko POS'
                 };
             } else {
