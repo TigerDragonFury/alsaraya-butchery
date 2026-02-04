@@ -2,8 +2,9 @@
   "name": "alsaraya-butchery",
   "version": "1.0.0",
   "description": "Al Saraya Butchery Website with Serverless Functions",
+  "type": "module",
   "scripts": {
-    "dev": "netlify dev"
+    "dev": "node server/server.js"
   },
   "dependencies": {
     "stripe": "^14.10.0",
