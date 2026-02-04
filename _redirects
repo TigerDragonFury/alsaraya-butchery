@@ -1,0 +1,5 @@
+# Netlify Redirects
+/api/stripe/config /.netlify/functions/stripe-config 200
+/api/stripe/create-payment-intent /.netlify/functions/create-payment-intent 200
+/api/stripe/verify-payment /.netlify/functions/verify-payment 200
+/api/iiko/create-order /.netlify/functions/create-iiko-order 200
