@@ -71,8 +71,10 @@ exports.handler = async (event, context) => {
 
         if (!orderResponse.ok) {
             const errorText = await orderResponse.text();
-            console.error('iiko order creation failed:', orderResponse.status, errorText);
-            throw new Error(`iiko order creation failed: ${orderResponse.status}`);
+            console.error('iiko order creation failed:', orderResponse.status);
+            console.error('Error response:', errorText);
+            console.error('Request data sent:', JSON.stringify({organizationId: process.env.IIKO_ORG_ID, ...orderData}, null, 2));
+            throw new Error(`iiko order creation failed: ${orderResponse.status} - ${errorText.substring(0, 200)}`);
         }
 
         const result = await orderResponse.json();
