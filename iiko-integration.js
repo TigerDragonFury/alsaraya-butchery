@@ -1,7 +1,7 @@
 // iiko POS Integration Module
 // This file handles communication with the backend server that connects to iiko
 
-const IIKO_SERVER_URL = ''; // Empty string = use same origin (works on Netlify and localhost)
+const IIKO_SERVER_URL = ''; // Empty string = use same origin (works on production)
 
 // iiko Integration Class
 class IikoIntegration {
