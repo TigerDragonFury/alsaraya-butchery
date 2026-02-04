@@ -68,6 +68,7 @@ exports.handler = async (event, context) => {
             organizationId: process.env.IIKO_ORG_ID,
             terminalGroupId: process.env.IIKO_TERMINAL_ID,
             order: {
+                phone: formattedPhone,
                 completeBefore: deliveryTime,
                 customer: {
                     name: orderData.customerName,
