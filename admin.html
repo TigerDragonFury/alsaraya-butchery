@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Al Saraya Butchery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"> <span style="font-size: 0.75rem; color: var(--primary-red); margin-left: 0.5rem;">ADMIN</span></a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#dashboard" onclick="closeMenu()">Dashboard</a></li>
+                <li><a href="#products" onclick="closeMenu()">Products</a></li>
+                <li><a href="#orders" onclick="closeMenu()">Orders</a></li>
+                <li><a href="#categories" onclick="closeMenu()">Categories</a></li>
+                <li><a href="index.html" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Logout</a></li>
+            </ul>
+            <div class="mobile-menu" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="admin-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <p>Overview of your store performance</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="totalOrders">0</h3>
+                        <p>Total Orders</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🛍️</div>
+                    <div class="stat-info">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Total Products</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="totalRevenue">$0</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3 id="pendingOrders">0</h3>
+                        <p>Pending Orders</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-orders">
+                <h2>Recent Orders</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersTable">
+                            <tr>
+                                <td colspan="6" class="no-data">Loading orders...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="admin-section">
+            <div class="section-header">
+                <h1>Products Management</h1>
+                <button class="btn btn-primary" onclick="openProductModal()">+ Add New Product</button>
+            </div>
+            
+            <div class="search-filter" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" id="productSearch" placeholder="🔍 Search products..." style="flex: 1; min-width: 250px; padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" oninput="filterProducts()">
+                <select id="productCategoryFilter" onchange="filterProducts()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem; min-width: 150px;">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <div class="no-data">Loading products...</div>
+            </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orders" class="admin-section">
+            <div class="section-header">
+                <h1>Orders Management</h1>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterOrdersByStatus('all')">All</button>
+                    <button class="filter-btn" onclick="filterOrdersByStatus('pending')">Pending</button>
+                    <button class="filter-btn" onclick="filterOrdersByStatus('processing')">Processing</button>
+                    <button class="filter-btn" onclick="filterOrdersByStatus('completed')">Completed</button>
+                    <button class="filter-btn" onclick="filterOrdersByStatus('cancelled')">Cancelled</button>
+                </div>
+            </div>
+            
+            <div class="search-filter" style="margin-bottom: 1.5rem;">
+                <input type="text" id="orderSearch" placeholder="🔍 Search orders..." style="width: 100%; padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" oninput="filterOrders()">
+            </div>
+
+            <div class="orders-grid" id="ordersGrid">
+                <div class="no-data">Loading orders...</div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="admin-section">
+            <div class="section-header">
+                <h1>Categories Management</h1>
+                <button class="btn btn-primary" onclick="openCategoryModal()">+ Add New Category</button>
+            </div>
+
+            <div class="categories-grid" id="categoriesGrid">
+                <div class="no-data">Loading categories...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="productModalTitle">Add New Product</h2>
+                <button class="close-modal" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm" class="admin-form">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label>Arabic Name (Optional)</label>
+                    <input type="text" id="productArabicName">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="raw-meat">Raw Meat</option>
+                            <option value="bowels">Bowels</option>
+                            <option value="trays">Trays</option>
+                            <option value="appetizers">Appetizers</option>
+                            <option value="lamb">Lamb</option>
+                            <option value="beef">Beef</option>
+                            <option value="chicken">Chicken</option>
+                            <option value="skewers">Skewers</option>
+                            <option value="boxes">Boxes</option>
+                            <option value="local-veal">Local Veal</option>
+                            <option value="specialty">Specialty</option>
+                            <option value="marinated">Marinated</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" id="productPrice" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Unit</label>
+                    <input type="text" id="productUnit" placeholder="e.g., kg, piece, tray" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Icon (Emoji)</label>
+                    <input type="text" id="productIcon" placeholder="e.g., 🥩" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label>Badge (Optional)</label>
+                    <input type="text" id="productBadge" placeholder="e.g., Premium, New">
+                </div>
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="productImageUrl" placeholder="Image URL or upload..." style="flex: 1;">
+                        <input type="file" id="productImageFile" accept="image/*" style="display: none;" onchange="uploadImageToImgur(this)">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('productImageFile').click()" style="white-space: nowrap;">Upload Image</button>
+                    </div>
+                    <div id="imagePreview" style="margin-top: 0.5rem; display: none;">
+                        <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid rgba(220, 38, 38, 0.2);">
+                    </div>
+                    <small style="color: var(--cool-gray); font-size: 0.75rem; display: block; margin-top: 0.25rem;">Upload to Imgur or paste image URL</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close-modal" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div id="orderDetailsContent">
+                <!-- Order details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Category</h2>
+                <button class="close-modal" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <form id="categoryForm" class="admin-form">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category Slug</label>
+                    <input type="text" id="categorySlug" placeholder="e.g., raw-meat" required>
+                </div>
+                <div class="form-group">
+                    <label>Icon (Emoji)</label>
+                    <input type="text" id="categoryIcon" placeholder="e.g., 🥩" maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="categoryDescription" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#dashboard" class="nav-item">
+            <span class="icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="#products" class="nav-item">
+            <span class="icon">🛍️</span>
+            <span>Products</span>
+        </a>
+        <a href="#orders" class="nav-item">
+            <span class="icon">📦</span>
+            <span>Orders</span>
+        </a>
+        <a href="#categories" class="nav-item">
+            <span class="icon">🏷️</span>
+            <span>Categories</span>
+        </a>
+        <a href="index.html" class="nav-item">
+            <span class="icon">🚪</span>
+            <span>Exit</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

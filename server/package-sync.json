@@ -1,0 +1,16 @@
+{
+  "name": "alsaraya-auto-sync",
+  "version": "1.0.0",
+  "description": "Auto-sync products from iiko to Supabase",
+  "main": "auto-sync-products.js",
+  "scripts": {
+    "sync": "node auto-sync-products.js",
+    "sync-once": "node -e \"require('./auto-sync-products').syncProducts()\"",
+    "start-sync": "node auto-sync-products.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  }
+}

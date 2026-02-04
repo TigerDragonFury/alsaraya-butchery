@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Al Saraya Butchery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"></a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="tracking.html">Track Order</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li class="cart-icon" id="cartIcon">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </li>
+            </ul>
+            <div class="mobile-menu" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="breadcrumbProduct">Product</span>
+        </div>
+    </section>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail">
+        <div class="container">
+            <div class="product-detail-grid">
+                <!-- Product Image -->
+                <div class="product-detail-image">
+                    <img id="productImage" src="" alt="Product Image">
+                    <div id="productBadge" class="product-badge" style="display: none;"></div>
+                </div>
+
+                <!-- Product Information -->
+                <div class="product-detail-info">
+                    <h1 id="productName">Loading...</h1>
+                    <div class="product-meta">
+                        <span class="product-category" id="productCategory"></span>
+                        <span class="product-stock" id="productStock"></span>
+                    </div>
+                    
+                    <div class="product-price-large">
+                        $<span id="productPrice">0.00</span><span class="unit">/<span id="productUnit">kg</span></span>
+                    </div>
+
+                    <div class="product-description">
+                        <h3>Description</h3>
+                        <p id="productDescription">Loading product details...</p>
+                    </div>
+
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button onclick="decrementQuantity()">-</button>
+                            <input type="number" id="quantity" value="1" min="1">
+                            <button onclick="incrementQuantity()">+</button>
+                        </div>
+                        <button class="btn btn-primary btn-large" id="addToCartBtn" onclick="addProductToCart()">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <div class="product-details-list">
+                        <div class="detail-item">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value" id="categoryDetail"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Unit:</span>
+                            <span class="detail-value" id="unitDetail"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Availability:</span>
+                            <span class="detail-value" id="availabilityDetail"></span>
+                        </div>
+                    </div>
+
+                    <a href="shop.html" class="back-to-shop">← Back to Shop</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="related-products">
+        <div class="container">
+            <h2>Related Products</h2>
+            <div class="products-grid" id="relatedProductsGrid">
+                <!-- Related products will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Al Saraya</h3>
+                <p>Your trusted source for premium quality meats since 1995. We're committed to excellence in every cut.</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">📷</a>
+                    <a href="#" class="social-icon">𝕏</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <div class="footer-links">
+                    <a href="index.html#home">Home</a>
+                    <a href="shop.html">Shop</a>
+                    <a href="tracking.html">Track Order</a>
+                    <a href="index.html#contact">Contact</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Products</h3>
+                <div class="footer-links">
+                    <a href="shop.html">Fresh Beef</a>
+                    <a href="shop.html">Premium Lamb</a>
+                    <a href="shop.html">Farm Chicken</a>
+                    <a href="shop.html">Specialty Cuts</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Information</h3>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Delivery Info</a>
+                    <a href="#">FAQ</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Al Saraya Butchery. All rights reserved. Crafted with passion.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <button class="close-cart" id="closeCart">✕</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="empty-cart">Your cart is empty</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="total-amount" id="cartTotal">$0.00</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add to Cart Bar (Mobile Only) -->
+    <div class="floating-cart-bar">
+        <div class="floating-cart-content">
+            <div class="floating-cart-info">
+                <div class="floating-product-price">
+                    $<span id="floatingPrice">0.00</span>
+                    <span class="floating-unit">/<span id="floatingUnit">kg</span></span>
+                </div>
+                <div class="floating-product-name" id="floatingProductName">Product</div>
+            </div>
+            <div class="floating-cart-actions">
+                <div class="floating-quantity-selector">
+                    <button onclick="decrementQuantity()" class="floating-qty-btn">−</button>
+                    <span id="floatingQuantity">1</span>
+                    <button onclick="incrementQuantity()" class="floating-qty-btn">+</button>
+                </div>
+                <button class="floating-add-to-cart-btn" onclick="addProductToCart()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </div>
+            <span>Home</span>
+        </a>
+        <a href="shop.html" class="nav-item active">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </div>
+            <span>Shop</span>
+        </a>
+        <a href="#" id="cartIconBottom" class="nav-item cart-item-nav">
+            <div class="nav-icon cart-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <span class="cart-count" id="cartCountMobile">0</span>
+            </div>
+            <span>Cart</span>
+        </a>
+        <a href="tracking.html" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+            </div>
+            <span>Track</span>
+        </a>
+        <a href="index.html#contact" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                </svg>
+            </div>
+            <span>Contact</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+    <script>
+        let currentProduct = null;
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (!productId) {
+            window.location.href = 'shop.html';
+        }
+
+        // Load product details
+        async function loadProductDetails() {
+            try {
+                const { data: product, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !product) {
+                    console.error('Error loading product:', error);
+                    alert('Product not found');
+                    window.location.href = 'shop.html';
+                    return;
+                }
+
+                currentProduct = product;
+
+                // Update page title
+                document.title = `${product.name} - Al Saraya Butchery`;
+
+                // Update product details
+                const defaultImage = 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&h=600&fit=crop';
+                document.getElementById('productImage').src = product.image_url || defaultImage;
+                document.getElementById('productImage').alt = product.name;
+                document.getElementById('productName').textContent = product.name;
+                document.getElementById('breadcrumbProduct').textContent = product.name;
+                document.getElementById('productCategory').textContent = product.category;
+                document.getElementById('productPrice').textContent = parseFloat(product.price).toFixed(2);
+                document.getElementById('productUnit').textContent = product.unit || 'kg';
+                document.getElementById('productDescription').textContent = product.description || 'Premium quality product from Al Saraya Butchery. Fresh and carefully selected for your satisfaction.';
+                
+                // Update floating bar
+                document.getElementById('floatingPrice').textContent = parseFloat(product.price).toFixed(2);
+                document.getElementById('floatingUnit').textContent = product.unit || 'kg';
+                document.getElementById('floatingProductName').textContent = product.name;
+                
+                // Badge
+                if (product.badge) {
+                    document.getElementById('productBadge').textContent = product.badge;
+                    document.getElementById('productBadge').style.display = 'block';
+                }
+
+                // Stock status
+                const stockEl = document.getElementById('productStock');
+                if (product.in_stock) {
+                    stockEl.textContent = 'In Stock';
+                    stockEl.className = 'product-stock in-stock';
+                } else {
+                    stockEl.textContent = 'Out of Stock';
+                    stockEl.className = 'product-stock out-of-stock';
+                    document.getElementById('addToCartBtn').disabled = true;
+                    document.getElementById('addToCartBtn').textContent = 'Out of Stock';
+                }
+
+                // Details list
+                document.getElementById('categoryDetail').textContent = product.category;
+                document.getElementById('unitDetail').textContent = product.unit || 'kg';
+                document.getElementById('availabilityDetail').textContent = product.in_stock ? 'In Stock' : 'Out of Stock';
+
+                // Load related products
+                loadRelatedProducts(product.category);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading product details');
+                window.location.href = 'shop.html';
+            }
+        }
+
+        // Load related products
+        async function loadRelatedProducts(category) {
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('category', category)
+                    .neq('id', productId)
+                    .limit(4);
+
+                if (error) throw error;
+
+                const grid = document.getElementById('relatedProductsGrid');
+                if (!products || products.length === 0) {
+                    grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No related products found.</p>';
+                    return;
+                }
+
+                const defaultImage = 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&h=350&fit=crop';
+                
+                grid.innerHTML = products.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="product-detail.html?id=${product.id}">
+                                <img src="${product.image_url || defaultImage}" alt="${product.name}" loading="lazy">
+                            </a>
+                            ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">
+                                <a href="product-detail.html?id=${product.id}">${product.name}</a>
+                            </h3>
+                            <p class="product-description">${product.description || ''}</p>
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    $${parseFloat(product.price).toFixed(2)}<span>/${product.unit || 'kg'}</span>
+                                </div>
+                                <button class="add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading related products:', error);
+            }
+        }
+
+        // Quantity controls
+        function incrementQuantity() {
+            const input = document.getElementById('quantity');
+            input.value = parseInt(input.value) + 1;
+            updateFloatingQuantity();
+        }
+
+        function decrementQuantity() {
+            const input = document.getElementById('quantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+            updateFloatingQuantity();
+        }
+
+        // Update floating bar quantity display
+        function updateFloatingQuantity() {
+            const quantity = document.getElementById('quantity').value;
+            document.getElementById('floatingQuantity').textContent = quantity;
+        }
+
+        // Add to cart
+        function addProductToCart() {
+            if (!currentProduct) return;
+
+            const quantity = parseInt(document.getElementById('quantity').value);
+            addToCartFromDB(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.category, currentProduct.unit || 'kg', quantity);
+        }
+
+        // Load product on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProductDetails();
+            updateCart();
+            updateFloatingQuantity();
+        });
+    </script>
+</body>
+</html>

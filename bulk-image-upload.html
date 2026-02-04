@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Image Upload - Al Saraya</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #dc2626;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .instructions {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        .instructions h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .upload-section {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: #dc2626;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #4b5563;
+            margin-left: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: #374151;
+        }
+
+        .file-count {
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #10b981;
+        }
+
+        .progress-section {
+            margin-top: 2rem;
+        }
+
+        .progress-bar-container {
+            background: #1a1a1a;
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #f87171);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .log-container {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            border-left: 4px solid #666;
+        }
+
+        .log-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: #10b981;
+            color: #10b981;
+        }
+
+        .log-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .log-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .log-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Bulk Image Upload Tool</h1>
+        
+        <div class="instructions">
+            <h2>Instructions:</h2>
+            <ol>
+                <li>Download all images from your Google Drive folder to your computer</li>
+                <li>Make sure image filenames contain the Arabic product names (e.g., "كفتة.jpg", "لحم مفروم.png")</li>
+                <li>Click "Select Images" and choose all the downloaded images</li>
+                <li>Click "Upload and Match" to automatically:
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Upload each image to Imgur</li>
+                        <li>Match the filename to products by Arabic name</li>
+                        <li>Update the database with image URLs</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <label for="imageFiles" class="btn">
+                    📁 Select Images
+                </label>
+                <input type="file" id="imageFiles" multiple accept="image/*">
+            </div>
+            
+            <div class="file-count" id="fileCount">No files selected</div>
+            
+            <button class="btn" id="uploadBtn" onclick="startBulkUpload()" disabled>
+                🚀 Upload and Match
+            </button>
+            <button class="btn btn-secondary" onclick="clearLogs()">
+                🗑️ Clear Logs
+            </button>
+        </div>
+
+        <div class="progress-section" id="progressSection" style="display: none;">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value success" id="successCount">0</div>
+                <div class="stat-label">Successfully Uploaded</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value error" id="errorCount">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning" id="skippedCount">0</div>
+                <div class="stat-label">No Match Found</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let selectedFiles = [];
+        let allProducts = [];
+        let stats = { success: 0, error: 0, skipped: 0 };
+
+        // File selection handler
+        document.getElementById('imageFiles').addEventListener('change', function(e) {
+            selectedFiles = Array.from(e.target.files);
+            const count = selectedFiles.length;
+            document.getElementById('fileCount').textContent = `${count} file${count !== 1 ? 's' : ''} selected`;
+            document.getElementById('uploadBtn').disabled = count === 0;
+        });
+
+        // Load products from database
+        async function loadProducts() {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('id, name, arabic_name, image_url');
+                
+                if (error) throw error;
+                allProducts = data || [];
+                addLog('info', `✓ Loaded ${allProducts.length} products from database`);
+            } catch (error) {
+                addLog('error', `✗ Error loading products: ${error.message}`);
+            }
+        }
+
+        // Find product by filename
+        function findProductByFilename(filename) {
+            // Remove file extension
+            const nameWithoutExt = filename.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '').trim();
+            
+            // Try to match with arabic_name
+            const product = allProducts.find(p => {
+                if (!p.arabic_name) return false;
+                
+                // Exact match
+                if (p.arabic_name === nameWithoutExt) return true;
+                
+                // Contains match (filename contains arabic name or vice versa)
+                if (nameWithoutExt.includes(p.arabic_name) || p.arabic_name.includes(nameWithoutExt)) return true;
+                
+                return false;
+            });
+            
+            return product;
+        }
+
+        // Upload image to Imgur
+        async function uploadToImgur(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            const response = await fetch('https://api.imgur.com/3/image', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Client-ID 546c25a59c58ad7'
+                },
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.data?.error || 'Upload failed');
+            }
+            
+            return data.data.link;
+        }
+
+        // Update product with image URL
+        async function updateProductImage(productId, imageUrl) {
+            const { error } = await supabase
+                .from('products')
+                .update({ image_url: imageUrl })
+                .eq('id', productId);
+            
+            if (error) throw error;
+        }
+
+        // Add log entry
+        function addLog(type, message) {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Update stats display
+        function updateStats() {
+            document.getElementById('successCount').textContent = stats.success;
+            document.getElementById('errorCount').textContent = stats.error;
+            document.getElementById('skippedCount').textContent = stats.skipped;
+        }
+
+        // Clear logs
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+            stats = { success: 0, error: 0, skipped: 0 };
+            updateStats();
+        }
+
+        // Main bulk upload function
+        async function startBulkUpload() {
+            if (selectedFiles.length === 0) return;
+            
+            // Reset stats
+            stats = { success: 0, error: 0, skipped: 0 };
+            updateStats();
+            
+            // Show progress section
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('uploadBtn').disabled = true;
+            
+            // Load products
+            addLog('info', '🔄 Loading products from database...');
+            await loadProducts();
+            
+            if (allProducts.length === 0) {
+                addLog('error', '✗ No products found in database. Please add products first.');
+                document.getElementById('uploadBtn').disabled = false;
+                return;
+            }
+            
+            addLog('info', `🚀 Starting bulk upload of ${selectedFiles.length} images...`);
+            
+            // Process each file
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const progress = Math.round(((i + 1) / selectedFiles.length) * 100);
+                
+                // Update progress bar
+                document.getElementById('progressBar').style.width = progress + '%';
+                document.getElementById('progressBar').textContent = progress + '%';
+                
+                addLog('info', `\n📤 Processing: ${file.name}`);
+                
+                try {
+                    // Find matching product
+                    const product = findProductByFilename(file.name);
+                    
+                    if (!product) {
+                        addLog('warning', `⚠️  No product found matching "${file.name}"`);
+                        stats.skipped++;
+                        updateStats();
+                        continue;
+                    }
+                    
+                    addLog('info', `✓ Matched to product: ${product.name} (${product.arabic_name})`);
+                    
+                    // Upload to Imgur
+                    addLog('info', `📤 Uploading to Imgur...`);
+                    const imageUrl = await uploadToImgur(file);
+                    addLog('success', `✓ Uploaded: ${imageUrl}`);
+                    
+                    // Update database
+                    addLog('info', `💾 Updating database...`);
+                    await updateProductImage(product.id, imageUrl);
+                    addLog('success', `✓ Database updated for product #${product.id}`);
+                    
+                    stats.success++;
+                    updateStats();
+                    
+                } catch (error) {
+                    addLog('error', `✗ Error: ${error.message}`);
+                    stats.error++;
+                    updateStats();
+                }
+                
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            addLog('info', `\n✅ Bulk upload complete!`);
+            addLog('info', `📊 Results: ${stats.success} successful, ${stats.error} failed, ${stats.skipped} skipped`);
+            
+            document.getElementById('uploadBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>

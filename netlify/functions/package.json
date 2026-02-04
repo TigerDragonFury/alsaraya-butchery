@@ -1,0 +1,9 @@
+{
+  "name": "alsaraya-serverless-functions",
+  "version": "1.0.0",
+  "description": "Serverless functions for Al Saraya Butchery",
+  "dependencies": {
+    "stripe": "^14.10.0",
+    "node-fetch": "^2.7.0"
+  }
+}

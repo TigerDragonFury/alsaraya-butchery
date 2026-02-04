@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Al Saraya Butchery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="translations.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="iiko-integration.js"></script>
+</head>
+<body>
+    <!-- Floating Shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"></a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#home" data-translate="home">Home</a></li>
+                <li><a href="index.html#about" data-translate="about">About</a></li>
+                <li><a href="shop.html" data-translate="shop">Shop</a></li>
+                <li><a href="tracking.html" data-translate="trackOrder">Track Order</a></li>
+                <li><a href="index.html#contact" data-translate="contact">Contact</a></li>
+                <li class="language-switcher">
+                    <button onclick="switchLanguage('en')" class="lang-btn" id="langEn">EN</button>
+                    <button onclick="switchLanguage('ar')" class="lang-btn" id="langAr">ع</button>
+                </li>
+                <li class="cart-icon" id="cartIcon">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </li>
+            </ul>
+            <div class="mobile-menu" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero page-hero-checkout">
+        <div class="page-hero-content">
+            <h1>Checkout</h1>
+            <p>Complete your order details below</p>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="shop">
+        <div class="checkout-container">
+            <div class="checkout-section customer-info-section">
+                <div class="section-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <h3>Customer Information</h3>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label for="customerName">Full Name *</label>
+                        <input type="text" id="customerName" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerMobile">Mobile Number *</label>
+                        <input type="tel" id="customerMobile" required placeholder="+1 (555) 123-4567" pattern="[\+]?[0-9\s\-\(\)]+">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Email (Optional)</label>
+                        <input type="email" id="customerEmail" placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="deliveryAddress">Delivery Address *</label>
+                        <textarea id="deliveryAddress" required placeholder="Enter your complete delivery address"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryOption">Delivery Time *</label>
+                        <select id="deliveryOption" required onchange="updateDeliveryTime()">
+                            <option value="asap">ASAP (4 hours from now)</option>
+                            <option value="today">Later Today (Evening)</option>
+                            <option value="tomorrow" selected>Tomorrow (Default)</option>
+                            <option value="custom">Choose Custom Date & Time</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="customTimeGroup" style="display: none;">
+                        <label for="customDeliveryDate">Select Delivery Date</label>
+                        <input type="date" id="customDeliveryDate" min="" style="width: 100%; padding: 0.75rem; border: 2px solid rgba(220, 38, 38, 0.2); border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; cursor: pointer; background: white;">
+                        
+                        <label for="customDeliveryHour">Select Delivery Time</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <select id="customDeliveryHour" style="width: 100%; padding: 0.75rem; border: 2px solid rgba(220, 38, 38, 0.2); border-radius: 8px; font-size: 1rem;">
+                                <option value="">Hour</option>
+                                <option value="08">08:00 AM</option>
+                                <option value="09">09:00 AM</option>
+                                <option value="10">10:00 AM</option>
+                                <option value="11">11:00 AM</option>
+                                <option value="12">12:00 PM</option>
+                                <option value="13">01:00 PM</option>
+                                <option value="14">02:00 PM</option>
+                                <option value="15">03:00 PM</option>
+                                <option value="16">04:00 PM</option>
+                                <option value="17">05:00 PM</option>
+                                <option value="18">06:00 PM</option>
+                                <option value="19">07:00 PM</option>
+                                <option value="20">08:00 PM</option>
+                                <option value="21">09:00 PM</option>
+                                <option value="22">10:00 PM</option>
+                            </select>
+                            
+                            <select id="customDeliveryMinute" style="width: 100%; padding: 0.75rem; border: 2px solid rgba(220, 38, 38, 0.2); border-radius: 8px; font-size: 1rem;">
+                                <option value="">Minutes</option>
+                                <option value="00">:00</option>
+                                <option value="15">:15</option>
+                                <option value="30">:30</option>
+                                <option value="45">:45</option>
+                            </select>
+                        </div>
+                        <small style="color: var(--cool-gray); font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                            ⏰ Minimum 4 hours advance notice required
+                        </small>
+                    </div>
+
+                    <div class="delivery-time-info" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(118, 75, 162, 0.1)); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="font-size: 1.5rem;">⏱️</span>
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Expected Delivery:</strong>
+                                <span id="deliveryTimeDisplay" style="color: var(--crimson-red); font-weight: 600;">Tomorrow at 12:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orderNotes">Order Notes (Optional)</label>
+                        <textarea id="orderNotes" placeholder="Any special requests or notes for your order" style="min-height: 100px;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method *</label>
+                        <select id="paymentMethod" required onchange="togglePaymentFields()">
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="card">Pay Online (Card)</option>
+                        </select>
+                    </div>
+
+                    <!-- Stripe Card Element (Hidden by default) -->
+                    <div id="cardPaymentSection" style="display: none;">
+                        <div class="form-group">
+                            <label>Card Details</label>
+                            <div id="card-element" style="padding: 0.75rem; border: 2px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: white;"></div>
+                            <div id="card-errors" role="alert" style="color: var(--crimson-red); font-size: 0.85rem; margin-top: 0.5rem;"></div>
+                        </div>
+                        <div style="background: rgba(34, 197, 94, 0.1); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <small style="color: #059669; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                                <span><strong>Test Mode:</strong> Use card 4242 4242 4242 4242, any future date & CVC</span>
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="checkout-section order-summary-section">
+                <div class="section-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h3>Order Summary</h3>
+                <div id="orderItemsList"></div>
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee:</span>
+                        <span id="deliveryFee">$5.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span id="totalAmount">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-checkout" onclick="placeOrder(event)">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 24px; height: 24px; margin-right: 0.5rem;">
+                    <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
+                </svg>
+                Place Order via WhatsApp
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Al Saraya</h3>
+                <p>Your trusted source for premium quality meats since 1995. We're committed to excellence in every cut.</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">📷</a>
+                    <a href="#" class="social-icon">𝕏</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <div class="footer-links">
+                    <a href="index.html#home">Home</a>
+                    <a href="index.html#about">About Us</a>
+                    <a href="shop.html">Shop</a>
+                    <a href="tracking.html">Track Order</a>
+                    <a href="index.html#contact">Contact</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Products</h3>
+                <div class="footer-links">
+                    <a href="shop.html">Fresh Beef</a>
+                    <a href="shop.html">Premium Lamb</a>
+                    <a href="shop.html">Farm Chicken</a>
+                    <a href="shop.html">Specialty Cuts</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Information</h3>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Delivery Info</a>
+                    <a href="#">FAQ</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Al Saraya Butchery. All rights reserved. Crafted with passion.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </div>
+            <span>Home</span>
+        </a>
+        <a href="shop.html" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </div>
+            <span>Shop</span>
+        </a>
+        <a href="#" id="cartIconBottom" class="nav-item cart-item-nav">
+            <div class="nav-icon cart-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <span class="cart-count" id="cartCountMobile">0</span>
+            </div>
+            <span>Cart</span>
+        </a>
+        <a href="tracking.html" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+            </div>
+            <span>Track</span>
+        </a>
+        <a href="index.html#contact" class="nav-item">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                </svg>
+            </div>
+            <span>Contact</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+    <script>
+        // WhatsApp Business Number
+        const WHATSAPP_NUMBER = '971502606292'; // Your WhatsApp number (without + or spaces)
+
+        // Use the global Supabase client from app.js
+        const checkoutSupabase = supabase;
+
+        // Populate available hours based on selected date
+        function populateAvailableHours() {
+            const customDateInput = document.getElementById('customDeliveryDate');
+            const customHourInput = document.getElementById('customDeliveryHour');
+            const customMinuteInput = document.getElementById('customDeliveryMinute');
+            
+            if (!customDateInput.value) {
+                return;
+            }
+            
+            const selectedDate = new Date(customDateInput.value);
+            const now = new Date();
+            const minTime = new Date(Date.now() + 4 * 60 * 60 * 1000); // 4 hours from now
+            
+            const isToday = selectedDate.toDateString() === now.toDateString();
+            
+            let minHour = 8; // Default minimum hour (8 AM)
+            
+            if (isToday) {
+                // If today, calculate minimum hour based on 4-hour requirement
+                minHour = Math.max(8, Math.ceil(minTime.getHours() + minTime.getMinutes() / 60));
+                if (minHour > 22) {
+                    // Too late today, need to select tomorrow
+                    showNotification('Please select tomorrow or a later date for delivery', 'warning');
+                    customDateInput.value = '';
+                    return;
+                }
+            }
+            
+            // Disable hours that are not available
+            const hourOptions = customHourInput.querySelectorAll('option');
+            hourOptions.forEach(option => {
+                if (option.value === '') return; // Skip the placeholder
+                
+                const hourValue = parseInt(option.value);
+                if (hourValue < minHour) {
+                    option.disabled = true;
+                    option.style.display = 'none';
+                } else {
+                    option.disabled = false;
+                    option.style.display = 'block';
+                }
+            });
+            
+            // If hour is selected, validate it's still valid
+            if (customHourInput.value) {
+                const selectedHour = parseInt(customHourInput.value);
+                if (selectedHour < minHour) {
+                    customHourInput.value = '';
+                    customMinuteInput.value = '';
+                }
+            }
+            
+            updateDeliveryTime();
+        }
+        
+        // Update delivery time display and custom input visibility
+        function updateDeliveryTime() {
+            const deliveryOption = document.getElementById('deliveryOption').value;
+            const customTimeGroup = document.getElementById('customTimeGroup');
+            const deliveryTimeDisplay = document.getElementById('deliveryTimeDisplay');
+            const customDateInput = document.getElementById('customDeliveryDate');
+            const customHourInput = document.getElementById('customDeliveryHour');
+            const customMinuteInput = document.getElementById('customDeliveryMinute');
+            
+            // Set minimum date for custom input (today)
+            const today = new Date();
+            customDateInput.min = today.toISOString().split('T')[0];
+            
+            if (deliveryOption === 'custom') {
+                customTimeGroup.style.display = 'block';
+                
+                // Update display when date/time is selected
+                if (customDateInput.value && customHourInput.value && customMinuteInput.value) {
+                    const selectedDateTime = new Date(customDateInput.value);
+                    selectedDateTime.setHours(parseInt(customHourInput.value), parseInt(customMinuteInput.value), 0, 0);
+                    
+                    // Validate it's at least 4 hours from now
+                    const minTime = new Date(Date.now() + 4 * 60 * 60 * 1000);
+                    if (selectedDateTime < minTime) {
+                        deliveryTimeDisplay.innerHTML = '<span style="color: var(--crimson-red);">⚠️ Must be 4+ hours from now</span>';
+                    } else {
+                        deliveryTimeDisplay.textContent = selectedDateTime.toLocaleString('en-AE', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                } else {
+                    deliveryTimeDisplay.textContent = 'Please select date & time';
+                }
+            } else {
+                customTimeGroup.style.display = 'none';
+                
+                const now = new Date();
+                let deliveryTime;
+                
+                switch(deliveryOption) {
+                    case 'asap':
+                        deliveryTime = new Date(Date.now() + 4 * 60 * 60 * 1000);
+                        break;
+                    case 'today':
+                        const fiveHoursLater = new Date(Date.now() + 5 * 60 * 60 * 1000);
+                        const today7PM = new Date();
+                        today7PM.setHours(19, 0, 0, 0);
+                        deliveryTime = fiveHoursLater > today7PM ? fiveHoursLater : today7PM;
+                        break;
+                    case 'tomorrow':
+                    default:
+                        deliveryTime = new Date();
+                        deliveryTime.setDate(deliveryTime.getDate() + 1);
+                        deliveryTime.setHours(12, 0, 0, 0);
+                        break;
+                }
+                
+                deliveryTimeDisplay.textContent = deliveryTime.toLocaleString('en-AE', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+        
+        // Update custom time display when changed
+        document.addEventListener('DOMContentLoaded', () => {
+            const customDateInput = document.getElementById('customDeliveryDate');
+            const customHourInput = document.getElementById('customDeliveryHour');
+            const customMinuteInput = document.getElementById('customDeliveryMinute');
+            
+            if (customDateInput) {
+                customDateInput.addEventListener('change', () => {
+                    populateAvailableHours();
+                });
+            }
+            if (customHourInput) {
+                customHourInput.addEventListener('change', updateDeliveryTime);
+            }
+            if (customMinuteInput) {
+                customMinuteInput.addEventListener('change', updateDeliveryTime);
+            }
+            
+            updateDeliveryTime();
+        });
+
+        // Display Order Summary
+        function displayOrderSummary() {
+            const orderItemsList = document.getElementById('orderItemsList');
+            const subtotalEl = document.getElementById('subtotal');
+            const deliveryFeeEl = document.getElementById('deliveryFee');
+            const totalAmountEl = document.getElementById('totalAmount');
+
+            if (cart.length === 0) {
+                orderItemsList.innerHTML = '<p style="color: var(--cool-gray); text-align: center; padding: 2rem;">Your cart is empty. <a href="shop.html" style="color: var(--crimson-red);">Continue shopping</a></p>';
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 5.00;
+            const total = subtotal + deliveryFee;
+
+            orderItemsList.innerHTML = cart.map(item => `
+                <div class="summary-row" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(220, 38, 38, 0.1);">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span style="color: var(--crimson-red); font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            deliveryFeeEl.textContent = `$${deliveryFee.toFixed(2)}`;
+            totalAmountEl.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Place Order
+        async function placeOrder(event) {
+            event.preventDefault();
+            
+            // Disable submit button to prevent double-clicks
+            const submitButton = event.target.closest('button') || event.target;
+            if (submitButton.disabled) return;
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.6';
+            submitButton.style.cursor = 'not-allowed';
+
+            const name = document.getElementById('customerName').value.trim();
+            const mobile = document.getElementById('customerMobile').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const address = document.getElementById('deliveryAddress').value.trim();
+            const notes = document.getElementById('orderNotes').value.trim();
+            const deliveryOption = document.getElementById('deliveryOption').value;
+            const customDeliveryDate = document.getElementById('customDeliveryDate').value;
+            const customDeliveryHour = document.getElementById('customDeliveryHour').value;
+            const customDeliveryMinute = document.getElementById('customDeliveryMinute').value;
+
+            // Check for empty required fields and highlight them
+            const requiredFields = [
+                { id: 'customerName', value: name, label: 'Full Name' },
+                { id: 'customerMobile', value: mobile, label: 'Mobile Number' },
+                { id: 'deliveryAddress', value: address, label: 'Delivery Address' }
+            ];
+
+            // Validate custom delivery time if selected
+            if (deliveryOption === 'custom') {
+                if (!customDeliveryDate || !customDeliveryHour || !customDeliveryMinute) {
+                    showNotification('Please select a complete delivery date and time', 'error');
+                    document.getElementById('customDeliveryDate').focus();
+                    return;
+                }
+                
+                const selectedTime = new Date(customDeliveryDate);
+                selectedTime.setHours(parseInt(customDeliveryHour), parseInt(customDeliveryMinute), 0, 0);
+                const minTime = new Date(Date.now() + 4 * 60 * 60 * 1000);
+                
+                if (selectedTime < minTime) {
+                    showNotification('Delivery time must be at least 4 hours from now', 'error');
+                    document.getElementById('customDeliveryDate').focus();
+                    return;
+                }
+            }
+
+            const emptyFields = requiredFields.filter(field => !field.value);
+
+            if (emptyFields.length > 0) {
+                // Remove any existing error styling first
+                requiredFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    element.classList.remove('field-error');
+                    element.style.animation = '';
+                });
+
+                // Add error styling and scroll to first empty field
+                const firstEmptyField = document.getElementById(emptyFields[0].id);
+                
+                emptyFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    element.classList.add('field-error');
+                    element.style.animation = 'shake 0.5s';
+                });
+
+                // Scroll to first empty field
+                firstEmptyField.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+
+                // Focus on first empty field
+                setTimeout(() => {
+                    firstEmptyField.focus();
+                }, 500);
+
+                showNotification(`Please fill in: ${emptyFields.map(f => f.label).join(', ')}`, 'error');
+                
+                // Remove error styling after 3 seconds
+                setTimeout(() => {
+                    emptyFields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        element.classList.remove('field-error');
+                        element.style.animation = '';
+                    });
+                }, 3000);
+
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.style.opacity = '1';
+                submitButton.style.cursor = 'pointer';
+                return;
+            }
+
+            if (cart.length === 0) {
+                showNotification('Your cart is empty!');
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.style.opacity = '1';
+                submitButton.style.cursor = 'pointer';
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 5.00;
+            const total = subtotal + deliveryFee;
+            
+            // Get payment method
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            let paymentIntentId = null;
+            let paymentStatus = 'pending';
+            
+            // Process Stripe payment if card payment is selected
+            if (paymentMethod === 'card') {
+                try {
+                    showLoadingModal('Processing payment...');
+                    const paymentResult = await processStripePayment(total, name, email || 'customer@alsaraya.com');
+                    
+                    if (!paymentResult.success) {
+                        hideLoadingModal();
+                        showNotification('Payment failed: ' + paymentResult.error, 'error');
+                        // Re-enable submit button
+                        submitButton.disabled = false;
+                        submitButton.style.opacity = '1';
+                        submitButton.style.cursor = 'pointer';
+                        return;
+                    }
+                    
+                    paymentIntentId = paymentResult.paymentIntentId;
+                    paymentStatus = paymentResult.status;
+                    updateLoadingModal('Payment successful! Creating order...');
+                } catch (paymentError) {
+                    console.error('Payment error:', paymentError);
+                    hideLoadingModal();
+                    showNotification('Payment processing error. Please try again.', 'error');
+                    // Re-enable submit button
+                    submitButton.disabled = false;
+                    submitButton.style.opacity = '1';
+                    submitButton.style.cursor = 'pointer';
+                    return;
+                }
+            }
+            
+            // Calculate delivery time based on selection
+            let deliveryTime;
+            if (deliveryOption === 'custom') {
+                const selectedDateTime = new Date(customDeliveryDate);
+                selectedDateTime.setHours(parseInt(customDeliveryHour), parseInt(customDeliveryMinute), 0, 0);
+                deliveryTime = selectedDateTime.toISOString();
+            } else {
+                const now = new Date();
+                switch(deliveryOption) {
+                    case 'asap':
+                        deliveryTime = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
+                        break;
+                    case 'today':
+                        const fiveHoursLater = new Date(Date.now() + 5 * 60 * 60 * 1000);
+                        const today7PM = new Date();
+                        today7PM.setHours(19, 0, 0, 0);
+                        deliveryTime = (fiveHoursLater > today7PM ? fiveHoursLater : today7PM).toISOString();
+                        break;
+                    case 'tomorrow':
+                    default:
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        tomorrow.setHours(12, 0, 0, 0);
+                        deliveryTime = tomorrow.toISOString();
+                        break;
+                }
+            }
+
+            // Helper function to get UAE time (UTC+4)
+            function getUAETime() {
+                const now = new Date();
+                // Convert to UAE timezone (Asia/Dubai)
+                const uaeDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+                
+                // Format as ISO string with UAE timezone offset
+                const pad = (n) => String(n).padStart(2, '0');
+                const year = uaeDate.getFullYear();
+                const month = pad(uaeDate.getMonth() + 1);
+                const day = pad(uaeDate.getDate());
+                const hours = pad(uaeDate.getHours());
+                const minutes = pad(uaeDate.getMinutes());
+                const seconds = pad(uaeDate.getSeconds());
+                const ms = String(uaeDate.getMilliseconds()).padStart(3, '0');
+                
+                return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${ms}+04:00`;
+            }
+
+            try {
+                const uaeTimestamp = getUAETime();
+                
+                // Save order to Supabase
+                const { data: orderData, error: orderError } = await checkoutSupabase
+                    .from('orders')
+                    .insert([
+                        {
+                            customer_name: name,
+                            customer_mobile: mobile,
+                            customer_email: email || null,
+                            delivery_address: address,
+                            order_notes: notes || null,
+                            subtotal: subtotal,
+                            delivery_fee: deliveryFee,
+                            total_amount: total,
+                            status: 'pending',
+                            created_at: uaeTimestamp,
+                            payment_method: paymentMethod,
+                            payment_status: paymentStatus,
+                            payment_intent_id: paymentIntentId
+                        }
+                    ])
+                    .select();
+
+                if (orderError) throw orderError;
+
+                const orderId = orderData[0].id;
+
+                // Save order items to Supabase
+                const orderItems = cart.map(item => ({
+                    order_id: orderId,
+                    product_name: item.name,
+                    product_category: item.category,
+                    quantity: item.quantity,
+                    unit_price: item.price,
+                    total_price: item.price * item.quantity
+                }));
+
+                const { error: itemsError } = await checkoutSupabase
+                    .from('order_items')
+                    .insert(orderItems);
+
+                if (itemsError) throw itemsError;
+
+                // ========================================
+                // SEND ORDER TO iiko POS
+                // ========================================
+                try {
+                    console.log('Sending order to iiko POS...');
+                    
+                    const iikoOrderData = window.iikoIntegration.formatOrderForIiko(
+                        cart,
+                        {
+                            name: name,
+                            phone: mobile,
+                            email: email,
+                            address: address,
+                            notes: notes + (paymentIntentId ? ` [Stripe Payment ID: ${paymentIntentId}]` : ''),
+                            paymentMethod: paymentMethod,
+                            deliveryTime: deliveryTime, // Pass the calculated delivery time
+                            deliveryType: deliveryOption // Pass the delivery type (asap, today, tomorrow, custom)
+                        },
+                        total
+                    );
+
+                    const iikoResult = await window.iikoIntegration.sendOrder(iikoOrderData);
+                    
+                    if (iikoResult.success) {
+                        console.log('✅ Order successfully sent to iiko POS:', iikoResult.orderId);
+                        
+                        // Check if in fallback mode
+                        if (iikoResult.fallbackMode) {
+                            console.log('⚠️ Fallback mode active - order logged for manual processing');
+                            
+                            await checkoutSupabase
+                                .from('orders')
+                                .update({ 
+                                    iiko_order_id: iikoResult.orderId,
+                                    iiko_sync_status: 'fallback',
+                                    iiko_sync_error: 'Products not configured in iiko - manual entry required',
+                                    delivery_time: deliveryTime,
+                                    notes: (notes || '') + ' [FALLBACK MODE: Manual iiko entry needed]'
+                                })
+                                .eq('id', orderId);
+                        } else {
+                            // Normal iiko integration
+                            await checkoutSupabase
+                                .from('orders')
+                                .update({ 
+                                    iiko_order_id: iikoResult.orderId,
+                                    iiko_sync_status: 'synced',
+                                    iiko_synced_at: getUAETime(),
+                                    delivery_time: deliveryTime
+                                })
+                                .eq('id', orderId);
+                        }
+                    } else {
+                        console.error('⚠️ Failed to send order to iiko POS:', iikoResult.error);
+                        
+                        // Update order status to indicate iiko sync failed
+                        await checkoutSupabase
+                            .from('orders')
+                            .update({ 
+                                iiko_sync_status: 'failed',
+                                iiko_sync_error: iikoResult.error,
+                                delivery_time: deliveryTime
+                            })
+                            .eq('id', orderId);
+                        
+                        // Still continue with order - don't fail the whole process
+                        showNotification('Order placed but POS sync failed. Staff will be notified.', 'warning');
+                    }
+                } catch (iikoError) {
+                    console.error('Error sending to iiko POS:', iikoError);
+                    // Don't fail the order, just log the error
+                }
+
+                // Create WhatsApp message
+                const deliveryTimeFormatted = new Date(deliveryTime).toLocaleString('en-AE', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                let whatsappMessage = `*New Order from Al Saraya Butchery*%0A%0A`;
+                whatsappMessage += `*Order ID:* ${orderId}%0A`;
+                whatsappMessage += `*Customer:* ${name}%0A`;
+                whatsappMessage += `*Mobile:* ${mobile}%0A`;
+                if (email) whatsappMessage += `*Email:* ${email}%0A`;
+                whatsappMessage += `*Address:* ${address}%0A`;
+                whatsappMessage += `*Delivery Time:* ${deliveryTimeFormatted}%0A`;
+                whatsappMessage += `*Payment Method:* ${paymentMethod === 'card' ? '💳 Card (Paid Online)' : '💵 Cash on Delivery'}%0A`;
+                if (paymentIntentId) {
+                    whatsappMessage += `*Payment Ref:* ${paymentIntentId.substring(0, 20)}...%0A`;
+                }
+                whatsappMessage += `%0A*Order Items:*%0A`;
+                
+                cart.forEach(item => {
+                    whatsappMessage += `- ${item.name} x ${item.quantity} @ $${item.price.toFixed(2)} = $${(item.price * item.quantity).toFixed(2)}%0A`;
+                });
+
+                whatsappMessage += `%0A*Subtotal:* $${subtotal.toFixed(2)}%0A`;
+                whatsappMessage += `*Delivery Fee:* $${deliveryFee.toFixed(2)}%0A`;
+                whatsappMessage += `*Total:* $${total.toFixed(2)}%0A`;
+                
+                if (notes) {
+                    whatsappMessage += `%0A*Notes:* ${notes}`;
+                }
+
+                // Store WhatsApp URL for later use
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+                // Hide loading modal
+                hideLoadingModal();
+
+                // Clear cart
+                clearCart();
+                
+                // Show success modal with options
+                showOrderSuccessModal(orderId, whatsappUrl);
+
+            } catch (error) {
+                console.error('Error placing order:', error);
+                hideLoadingModal();
+                showNotification('Error placing order. Please try again or contact us directly.');
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.style.opacity = '1';
+                submitButton.style.cursor = 'pointer';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            displayOrderSummary();
+            initializeStripe();
+        });
+
+        // ========================================
+        // STRIPE PAYMENT INTEGRATION
+        // ========================================
+        let stripe, elements, cardElement;
+        let stripeInitialized = false;
+
+        async function initializeStripe() {
+            try {
+                // Get Stripe publishable key from serverless function
+                const response = await fetch('/api/stripe/config');
+                const { publishableKey } = await response.json();
+                
+                // Initialize Stripe
+                stripe = Stripe(publishableKey);
+                elements = stripe.elements();
+                
+                // Create card element
+                cardElement = elements.create('card', {
+                    hidePostalCode: true,
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#1E293B',
+                            '::placeholder': {
+                                color: '#94A3B8',
+                            },
+                        },
+                    },
+                });
+                
+                // Mount card element (but keep hidden initially)
+                cardElement.mount('#card-element');
+                
+                // Handle real-time validation errors
+                cardElement.on('change', (event) => {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+
+                stripeInitialized = true;
+                console.log('✅ Stripe initialized successfully');
+            } catch (error) {
+                console.error('❌ Stripe initialization failed:', error);
+                showNotification('Payment system initialization failed. Please use Cash on Delivery.', 'error');
+            }
+        }
+
+        function togglePaymentFields() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const cardSection = document.getElementById('cardPaymentSection');
+            
+            if (paymentMethod === 'card') {
+                cardSection.style.display = 'block';
+            } else {
+                cardSection.style.display = 'none';
+            }
+        }
+
+        async function processStripePayment(amount, customerName, customerEmail) {
+            try {
+                console.log('💳 Processing Stripe payment...');
+                
+                // Create payment intent
+                const response = await fetch('/api/stripe/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: 'aed',
+                        customerName: customerName,
+                        customerEmail: customerEmail
+                    })
+                });
+
+                const { clientSecret, paymentIntentId } = await response.json();
+
+                // Confirm payment
+                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: customerName,
+                            email: customerEmail
+                        }
+                    }
+                });
+
+                if (error) {
+                    console.error('❌ Payment failed:', error);
+                    return { success: false, error: error.message };
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    console.log('✅ Payment successful!');
+                    return { 
+                        success: true, 
+                        paymentIntentId: paymentIntent.id,
+                        amount: paymentIntent.amount / 100,
+                        status: paymentIntent.status
+                    };
+                }
+
+                return { success: false, error: 'Payment not completed' };
+
+            } catch (error) {
+                console.error('❌ Stripe payment error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Loading Modal Functions
+        let loadingModalElement = null;
+
+        function showLoadingModal(message) {
+            if (loadingModalElement) return; // Prevent duplicate modals
+            
+            loadingModalElement = document.createElement('div');
+            loadingModalElement.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+            
+            loadingModalElement.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 3rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; animation: fadeIn 0.3s ease-out;">
+                    <div class="loading-spinner" style="width: 60px; height: 60px; margin: 0 auto 1.5rem;"></div>
+                    <h3 id="loadingMessage" style="color: #1E293B; margin: 0; font-size: 1.25rem; font-weight: 600;">${message}</h3>
+                    <p style="color: #64748B; margin-top: 0.5rem; font-size: 0.9rem;">Please wait...</p>
+                </div>
+                
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: scale(0.9); }
+                        to { opacity: 1; transform: scale(1); }
+                    }
+                    
+                    .loading-spinner {
+                        border: 4px solid #E2E8F0;
+                        border-top: 4px solid #DC2626;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    }
+                    
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(loadingModalElement);
+        }
+
+        function updateLoadingModal(message) {
+            if (loadingModalElement) {
+                const messageEl = loadingModalElement.querySelector('#loadingMessage');
+                if (messageEl) messageEl.textContent = message;
+            }
+        }
+
+        function hideLoadingModal() {
+            if (loadingModalElement) {
+                loadingModalElement.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (loadingModalElement && loadingModalElement.parentNode) {
+                        loadingModalElement.parentNode.removeChild(loadingModalElement);
+                    }
+                    loadingModalElement = null;
+                }, 300);
+            }
+        }
+
+        // Show Order Success Modal
+        function showOrderSuccessModal(orderId, whatsappUrl) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 3rem; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; animation: slideUp 0.4s ease-out;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22C55E, #10B981); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; animation: scaleIn 0.5s ease-out 0.2s both;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 style="color: #1E293B; margin-bottom: 0.5rem; font-size: 1.75rem;">Order Placed Successfully!</h2>
+                    <p style="color: #64748B; margin-bottom: 0.5rem; font-size: 1rem;">Your order #${orderId} has been received</p>
+                    <p style="color: #64748B; margin-bottom: 2rem; font-size: 0.9rem;">What would you like to do next?</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button onclick="window.open('${whatsappUrl}', '_blank')" style="
+                            background: linear-gradient(135deg, #25D366, #128C7E);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.75rem;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(37, 211, 102, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Send to WhatsApp
+                        </button>
+                        
+                        <button onclick="window.location.href='tracking.html?order=${orderId}'" style="
+                            background: linear-gradient(135deg, #DC2626, #B91C1C);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.75rem;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(220, 38, 38, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                            </svg>
+                            Track Order
+                        </button>
+                        
+                        <button onclick="window.location.href='shop.html'" style="
+                            background: white;
+                            color: #1E293B;
+                            border: 2px solid #E2E8F0;
+                            padding: 1rem 2rem;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.75rem;
+                            transition: transform 0.2s, border-color 0.2s;
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#DC2626'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#E2E8F0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes slideUp {
+                        from {
+                            transform: translateY(30px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateY(0);
+                            opacity: 1;
+                        }
+                    }
+                    
+                    @keyframes scaleIn {
+                        from {
+                            transform: scale(0);
+                        }
+                        to {
+                            transform: scale(1);
+                        }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Netlify Configuration
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "echo 'No build step required'"
+
+# Redirect API calls to serverless functions
+[[redirects]]
+  from = "/api/stripe/config"
+  to = "/.netlify/functions/stripe-config"
+  status = 200
+
+[[redirects]]
+  from = "/api/stripe/create-payment-intent"
+  to = "/.netlify/functions/create-payment-intent"
+  status = 200
+
+[[redirects]]
+  from = "/api/stripe/verify-payment"
+  to = "/.netlify/functions/verify-payment"
+  status = 200
+
+[[redirects]]
+  from = "/api/iiko/create-order"
+  to = "/.netlify/functions/create-iiko-order"
+  status = 200
+
+# SPA fallback (optional, for future routing)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"]}
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
