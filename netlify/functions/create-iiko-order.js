@@ -56,6 +56,53 @@ exports.handler = async (event, context) => {
 
         console.log('iiko authentication successful');
 
+        // Format phone number (add +971 if not present)
+        const phone = orderData.customerPhone;
+        const formattedPhone = phone.startsWith('+') ? phone : `+971${phone}`;
+
+        // Calculate delivery time
+        const deliveryTime = orderData.deliveryTime || new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
+
+        // Build iiko order structure
+        const iikoOrder = {
+            organizationId: process.env.IIKO_ORG_ID,
+            terminalGroupId: process.env.IIKO_TERMINAL_ID,
+            order: {
+                completeBefore: deliveryTime,
+                customer: {
+                    name: orderData.customerName,
+                    phone: formattedPhone
+                },
+                deliveryPoint: {
+                    address: {
+                        street: {
+                            classifierId: "00000000-0000-0000-0000-000000000000",
+                            name: orderData.address
+                        },
+                        house: ""
+                    },
+                    comment: orderData.notes || ''
+                },
+                items: orderData.items.map(item => ({
+                    type: "Product",
+                    productId: item.iikoProductId || "00000000-0000-0000-0000-000000000000",
+                    amount: item.quantity,
+                    comment: `${item.name} (Qty: ${item.quantity})`
+                })),
+                payments: [{
+                    paymentTypeKind: orderData.paymentMethod === 'card' ? 'Card' : 'Cash',
+                    paymentTypeId: process.env.IIKO_PAYMENT_TYPE_ID,
+                    sum: orderData.total,
+                    isProcessedExternally: true
+                }],
+                comment: orderData.notes || '',
+                sourceKey: 'website',
+                orderTypeId: process.env.IIKO_WEBSITE_ORDER_TYPE || process.env.IIKO_DELIVERY_ORDER_TYPE
+            }
+        };
+
+        console.log('Sending iiko order:', JSON.stringify(iikoOrder).substring(0, 300));
+
         // Create order in iiko
         const orderResponse = await fetch(`${process.env.IIKO_API_URL}/api/1/deliveries/create`, {
             method: 'POST',
@@ -63,10 +110,7 @@ exports.handler = async (event, context) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({
-                organizationId: process.env.IIKO_ORG_ID,
-                ...orderData
-            })
+            body: JSON.stringify(iikoOrder)
         });
 
         if (!orderResponse.ok) {
