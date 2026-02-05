@@ -98,7 +98,7 @@ async function loadDashboardData() {
         // Update dashboard
         document.getElementById('totalOrders').textContent = totalOrders;
         document.getElementById('totalProducts').textContent = totalProducts;
-        document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        document.getElementById('totalRevenue').textContent = `${totalRevenue.toFixed(2)} AED`;
         document.getElementById('pendingOrders').textContent = pendingOrders;
         
         // Load recent orders
@@ -122,7 +122,7 @@ function displayRecentOrders(orders) {
         <tr>
             <td><strong>#${order.id}</strong></td>
             <td>${order.customer_name || 'N/A'}</td>
-            <td>$${parseFloat(order.total_amount).toFixed(2)}</td>
+            <td>${parseFloat(order.total_amount).toFixed(2)} AED</td>
             <td><span class="status-badge status-${order.status}">${order.status}</span></td>
             <td>${new Date(order.created_at).toLocaleDateString()}</td>
             <td>
@@ -182,7 +182,7 @@ function displayProducts(products) {
                 <p class="product-category"><span class="category-badge">${categoryName}</span></p>
                 <div class="product-footer">
                     <div class="product-price">
-                        $${parseFloat(product.price).toFixed(2)}<span>/${product.unit || 'kg'}</span>
+                        ${parseFloat(product.price).toFixed(2)} AED<span>/${product.unit || 'kg'}</span>
                     </div>
                     <div class="product-actions">
                         <button class="btn-icon btn-edit" onclick="editProduct(${product.id})" title="Edit">✏️</button>
@@ -398,7 +398,7 @@ function displayOrders(orders) {
                     </div>
                     <div class="info-row">
                         <span class="info-label">Total:</span>
-                        <span class="info-value order-total">$${parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span class="info-value order-total">${parseFloat(order.total_amount).toFixed(2)} AED</span>
                     </div>
                 </div>
             </div>
@@ -483,16 +483,16 @@ window.viewOrderDetails = async function(orderId) {
                                 return `
                                 <tr>
                                     <td>${item.product_name || 'Unknown Product'}</td>
-                                    <td>$${itemPrice.toFixed(2)}</td>
+                                    <td>${itemPrice.toFixed(2)} AED</td>
                                     <td>${itemQuantity}</td>
-                                    <td>$${itemTotal.toFixed(2)}</td>
+                                    <td>${itemTotal.toFixed(2)} AED</td>
                                 </tr>
                                 `;
                             }).join('')}
                         </tbody>
                     </table>
                     <div class="order-total">
-                        <strong>Total: $${(parseFloat(order.total_amount) || 0).toFixed(2)}</strong>
+                        <strong>Total: ${(parseFloat(order.total_amount) || 0).toFixed(2)} AED</strong>
                     </div>
                 </div>
                 

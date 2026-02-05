@@ -447,7 +447,7 @@
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal">$0.00</span>
+                <span id="cartTotal">0.00 AED</span>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout()">Proceed to Checkout</button>
         </div>
@@ -509,7 +509,7 @@
                                 <p class="product-description">${product.description || ''}</p>
                                 <div class="product-footer">
                                     <div class="product-price">
-                                        $${parseFloat(product.price).toFixed(2)}<span>/${product.unit || 'kg'}</span>
+                                        ${parseFloat(product.price).toFixed(2)} AED<span>/${product.unit || 'kg'}</span>
                                     </div>
                                     <button class="add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">
                                         Add to Cart
@@ -569,8 +569,8 @@
                             <h2>${displayName}</h2>
                             <p>${product.description || 'Limited time offer on this premium product!'}</p>
                             <div class="promo-pricing">
-                                <span class="original-price">$${parseFloat(product.price).toFixed(2)}</span>
-                                <span class="discount-price">$${discountPrice}</span>
+                                <span class="original-price">${parseFloat(product.price).toFixed(2)} AED</span>
+                                <span class="discount-price">${discountPrice} AED</span>
                                 <span class="price-unit">/${product.unit || 'kg'}</span>
                             </div>
                             <button class="btn btn-primary btn-large" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">

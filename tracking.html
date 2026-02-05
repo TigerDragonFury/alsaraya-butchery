@@ -172,7 +172,7 @@
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal">$0.00</span>
+                <span id="cartTotal">0.00 AED</span>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout()">Proceed to Checkout</button>
         </div>
@@ -276,7 +276,7 @@
                                 </div>
                                 <div class="order-info-item">
                                     <span class="order-info-label">Total Amount:</span>
-                                    <span class="order-info-value" style="color: var(--amber-gold); font-weight: 700; font-size: 1.2rem;">$${parseFloat(order.total_amount).toFixed(2)}</span>
+                                    <span class="order-info-value" style="color: var(--amber-gold); font-weight: 700; font-size: 1.2rem;">${parseFloat(order.total_amount).toFixed(2)} AED</span>
                                 </div>
                             </div>
 
@@ -288,8 +288,8 @@
                                             <span class="item-name">${item.product_name}</span>
                                             <span class="item-details">
                                                 <span>Qty: ${item.quantity}</span>
-                                                <span>$${parseFloat(item.unit_price).toFixed(2)} ea</span>
-                                                <span>Total: $${parseFloat(item.total_price).toFixed(2)}</span>
+                                                <span>${parseFloat(item.unit_price).toFixed(2)} AED ea</span>
+                                                <span>Total: ${parseFloat(item.total_price).toFixed(2)} AED</span>
                                             </span>
                                         </div>
                                     `).join('')}

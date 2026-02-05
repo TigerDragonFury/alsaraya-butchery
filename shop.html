@@ -218,7 +218,7 @@
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal">$0.00</span>
+                <span id="cartTotal">0.00 AED</span>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout()">Proceed to Checkout</button>
         </div>
@@ -394,7 +394,7 @@
                             <p class="product-description">${product.description || ''}</p>
                             <div class="product-footer">
                                 <div class="product-price">
-                                    $${parseFloat(product.price).toFixed(2)}<span>/${product.unit || 'kg'}</span>
+                                    ${parseFloat(product.price).toFixed(2)} AED<span>/${product.unit || 'kg'}</span>
                                 </div>
                                 <button class="add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.category}', '${product.unit || 'kg'}', '${product.iiko_product_id || ''}')">
                                     Add to Cart

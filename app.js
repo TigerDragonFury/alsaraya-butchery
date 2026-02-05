@@ -276,7 +276,7 @@ function updateCart() {
     if (!cartItems || !cartTotal) return;
 
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+    cartTotal.textContent = `${totalPrice.toFixed(2)} AED`;
 
     if (cart.length === 0) {
         cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
@@ -285,7 +285,7 @@ function updateCart() {
             <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">$${item.price.toFixed(2)} ${item.unit}</div>
+                    <div class="cart-item-price">${item.price.toFixed(2)} AED / ${item.unit}</div>
                 </div>
                 <div class="cart-item-quantity">
                     <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
