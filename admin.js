@@ -1004,96 +1004,75 @@ function getStatusClass(status) {
     return statusMap[status] || 'status-pending';
 }
 
-// View iiko order details
-window.viewIikoOrderDetails = async function(orderId) {
+// View iiko order details (uses cached data from iikoOrders)
+window.viewIikoOrderDetails = function(orderId) {
     const modal = document.getElementById('iikoOrderModal');
     const content = document.getElementById('iikoOrderDetailsContent');
 
-    content.innerHTML = '<div class="loading">Loading order details...</div>';
-    modal.classList.add('active');
+    // Find order in cached data
+    const order = iikoOrders.find(o => o.id === orderId);
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/iiko/orders/${orderId}`);
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.error || 'Failed to fetch order details');
-        }
-
-        const order = data.order?.order || data.order;
-        if (!order) {
-            throw new Error('Order data not found');
-        }
-
-        content.innerHTML = `
-            <div class="order-details">
-                <div class="detail-group">
-                    <h3>Order Information</h3>
-                    <p><strong>Order #:</strong> ${order.number || 'N/A'}</p>
-                    <p><strong>Status:</strong> <span class="status-badge ${getStatusClass(order.status)}">${order.status || 'Unknown'}</span></p>
-                    <p><strong>Created:</strong> ${order.whenCreated || 'N/A'}</p>
-                    <p><strong>Delivery By:</strong> ${order.completeBefore || 'N/A'}</p>
-                    <p><strong>Source:</strong> ${order.sourceKey === 'website' ? 'Website' : 'POS'}</p>
-                </div>
-
-                <div class="detail-group">
-                    <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> ${order.customer?.name || 'N/A'}</p>
-                    <p><strong>Phone:</strong> ${order.phone || 'N/A'}</p>
-                    ${order.deliveryPoint?.address ? `
-                        <p><strong>Address:</strong> ${order.deliveryPoint.address.line1 || order.deliveryPoint.address.street?.name || 'N/A'}</p>
-                        ${order.deliveryPoint.address.house ? `<p><strong>House:</strong> ${order.deliveryPoint.address.house}</p>` : ''}
-                        ${order.deliveryPoint.address.flat ? `<p><strong>Flat:</strong> ${order.deliveryPoint.address.flat}</p>` : ''}
-                    ` : ''}
-                    ${order.deliveryPoint?.comment ? `<p><strong>Delivery Notes:</strong> ${order.deliveryPoint.comment}</p>` : ''}
-                </div>
-
-                <div class="detail-group">
-                    <h3>Order Items</h3>
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${(order.items || []).map(item => `
-                                <tr>
-                                    <td>${item.product?.name || 'Unknown'}</td>
-                                    <td>${item.amount}</td>
-                                    <td>${item.price?.toFixed(2) || '0.00'} AED</td>
-                                    <td>${item.resultSum?.toFixed(2) || '0.00'} AED</td>
-                                </tr>
-                            `).join('') || '<tr><td colspan="4">No items</td></tr>'}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="detail-group">
-                    <h3>Payment</h3>
-                    ${(order.payments || []).map(p => `
-                        <p><strong>${p.paymentType?.name || 'Payment'}:</strong> ${p.sum?.toFixed(2) || '0.00'} AED</p>
-                    `).join('') || '<p>No payment info</p>'}
-                    <p class="order-total" style="font-size: 1.25rem; margin-top: 1rem;">
-                        <strong>Total: ${order.sum?.toFixed(2) || '0.00'} AED</strong>
-                    </p>
-                </div>
-
-                ${order.comment ? `
-                    <div class="detail-group">
-                        <h3>Order Notes</h3>
-                        <p>${order.comment}</p>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    } catch (error) {
-        console.error('Error fetching order details:', error);
-        content.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+    if (!order) {
+        content.innerHTML = '<div class="error">Order not found in loaded data</div>';
+        modal.classList.add('active');
+        return;
     }
+
+    const dateStr = order.created ? new Date(order.created).toLocaleString() : 'N/A';
+    const deliveryStr = order.deliveryTime ? new Date(order.deliveryTime).toLocaleString() : 'N/A';
+
+    content.innerHTML = `
+        <div class="order-details">
+            <div class="detail-group">
+                <h3>Order Information</h3>
+                <p><strong>Order #:</strong> ${order.number || 'N/A'}</p>
+                <p><strong>Status:</strong> <span class="status-badge ${getStatusClass(order.status)}">${order.status || 'Unknown'}</span></p>
+                <p><strong>Created:</strong> ${dateStr}</p>
+                <p><strong>Delivery By:</strong> ${deliveryStr}</p>
+                <p><strong>Source:</strong> ${order.sourceKey === 'website' ? 'Website' : 'POS'}</p>
+            </div>
+
+            <div class="detail-group">
+                <h3>Customer Information</h3>
+                <p><strong>Name:</strong> ${order.customer || 'N/A'}</p>
+                <p><strong>Phone:</strong> ${order.phone || 'N/A'}</p>
+                <p><strong>Address:</strong> ${order.address || 'N/A'}</p>
+                ${order.comment ? `<p><strong>Notes:</strong> ${order.comment}</p>` : ''}
+            </div>
+
+            <div class="detail-group">
+                <h3>Order Items</h3>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(order.items || []).map(item => `
+                            <tr>
+                                <td>${item.name || 'Unknown'}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.price?.toFixed(2) || '0.00'} AED</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="3">No items</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="detail-group">
+                <h3>Payment</h3>
+                <p><strong>Method:</strong> ${order.payment || 'N/A'}</p>
+                <p class="order-total" style="font-size: 1.25rem; margin-top: 1rem;">
+                    <strong>Total: ${order.total?.toFixed(2) || '0.00'} AED</strong>
+                </p>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
 }
 
 // Close iiko order modal
