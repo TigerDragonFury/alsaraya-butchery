@@ -58,6 +58,9 @@ export default async function handler(req, res) {
         // Calculate delivery time
         const deliveryTime = orderData.deliveryTime || new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
 
+        // Determine if this is a cash payment (cod = cash on delivery)
+        const isCashPayment = orderData.paymentMethod === 'cod' || orderData.paymentMethod === 'cash';
+
         // Build iiko order structure
         const iikoOrder = {
             organizationId: process.env.IIKO_ORG_ID,
@@ -87,10 +90,12 @@ export default async function handler(req, res) {
                     comment: `${item.name} (Qty: ${item.quantity})`
                 })),
                 payments: [{
-                    paymentTypeKind: orderData.paymentMethod === 'card' ? 'Card' : 'Cash',
-                    paymentTypeId: process.env.IIKO_PAYMENT_TYPE_ID,
+                    paymentTypeKind: isCashPayment ? 'Cash' : 'Card',
+                    paymentTypeId: isCashPayment
+                        ? process.env.IIKO_PAYMENT_TYPE_CASH
+                        : process.env.IIKO_PAYMENT_TYPE_CARD,
                     sum: orderData.total,
-                    isProcessedExternally: true
+                    isProcessedExternally: !isCashPayment // Only external for card payments
                 }],
                 comment: orderData.notes || '',
                 sourceKey: 'website',
