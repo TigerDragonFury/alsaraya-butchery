@@ -72,20 +72,54 @@ class IikoIntegration {
         }
     }
 
+    // Fetch fresh iiko_product_id from database for cart items
+    async fetchIikoProductIds(cart) {
+        if (!window.supabase) {
+            console.warn('Supabase not available, using cart data as-is');
+            return cart;
+        }
+
+        const productIds = cart.map(item => item.id);
+        const { data: products, error } = await window.supabase
+            .from('products')
+            .select('id, iiko_product_id')
+            .in('id', productIds);
+
+        if (error) {
+            console.error('Error fetching product IDs:', error);
+            return cart;
+        }
+
+        // Create lookup map
+        const productMap = {};
+        products.forEach(p => {
+            productMap[p.id] = p.iiko_product_id;
+        });
+
+        // Update cart items with fresh iiko_product_id
+        return cart.map(item => ({
+            ...item,
+            iiko_product_id: productMap[item.id] || item.iiko_product_id || null
+        }));
+    }
+
     // Format order data for iiko
-    formatOrderForIiko(cart, customerInfo, total) {
+    async formatOrderForIiko(cart, customerInfo, total) {
+        // Fetch fresh iiko_product_id from database
+        const updatedCart = await this.fetchIikoProductIds(cart);
+
         return {
             customerName: customerInfo.name,
             customerPhone: customerInfo.phone,
             customerEmail: customerInfo.email || '',
             address: customerInfo.address,
             notes: customerInfo.notes || '',
-            items: cart.map(item => ({
+            items: updatedCart.map(item => ({
                 id: item.id,
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
-                iikoProductId: item.iiko_product_id || null, // Use iiko product ID from database
+                iikoProductId: item.iiko_product_id || null, // Use fresh iiko product ID from database
                 notes: item.notes || ''
             })),
             total: total,

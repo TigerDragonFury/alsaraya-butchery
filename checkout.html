@@ -723,7 +723,7 @@
                 try {
                     console.log('Sending order to iiko POS...');
                     
-                    const iikoOrderData = window.iikoIntegration.formatOrderForIiko(
+                    const iikoOrderData = await window.iikoIntegration.formatOrderForIiko(
                         cart,
                         {
                             name: name,
