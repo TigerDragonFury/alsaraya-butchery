@@ -229,20 +229,9 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Category</label>
-                        <select id="productCategory" required>
+                        <select id="productCategoryId" required>
                             <option value="">Select Category</option>
-                            <option value="raw-meat">Raw Meat</option>
-                            <option value="bowels">Bowels</option>
-                            <option value="trays">Trays</option>
-                            <option value="appetizers">Appetizers</option>
-                            <option value="lamb">Lamb</option>
-                            <option value="beef">Beef</option>
-                            <option value="chicken">Chicken</option>
-                            <option value="skewers">Skewers</option>
-                            <option value="boxes">Boxes</option>
-                            <option value="local-veal">Local Veal</option>
-                            <option value="specialty">Specialty</option>
-                            <option value="marinated">Marinated</option>
+                            <!-- Categories loaded dynamically from database -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -316,25 +305,27 @@
     <div class="modal" id="categoryModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add New Category</h2>
+                <h2 id="categoryModalTitle">Add New Category</h2>
                 <button class="close-modal" onclick="closeCategoryModal()">&times;</button>
             </div>
             <form id="categoryForm" class="admin-form">
+                <input type="hidden" id="categoryId">
                 <div class="form-group">
                     <label>Category Name</label>
-                    <input type="text" id="categoryName" required>
+                    <input type="text" id="categoryName" required oninput="generateSlug()">
                 </div>
                 <div class="form-group">
                     <label>Category Slug</label>
-                    <input type="text" id="categorySlug" placeholder="e.g., raw-meat" required>
+                    <input type="text" id="categorySlug" placeholder="e.g., raw-meat (auto-generated)" required>
+                    <small style="color: var(--cool-gray); font-size: 0.75rem;">Used in URLs and for filtering</small>
                 </div>
                 <div class="form-group">
                     <label>Icon (Emoji)</label>
-                    <input type="text" id="categoryIcon" placeholder="e.g., 🥩" maxlength="2" required>
+                    <input type="text" id="categoryIcon" placeholder="e.g., 🥩" maxlength="4">
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="categoryDescription" rows="2"></textarea>
+                    <textarea id="categoryDescription" rows="2" placeholder="Brief description of the category"></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>

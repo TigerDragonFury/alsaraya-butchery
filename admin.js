@@ -161,6 +161,12 @@ function displayProducts(products) {
     
     grid.innerHTML = products.map(product => {
         const imageUrl = product.image_url || 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&h=350&fit=crop';
+        // Get category name from category_id or fallback to slug
+        let categoryName = product.category || 'Uncategorized';
+        if (product.category_id) {
+            const cat = allCategories.find(c => c.id === product.category_id);
+            if (cat) categoryName = cat.name;
+        }
         return `
         <div class="admin-product-card">
             <div class="product-image">
@@ -173,7 +179,7 @@ function displayProducts(products) {
             <div class="product-info">
                 <h3 class="product-title">${product.name}</h3>
                 ${product.arabic_name ? `<p class="product-arabic">${product.arabic_name}</p>` : ''}
-                <p class="product-category"><span class="category-badge">${product.category}</span></p>
+                <p class="product-category"><span class="category-badge">${categoryName}</span></p>
                 <div class="product-footer">
                     <div class="product-price">
                         $${parseFloat(product.price).toFixed(2)}<span>/${product.unit || 'kg'}</span>
@@ -192,18 +198,34 @@ function displayProducts(products) {
 // Filter products by search
 window.filterProducts = function() {
     const searchTerm = document.getElementById('productSearch').value.toLowerCase();
-    const categoryFilter = document.getElementById('productCategoryFilter').value;
-    
+    const categoryFilter = document.getElementById('productCategoryFilter').value; // This is a slug
+
     let filteredProducts = allProducts.filter(product => {
+        // Get category name for search
+        let categoryName = product.category || '';
+        if (product.category_id) {
+            const cat = allCategories.find(c => c.id === product.category_id);
+            if (cat) categoryName = cat.name;
+        }
+
         const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
-            product.category.toLowerCase().includes(searchTerm) ||
+            categoryName.toLowerCase().includes(searchTerm) ||
             (product.arabic_name && product.arabic_name.toLowerCase().includes(searchTerm));
-        
-        const matchesCategory = !categoryFilter || product.category === categoryFilter;
-        
+
+        // Match by category_id or slug
+        let matchesCategory = !categoryFilter;
+        if (categoryFilter) {
+            const selectedCat = allCategories.find(c => c.slug === categoryFilter);
+            if (selectedCat) {
+                matchesCategory = product.category_id === selectedCat.id || product.category === categoryFilter;
+            } else {
+                matchesCategory = product.category === categoryFilter;
+            }
+        }
+
         return matchesSearch && matchesCategory;
     });
-    
+
     displayProducts(filteredProducts);
 }
 
@@ -223,14 +245,21 @@ function openProductModal(productId = null) {
             document.getElementById('productId').value = product.id;
             document.getElementById('productName').value = product.name;
             document.getElementById('productArabicName').value = product.arabic_name || '';
-            document.getElementById('productCategory').value = product.category;
+            // Use category_id if available, otherwise find ID from slug
+            const categorySelect = document.getElementById('productCategoryId');
+            if (product.category_id) {
+                categorySelect.value = product.category_id;
+            } else if (product.category) {
+                const cat = allCategories.find(c => c.slug === product.category);
+                categorySelect.value = cat ? cat.id : '';
+            }
             document.getElementById('productPrice').value = product.price;
             document.getElementById('productUnit').value = product.unit || 'kg';
             document.getElementById('productDescription').value = product.description || '';
             document.getElementById('productIcon').value = product.icon || '';
             document.getElementById('productBadge').value = product.badge || '';
             document.getElementById('productImageUrl').value = product.image_url || '';
-            
+
             // Show image preview if exists
             if (product.image_url) {
                 document.getElementById('previewImg').src = product.image_url;
@@ -550,18 +579,33 @@ async function loadCategories() {
 }
 
 function populateCategoryFilters() {
-    // Populate product category filter
+    // Populate product category filter (uses slug for filtering)
     const filterSelect = document.getElementById('productCategoryFilter');
     if (filterSelect) {
         filterSelect.innerHTML = '<option value="">All Categories</option>' +
             allCategories.map(cat => `<option value="${cat.slug}">${cat.name}</option>`).join('');
     }
-    
-    // Populate product form category dropdown
-    const formSelect = document.getElementById('productCategory');
+
+    // Populate product form category dropdown (uses category_id for proper FK relationship)
+    const formSelect = document.getElementById('productCategoryId');
     if (formSelect) {
         formSelect.innerHTML = '<option value="">Select Category</option>' +
-            allCategories.map(cat => `<option value="${cat.slug}">${cat.name}</option>`).join('');
+            allCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+    }
+}
+
+// Generate slug from category name
+window.generateSlug = function() {
+    const nameInput = document.getElementById('categoryName');
+    const slugInput = document.getElementById('categorySlug');
+    if (nameInput && slugInput && !document.getElementById('categoryId').value) {
+        // Only auto-generate if not editing existing category
+        slugInput.value = nameInput.value
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim();
     }
 }
 
@@ -581,35 +625,8 @@ function displayCategories(categories) {
     `).join('');
 }
 
-window.editCategory = async function(categoryId) {
-    const category = allCategories.find(c => c.id === categoryId);
-    if (!category) return;
-    
-    const newName = prompt('Category Name:', category.name);
-    if (!newName) return;
-    
-    const newIcon = prompt('Category Icon (emoji):', category.icon);
-    const newDescription = prompt('Category Description:', category.description);
-    
-    try {
-        const { error } = await supabase
-            .from('categories')
-            .update({
-                name: newName,
-                icon: newIcon || category.icon,
-                description: newDescription || category.description
-            })
-            .eq('id', categoryId);
-        
-        if (error) throw error;
-        
-        showNotification('Category updated successfully!');
-        await loadCategories();
-        
-    } catch (error) {
-        console.error('Error updating category:', error);
-        showNotification('Error updating category', 'error');
-    }
+window.editCategory = function(categoryId) {
+    openCategoryModal(categoryId);
 }
 
 window.deleteCategory = async function(categoryId) {
@@ -631,32 +648,33 @@ window.deleteCategory = async function(categoryId) {
         showNotification('Error deleting category', 'error');
     }
 }
-window.openCategoryModal = function(categoryIndex = null) {
+window.openCategoryModal = function(categoryId = null) {
     const modal = document.getElementById('categoryModal');
     const form = document.getElementById('categoryForm');
-    const title = modal.querySelector('h2');
-    
-    if (categoryIndex !== null) {
-        title.textContent = 'Edit Category';
-        // Categories are static for now
-        showNotification('Categories are currently managed in the code', 'error');
+    const title = document.getElementById('categoryModalTitle');
+
+    form.reset();
+    document.getElementById('categoryId').value = '';
+
+    if (categoryId !== null) {
+        const category = allCategories.find(c => c.id === categoryId);
+        if (category) {
+            title.textContent = 'Edit Category';
+            document.getElementById('categoryId').value = category.id;
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categorySlug').value = category.slug;
+            document.getElementById('categoryIcon').value = category.icon || '';
+            document.getElementById('categoryDescription').value = category.description || '';
+        }
     } else {
         title.textContent = 'Add New Category';
-        form.reset();
-        modal.classList.add('active');
     }
+
+    modal.classList.add('active');
 }
 
 window.closeCategoryModal = function() {
     document.getElementById('categoryModal').classList.remove('active');
-}
-
-window.editCategory = function(index) {
-    showNotification('Category editing coming soon! Categories are currently static.', 'error');
-}
-
-window.deleteCategory = function(slug) {
-    showNotification('Category deletion coming soon! This would affect products.', 'error');
 }
 
 // Form Handlers
@@ -666,10 +684,14 @@ function setupFormHandlers() {
         e.preventDefault();
         
         const productId = document.getElementById('productId').value;
+        const categoryId = document.getElementById('productCategoryId').value;
+        const selectedCategory = allCategories.find(c => c.id === parseInt(categoryId));
+
         const productData = {
             name: document.getElementById('productName').value,
             arabic_name: document.getElementById('productArabicName').value || null,
-            category: document.getElementById('productCategory').value,
+            category_id: categoryId ? parseInt(categoryId) : null,
+            category: selectedCategory ? selectedCategory.slug : null, // Keep slug for backward compatibility
             price: parseFloat(document.getElementById('productPrice').value),
             unit: document.getElementById('productUnit').value,
             description: document.getElementById('productDescription').value || null,
@@ -719,10 +741,44 @@ function setupFormHandlers() {
     });
     
     // Category form
-    document.getElementById('categoryForm').addEventListener('submit', (e) => {
+    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showNotification('Category management coming soon!');
-        closeCategoryModal();
+
+        const categoryId = document.getElementById('categoryId').value;
+        const categoryData = {
+            name: document.getElementById('categoryName').value,
+            slug: document.getElementById('categorySlug').value,
+            icon: document.getElementById('categoryIcon').value || '📦',
+            description: document.getElementById('categoryDescription').value || null
+        };
+
+        try {
+            if (categoryId) {
+                // Update existing category
+                const { error } = await supabase
+                    .from('categories')
+                    .update(categoryData)
+                    .eq('id', parseInt(categoryId));
+
+                if (error) throw error;
+                showNotification('Category updated successfully!');
+            } else {
+                // Insert new category
+                const { error } = await supabase
+                    .from('categories')
+                    .insert([categoryData]);
+
+                if (error) throw error;
+                showNotification('Category added successfully!');
+            }
+
+            closeCategoryModal();
+            await loadCategories();
+
+        } catch (error) {
+            console.error('Error saving category:', error);
+            showNotification('Error saving category: ' + error.message, 'error');
+        }
     });
 }
 
