@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         const dateParam = req.query.date;
         const status = req.query.status || null;
 
-        // Calculate date range for single day
+        // Calculate date range - include tomorrow for scheduled deliveries
         let targetDate;
         if (dateParam) {
             targetDate = new Date(dateParam);
@@ -60,7 +60,9 @@ export default async function handler(req, res) {
         const dateFrom = new Date(targetDate);
         dateFrom.setHours(0, 0, 0, 0);
 
+        // Extend to tomorrow to catch scheduled deliveries
         const dateTo = new Date(targetDate);
+        dateTo.setDate(dateTo.getDate() + 1); // Include tomorrow
         dateTo.setHours(23, 59, 59, 999);
 
         // Build statuses array
