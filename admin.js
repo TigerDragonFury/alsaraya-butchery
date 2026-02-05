@@ -836,7 +836,7 @@ window.loadIikoOrders = async function(page = 1) {
 
     try {
         const status = document.getElementById('iikoStatusFilter')?.value || '';
-        const days = document.getElementById('iikoDaysFilter')?.value || '7';
+        const days = document.getElementById('iikoDaysFilter')?.value || '3';
 
         const params = new URLSearchParams({
             page: page,

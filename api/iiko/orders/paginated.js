@@ -47,10 +47,10 @@
             // Parse query parameters
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 20;
-            let daysBack = parseInt(req.query.days) || 7;
+            let daysBack = parseInt(req.query.days) || 3; // Default to 3 days to avoid iiko limits
 
             // Prevent requesting excessively large date ranges which iiko may reject
-            const MAX_DAYS = 14;
+            const MAX_DAYS = 7;
             if (daysBack < 1) daysBack = 1;
             if (daysBack > MAX_DAYS) {
                 console.warn(`Requested days (${req.query.days}) exceeds max (${MAX_DAYS}), capping to ${MAX_DAYS}`);
