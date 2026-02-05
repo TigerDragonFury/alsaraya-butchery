@@ -792,9 +792,9 @@ document.addEventListener('click', (e) => {
 // =============================================
 
 let iikoOrders = [];
-let iikoCurrentPage = 1;
-let iikoTotalPages = 1;
-let iikoPagination = {};
+let iikoCurrentDate = new Date(); // Track which date we're loading
+let iikoLoadedDates = []; // Track all loaded dates
+let iikoIsLoading = false;
 
 // API Base URL - detect environment
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -815,7 +815,7 @@ window.switchOrderTab = function(tab) {
         websiteTab.style.borderBottomColor = 'transparent';
         iikoContent.style.display = 'block';
         websiteContent.style.display = 'none';
-        loadIikoOrders();
+        resetAndLoadIikoOrders();
     } else {
         websiteTab.style.color = 'var(--primary-red)';
         websiteTab.style.borderBottomColor = 'var(--primary-red)';
@@ -826,23 +826,51 @@ window.switchOrderTab = function(tab) {
     }
 }
 
-// Load iiko orders with pagination
-window.loadIikoOrders = async function(page = 1) {
+// Reset and load iiko orders from today
+window.resetAndLoadIikoOrders = async function() {
+    iikoOrders = [];
+    iikoCurrentDate = new Date();
+    iikoLoadedDates = [];
+
+    const tbody = document.getElementById('iikoOrdersBody');
+    tbody.innerHTML = '<tr><td colspan="10" class="no-data">Loading iiko orders...</td></tr>';
+
+    await loadIikoOrdersForDate(iikoCurrentDate);
+}
+
+// Load more orders (previous day)
+window.loadMoreIikoOrders = async function() {
+    if (iikoIsLoading) return;
+
+    // Move to previous day
+    iikoCurrentDate.setDate(iikoCurrentDate.getDate() - 1);
+    await loadIikoOrdersForDate(iikoCurrentDate, true); // append mode
+}
+
+// Load iiko orders for a specific date
+async function loadIikoOrdersForDate(date, append = false) {
+    if (iikoIsLoading) return;
+    iikoIsLoading = true;
+
     const tbody = document.getElementById('iikoOrdersBody');
     const countEl = document.getElementById('iikoOrderCount');
+    const loadMoreBtn = document.getElementById('iikoLoadMoreBtn');
 
-    tbody.innerHTML = '<tr><td colspan="10" class="no-data">Loading iiko orders...</td></tr>';
+    if (loadMoreBtn) {
+        loadMoreBtn.disabled = true;
+        loadMoreBtn.textContent = 'Loading...';
+    }
+
+    if (!append) {
+        tbody.innerHTML = '<tr><td colspan="10" class="no-data">Loading iiko orders...</td></tr>';
+    }
     countEl.textContent = 'Loading...';
 
     try {
         const status = document.getElementById('iikoStatusFilter')?.value || '';
-        const days = document.getElementById('iikoDaysFilter')?.value || '3';
+        const dateStr = date.toISOString().split('T')[0];
 
-        const params = new URLSearchParams({
-            page: page,
-            limit: 20,
-            days: days
-        });
+        const params = new URLSearchParams({ date: dateStr });
         if (status) params.append('status', status);
 
         const response = await fetch(`${API_BASE_URL}/api/iiko/orders/paginated?${params}`);
@@ -852,21 +880,76 @@ window.loadIikoOrders = async function(page = 1) {
             throw new Error(data.error || 'Failed to fetch orders');
         }
 
-        iikoOrders = data.orders || [];
-        iikoPagination = data.pagination || {};
-        iikoCurrentPage = iikoPagination.page || 1;
-        iikoTotalPages = iikoPagination.totalPages || 1;
+        const newOrders = data.orders || [];
 
-        countEl.textContent = `${iikoPagination.totalOrders || 0} orders found`;
+        // Add date to loaded dates list
+        if (!iikoLoadedDates.includes(dateStr)) {
+            iikoLoadedDates.push(dateStr);
+        }
+
+        if (append) {
+            // Append new orders to existing list
+            iikoOrders = [...iikoOrders, ...newOrders];
+        } else {
+            iikoOrders = newOrders;
+        }
+
+        countEl.textContent = `${iikoOrders.length} orders loaded`;
+
+        // Update loaded days display
+        updateLoadedDaysDisplay();
 
         displayIikoOrders(iikoOrders);
-        updateIikoPagination();
 
     } catch (error) {
         console.error('Error loading iiko orders:', error);
-        tbody.innerHTML = `<tr><td colspan="10" class="no-data">Error: ${error.message}</td></tr>`;
+        if (!append) {
+            tbody.innerHTML = `<tr><td colspan="10" class="no-data">Error: ${error.message}</td></tr>`;
+        }
         countEl.textContent = 'Error loading orders';
+        // Revert date on error
+        if (append) {
+            iikoCurrentDate.setDate(iikoCurrentDate.getDate() + 1);
+        }
+    } finally {
+        iikoIsLoading = false;
+        if (loadMoreBtn) {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.textContent = 'Load Previous Day';
+        }
     }
+}
+
+// Update the loaded days display
+function updateLoadedDaysDisplay() {
+    const loadedDaysEl = document.getElementById('iikoLoadedDays');
+    if (!loadedDaysEl || iikoLoadedDates.length === 0) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const firstDate = iikoLoadedDates[0];
+    const lastDate = iikoLoadedDates[iikoLoadedDates.length - 1];
+
+    if (iikoLoadedDates.length === 1) {
+        if (firstDate === today) {
+            loadedDaysEl.textContent = 'Showing: Today';
+        } else {
+            loadedDaysEl.textContent = `Showing: ${formatDateShort(firstDate)}`;
+        }
+    } else {
+        const firstLabel = firstDate === today ? 'Today' : formatDateShort(firstDate);
+        loadedDaysEl.textContent = `Showing: ${firstLabel} to ${formatDateShort(lastDate)} (${iikoLoadedDates.length} days)`;
+    }
+}
+
+// Format date as short string (e.g., "Feb 5")
+function formatDateShort(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Legacy function for compatibility
+window.loadIikoOrders = function() {
+    resetAndLoadIikoOrders();
 }
 
 // Display iiko orders in table
@@ -919,25 +1002,6 @@ function getStatusClass(status) {
         'Unconfirmed': 'status-pending'
     };
     return statusMap[status] || 'status-pending';
-}
-
-// Update pagination controls
-function updateIikoPagination() {
-    const prevBtn = document.getElementById('iikoPrevBtn');
-    const nextBtn = document.getElementById('iikoNextBtn');
-    const pageInfo = document.getElementById('iikoPageInfo');
-
-    pageInfo.textContent = `Page ${iikoCurrentPage} of ${iikoTotalPages}`;
-    prevBtn.disabled = !iikoPagination.hasPrev;
-    nextBtn.disabled = !iikoPagination.hasNext;
-}
-
-// Change page
-window.changeIikoPage = function(delta) {
-    const newPage = iikoCurrentPage + delta;
-    if (newPage >= 1 && newPage <= iikoTotalPages) {
-        loadIikoOrders(newPage);
-    }
 }
 
 // View iiko order details

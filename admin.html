@@ -129,7 +129,7 @@
             <!-- iiko Orders Content -->
             <div id="iikoOrdersContent" class="order-tab-content">
                 <div class="filter-row" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
-                    <select id="iikoStatusFilter" onchange="loadIikoOrders()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
+                    <select id="iikoStatusFilter" onchange="resetAndLoadIikoOrders()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
                         <option value="">All Statuses</option>
                         <option value="ReadyForCooking">Ready for Cooking</option>
                         <option value="CookingStarted">Cooking Started</option>
@@ -139,12 +139,7 @@
                         <option value="Closed">Closed</option>
                         <option value="Cancelled">Cancelled</option>
                     </select>
-                    <select id="iikoDaysFilter" onchange="loadIikoOrders()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
-                        <option value="1">Today</option>
-                        <option value="3" selected>Last 3 Days</option>
-                        <option value="7">Last 7 Days</option>
-                    </select>
-                    <button class="btn btn-secondary" onclick="loadIikoOrders()" style="padding: 0.75rem 1.5rem;">
+                    <button class="btn btn-secondary" onclick="resetAndLoadIikoOrders()" style="padding: 0.75rem 1.5rem;">
                         Refresh
                     </button>
                     <span id="iikoOrderCount" style="color: var(--cool-gray); margin-left: auto;">Loading...</span>
@@ -172,11 +167,12 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                <div class="pagination" id="iikoPagination" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem;">
-                    <button class="btn btn-secondary" id="iikoPrevBtn" onclick="changeIikoPage(-1)" disabled style="padding: 0.5rem 1rem;">Previous</button>
-                    <span id="iikoPageInfo" style="color: var(--cool-gray);">Page 1 of 1</span>
-                    <button class="btn btn-secondary" id="iikoNextBtn" onclick="changeIikoPage(1)" disabled style="padding: 0.5rem 1rem;">Next</button>
+                <!-- Load More -->
+                <div id="iikoLoadMore" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem; flex-direction: column;">
+                    <span id="iikoLoadedDays" style="color: var(--cool-gray); font-size: 0.9rem;">Showing: Today</span>
+                    <button class="btn btn-primary" id="iikoLoadMoreBtn" onclick="loadMoreIikoOrders()" style="padding: 0.75rem 2rem;">
+                        Load Previous Day
+                    </button>
                 </div>
             </div>
 
