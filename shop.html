@@ -347,18 +347,21 @@
             let filtered = filter === 'all'
                 ? allProducts
                 : allProducts.filter(p => {
-                    if (!p.category) return false;
-                    const productCat = p.category.toLowerCase();
-
                     // Find category by slug
                     const selectedCategory = allCategories.find(c => c.slug === filter);
                     if (selectedCategory) {
-                        // Match product category against category name OR slug
-                        return productCat === selectedCategory.name.toLowerCase() ||
-                               productCat === selectedCategory.slug.toLowerCase();
+                        // Primary: Match by category_id (proper foreign key relationship)
+                        if (p.category_id) {
+                            return p.category_id === selectedCategory.id;
+                        }
+                        // Fallback: Match by category name/slug (for backward compatibility)
+                        if (p.category) {
+                            const productCat = p.category.toLowerCase();
+                            return productCat === selectedCategory.name.toLowerCase() ||
+                                   productCat === selectedCategory.slug.toLowerCase();
+                        }
                     }
-                    // Fallback: direct match with filter
-                    return productCat === filter.toLowerCase();
+                    return false;
                 });
 
             if (filtered.length === 0) {
