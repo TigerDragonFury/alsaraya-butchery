@@ -684,14 +684,14 @@ function setupFormHandlers() {
         e.preventDefault();
         
         const productId = document.getElementById('productId').value;
-        const categoryId = document.getElementById('productCategoryId').value;
-        const selectedCategory = allCategories.find(c => c.id === parseInt(categoryId));
+        const categoryIdInput = document.getElementById('productCategoryId').value;
+        const categoryId = categoryIdInput ? parseInt(categoryIdInput) : null;
+        const selectedCategory = categoryId ? allCategories.find(c => c.id === categoryId) : null;
 
         const productData = {
             name: document.getElementById('productName').value,
             arabic_name: document.getElementById('productArabicName').value || null,
-            category_id: categoryId ? parseInt(categoryId) : null,
-            category: selectedCategory ? selectedCategory.slug : null, // Keep slug for backward compatibility
+            category: selectedCategory ? selectedCategory.slug : (document.getElementById('productCategoryId').options[document.getElementById('productCategoryId').selectedIndex]?.text || null),
             price: parseFloat(document.getElementById('productPrice').value),
             unit: document.getElementById('productUnit').value,
             description: document.getElementById('productDescription').value || null,
@@ -699,6 +699,11 @@ function setupFormHandlers() {
             badge: document.getElementById('productBadge').value || null,
             image_url: document.getElementById('productImageUrl').value || null
         };
+
+        // Only add category_id if it's a valid number (migration might not have been run)
+        if (categoryId && !isNaN(categoryId)) {
+            productData.category_id = categoryId;
+        }
         
         console.log('Submitting product:', { productId, productData });
         
