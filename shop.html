@@ -343,15 +343,22 @@
         function renderProducts(filter = 'all') {
             const grid = document.getElementById('productsGrid');
             const currentLang = localStorage.getItem('language') || 'en';
-            
-            let filtered = filter === 'all' 
-                ? allProducts 
+
+            let filtered = filter === 'all'
+                ? allProducts
                 : allProducts.filter(p => {
-                    // Direct match with database category or grouped categories
-                    if (filter === 'beef') {
-                        return ['beef', 'local-veal'].includes(p.category);
+                    if (!p.category) return false;
+                    const productCat = p.category.toLowerCase();
+
+                    // Find category by slug
+                    const selectedCategory = allCategories.find(c => c.slug === filter);
+                    if (selectedCategory) {
+                        // Match product category against category name OR slug
+                        return productCat === selectedCategory.name.toLowerCase() ||
+                               productCat === selectedCategory.slug.toLowerCase();
                     }
-                    return p.category === filter;
+                    // Fallback: direct match with filter
+                    return productCat === filter.toLowerCase();
                 });
 
             if (filtered.length === 0) {
