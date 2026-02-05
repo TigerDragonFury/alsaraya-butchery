@@ -4,7 +4,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 const IIKO_CONFIG = {
     apiUrl: process.env.IIKO_API_URL,
-    apiKey: process.env.IIKO_API_KEY,
+    apiKey: process.env.IIKO_API_LOGIN,
     orgId: process.env.IIKO_ORG_ID
 };
 
@@ -68,30 +68,33 @@ async function getToken() {
 
 async function getIikoProducts() {
     const token = await getToken();
-    const response = await makeRequest('POST', '/api/2/menu', {
+    const response = await makeRequest('POST', '/api/2/menu/by_id', {
         organizationIds: [IIKO_CONFIG.orgId],
         externalMenuId: "9321"
     }, token);
-    
+
     const products = [];
-    if (response && response.length > 0) {
-        response.forEach(org => {
-            if (org.products) {
-                org.products.forEach(product => {
+    if (response && response.itemCategories && response.itemCategories.length > 0) {
+        response.itemCategories.forEach(category => {
+            const categoryName = category.name || 'uncategorized';
+            const categoryId = category.id || null;
+
+            if (category.items && category.items.length > 0) {
+                category.items.forEach(item => {
+                    const price = item.itemSizes?.[0]?.prices?.[0]?.price || 0;
                     products.push({
-                        iiko_product_id: product.id,
-                        name: product.name,
-                        description: product.description || '',
-                        price: product.price || 0,
-                        category: product.category || 'uncategorized',
-                        iiko_category_id: product.categoryId || null,
-                        available: product.available !== false
+                        iiko_product_id: item.itemId,
+                        name: item.name,
+                        description: item.description || '',
+                        price: price,
+                        category: categoryName,
+                        iiko_category_id: categoryId
                     });
                 });
             }
         });
     }
-    
+
     return products;
 }
 

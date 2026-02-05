@@ -69,9 +69,9 @@ async function getMenu(token) {
   console.log(`${colors.cyan}📋 Fetching menu from iiko...${colors.reset}`);
   console.log(`${colors.cyan}Using Menu ID: 9321${colors.reset}\n`);
   const response = await makeRequest(
-    `${IIKO_API_URL}/api/2/menu`,
+    `${IIKO_API_URL}/api/2/menu/by_id`,
     'POST',
-    { 
+    {
       organizationIds: [IIKO_ORG_ID],
       externalMenuId: "9321"
     },

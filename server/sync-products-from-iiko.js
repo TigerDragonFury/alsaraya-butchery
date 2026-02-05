@@ -3,7 +3,7 @@ const https = require('https');
 
 const IIKO_CONFIG = {
     apiUrl: process.env.IIKO_API_URL,
-    apiKey: process.env.IIKO_API_KEY,
+    apiKey: process.env.IIKO_API_LOGIN,
     orgId: process.env.IIKO_ORG_ID
 };
 
@@ -51,12 +51,12 @@ async function getToken() {
 
 async function getMenu(token) {
     console.log('📋 Fetching menu from iiko...\n');
-    
-    const response = await makeRequest('POST', '/api/2/menu', {
+
+    const response = await makeRequest('POST', '/api/2/menu/by_id', {
         organizationIds: [IIKO_CONFIG.orgId],
         externalMenuId: "9321"
     }, token);
-    
+
     return response;
 }
 
@@ -105,8 +105,8 @@ async function main() {
         console.log('✅ Authentication successful\n');
         
         const menuData = await getMenu(token);
-        
-        if (!menuData || menuData.length === 0) {
+
+        if (!menuData || !menuData.itemCategories || menuData.itemCategories.length === 0) {
             console.log('⚠️  No menu data returned from iiko');
             console.log('📌 This means Menu ID 9321 is still empty in Back Office');
             console.log('\n💡 Next steps:');
@@ -117,26 +117,31 @@ async function main() {
             console.log('   5. Run this script again\n');
             return;
         }
-        
-        // Parse products
+
+        // Parse products from itemCategories structure
         const products = [];
-        menuData.forEach(org => {
-            if (org.products && org.products.length > 0) {
-                org.products.forEach(product => {
+        menuData.itemCategories.forEach(category => {
+            const categoryName = category.name || 'uncategorized';
+            const categoryId = category.id || null;
+
+            if (category.items && category.items.length > 0) {
+                category.items.forEach(item => {
+                    const price = item.itemSizes?.[0]?.prices?.[0]?.price || 0;
                     products.push({
-                        id: product.id,
-                        name: product.name,
-                        description: product.description || '',
-                        price: product.price || 0,
-                        category: product.category || 'uncategorized',
-                        categoryId: product.categoryId || null
+                        id: item.itemId,
+                        sku: item.sku || null,
+                        name: item.name,
+                        description: item.description || '',
+                        price: price,
+                        category: categoryName,
+                        categoryId: categoryId
                     });
                 });
             }
         });
-        
+
         console.log(`✅ Found ${products.length} products in Menu ID 9321\n`);
-        
+
         if (products.length === 0) {
             console.log('⚠️  Menu ID 9321 is empty');
             console.log('📌 Add products in iiko Back Office first\n');
