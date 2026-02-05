@@ -716,10 +716,17 @@ function setupFormHandlers() {
                     .update(productData)
                     .eq('id', parseInt(productId))
                     .select();
-                
+
                 console.log('Update result:', { data, error });
-                
+
                 if (error) throw error;
+
+                // Check if any rows were actually updated (RLS might block silently)
+                if (!data || data.length === 0) {
+                    console.error('No rows updated - likely RLS policy issue');
+                    throw new Error('Update blocked. Please check Supabase RLS policies for the products table.');
+                }
+
                 showNotification('Product updated successfully!');
             } else {
                 // Insert new product
