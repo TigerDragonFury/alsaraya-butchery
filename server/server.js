@@ -177,12 +177,12 @@ async function createIikoOrder(orderData) {
                     amount: item.quantity,
                     comment: item.notes || `Supabase Product ID: ${item.id} - ${item.name || 'Unknown Product'}`
                 })),
-                // Payment info
+                // Payment info - Website payment type is configured as Card in iiko
                 payments: [{
-                    paymentTypeKind: 'Cash', // or 'Card', 'External'
-                    paymentTypeId: IIKO_CONFIG.paymentTypeId, // Use configured payment type
+                    paymentTypeKind: 'Card', // Must match the payment type kind configured in iiko
+                    paymentTypeId: IIKO_CONFIG.paymentTypeId, // Website payment type
                     sum: orderData.total,
-                    isProcessedExternally: true
+                    isProcessedExternally: true // Paid externally via Stripe
                 }],
                 // Order metadata
                 comment: orderData.notes || '',
