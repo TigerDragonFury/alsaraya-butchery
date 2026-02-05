@@ -61,6 +61,17 @@ export default async function handler(req, res) {
         // Determine if this is a cash payment (cod = cash on delivery)
         const isCashPayment = orderData.paymentMethod === 'cod' || orderData.paymentMethod === 'cash';
 
+        // Get payment type ID - use specific ones if available, fallback to generic
+        const paymentTypeId = isCashPayment
+            ? (process.env.IIKO_PAYMENT_TYPE_CASH || process.env.IIKO_PAYMENT_TYPE_ID)
+            : (process.env.IIKO_PAYMENT_TYPE_CARD || process.env.IIKO_PAYMENT_TYPE_ID);
+
+        if (!paymentTypeId) {
+            throw new Error('Payment type ID not configured. Set IIKO_PAYMENT_TYPE_CASH and IIKO_PAYMENT_TYPE_CARD in environment variables.');
+        }
+
+        console.log(`Payment method: ${orderData.paymentMethod}, isCash: ${isCashPayment}, paymentTypeId: ${paymentTypeId}`);
+
         // Build iiko order structure
         const iikoOrder = {
             organizationId: process.env.IIKO_ORG_ID,
@@ -91,9 +102,7 @@ export default async function handler(req, res) {
                 })),
                 payments: [{
                     paymentTypeKind: isCashPayment ? 'Cash' : 'Card',
-                    paymentTypeId: isCashPayment
-                        ? process.env.IIKO_PAYMENT_TYPE_CASH
-                        : process.env.IIKO_PAYMENT_TYPE_CARD,
+                    paymentTypeId: paymentTypeId,
                     sum: orderData.total,
                     isProcessedExternally: !isCashPayment // Only external for card payments
                 }],
