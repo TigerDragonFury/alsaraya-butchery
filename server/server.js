@@ -24,7 +24,9 @@ const IIKO_CONFIG = {
     deliveryOrderType: process.env.IIKO_DELIVERY_ORDER_TYPE,
     collectionOrderType: process.env.IIKO_COLLECTION_ORDER_TYPE,
     websiteOrderType: process.env.IIKO_WEBSITE_ORDER_TYPE,
-    paymentTypeId: process.env.IIKO_PAYMENT_TYPE_ID,
+    // Payment types - Card for online payments, Cash for COD
+    paymentTypeCard: process.env.IIKO_PAYMENT_TYPE_CARD,
+    paymentTypeCash: process.env.IIKO_PAYMENT_TYPE_CASH,
     menuId: process.env.IIKO_MENU_ID
 };
 
@@ -177,12 +179,14 @@ async function createIikoOrder(orderData) {
                     amount: item.quantity,
                     comment: item.notes || `Supabase Product ID: ${item.id} - ${item.name || 'Unknown Product'}`
                 })),
-                // Payment info - Website payment type is configured as Card in iiko
+                // Payment info - dynamically choose based on payment method
                 payments: [{
-                    paymentTypeKind: 'Card', // Must match the payment type kind configured in iiko
-                    paymentTypeId: IIKO_CONFIG.paymentTypeId, // Website payment type
+                    paymentTypeKind: orderData.paymentMethod === 'cash' ? 'Cash' : 'Card',
+                    paymentTypeId: orderData.paymentMethod === 'cash'
+                        ? IIKO_CONFIG.paymentTypeCash
+                        : IIKO_CONFIG.paymentTypeCard,
                     sum: orderData.total,
-                    isProcessedExternally: true // Paid externally via Stripe
+                    isProcessedExternally: orderData.paymentMethod !== 'cash' // Only external for card payments
                 }],
                 // Order metadata
                 comment: orderData.notes || '',
