@@ -786,3 +786,263 @@ document.addEventListener('click', (e) => {
         e.target.classList.remove('active');
     }
 });
+
+// =============================================
+// iiko Orders Management
+// =============================================
+
+let iikoOrders = [];
+let iikoCurrentPage = 1;
+let iikoTotalPages = 1;
+let iikoPagination = {};
+
+// API Base URL - detect environment
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : ''; // Use relative URLs in production
+
+// Switch between order tabs
+window.switchOrderTab = function(tab) {
+    const iikoTab = document.getElementById('iikoTab');
+    const websiteTab = document.getElementById('websiteTab');
+    const iikoContent = document.getElementById('iikoOrdersContent');
+    const websiteContent = document.getElementById('websiteOrdersContent');
+
+    if (tab === 'iiko') {
+        iikoTab.style.color = 'var(--primary-red)';
+        iikoTab.style.borderBottomColor = 'var(--primary-red)';
+        websiteTab.style.color = 'var(--cool-gray)';
+        websiteTab.style.borderBottomColor = 'transparent';
+        iikoContent.style.display = 'block';
+        websiteContent.style.display = 'none';
+        loadIikoOrders();
+    } else {
+        websiteTab.style.color = 'var(--primary-red)';
+        websiteTab.style.borderBottomColor = 'var(--primary-red)';
+        iikoTab.style.color = 'var(--cool-gray)';
+        iikoTab.style.borderBottomColor = 'transparent';
+        websiteContent.style.display = 'block';
+        iikoContent.style.display = 'none';
+    }
+}
+
+// Load iiko orders with pagination
+window.loadIikoOrders = async function(page = 1) {
+    const tbody = document.getElementById('iikoOrdersBody');
+    const countEl = document.getElementById('iikoOrderCount');
+
+    tbody.innerHTML = '<tr><td colspan="10" class="no-data">Loading iiko orders...</td></tr>';
+    countEl.textContent = 'Loading...';
+
+    try {
+        const status = document.getElementById('iikoStatusFilter')?.value || '';
+        const days = document.getElementById('iikoDaysFilter')?.value || '7';
+
+        const params = new URLSearchParams({
+            page: page,
+            limit: 20,
+            days: days
+        });
+        if (status) params.append('status', status);
+
+        const response = await fetch(`${API_BASE_URL}/api/iiko/orders/paginated?${params}`);
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to fetch orders');
+        }
+
+        iikoOrders = data.orders || [];
+        iikoPagination = data.pagination || {};
+        iikoCurrentPage = iikoPagination.page || 1;
+        iikoTotalPages = iikoPagination.totalPages || 1;
+
+        countEl.textContent = `${iikoPagination.totalOrders || 0} orders found`;
+
+        displayIikoOrders(iikoOrders);
+        updateIikoPagination();
+
+    } catch (error) {
+        console.error('Error loading iiko orders:', error);
+        tbody.innerHTML = `<tr><td colspan="10" class="no-data">Error: ${error.message}</td></tr>`;
+        countEl.textContent = 'Error loading orders';
+    }
+}
+
+// Display iiko orders in table
+function displayIikoOrders(orders) {
+    const tbody = document.getElementById('iikoOrdersBody');
+
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="no-data">No orders found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = orders.map(order => {
+        const statusClass = getStatusClass(order.status);
+        const sourceIcon = order.sourceKey === 'website' ? 'WEB' : 'POS';
+        const sourceClass = order.sourceKey === 'website' ? 'source-web' : 'source-pos';
+        const itemsCount = order.items?.length || 0;
+        const itemsPreview = order.items?.slice(0, 2).map(i => i.name).join(', ') || 'N/A';
+        const dateStr = order.created ? new Date(order.created).toLocaleString() : 'N/A';
+
+        return `
+            <tr>
+                <td><strong>#${order.number}</strong></td>
+                <td>${order.customer || 'N/A'}</td>
+                <td>${order.phone || 'N/A'}</td>
+                <td title="${itemsPreview}">${itemsCount} item${itemsCount !== 1 ? 's' : ''}</td>
+                <td><strong>${order.total?.toFixed(2) || '0.00'} AED</strong></td>
+                <td>${order.payment || 'N/A'}</td>
+                <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                <td><span class="source-badge ${sourceClass}">${sourceIcon}</span></td>
+                <td>${dateStr}</td>
+                <td>
+                    <button class="btn-icon" onclick="viewIikoOrderDetails('${order.id}')" title="View Details">View</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Get status CSS class
+function getStatusClass(status) {
+    const statusMap = {
+        'ReadyForCooking': 'status-pending',
+        'CookingStarted': 'status-processing',
+        'CookingCompleted': 'status-processing',
+        'Waiting': 'status-pending',
+        'OnWay': 'status-processing',
+        'Delivered': 'status-completed',
+        'Closed': 'status-completed',
+        'Cancelled': 'status-cancelled',
+        'Unconfirmed': 'status-pending'
+    };
+    return statusMap[status] || 'status-pending';
+}
+
+// Update pagination controls
+function updateIikoPagination() {
+    const prevBtn = document.getElementById('iikoPrevBtn');
+    const nextBtn = document.getElementById('iikoNextBtn');
+    const pageInfo = document.getElementById('iikoPageInfo');
+
+    pageInfo.textContent = `Page ${iikoCurrentPage} of ${iikoTotalPages}`;
+    prevBtn.disabled = !iikoPagination.hasPrev;
+    nextBtn.disabled = !iikoPagination.hasNext;
+}
+
+// Change page
+window.changeIikoPage = function(delta) {
+    const newPage = iikoCurrentPage + delta;
+    if (newPage >= 1 && newPage <= iikoTotalPages) {
+        loadIikoOrders(newPage);
+    }
+}
+
+// View iiko order details
+window.viewIikoOrderDetails = async function(orderId) {
+    const modal = document.getElementById('iikoOrderModal');
+    const content = document.getElementById('iikoOrderDetailsContent');
+
+    content.innerHTML = '<div class="loading">Loading order details...</div>';
+    modal.classList.add('active');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/iiko/orders/${orderId}`);
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to fetch order details');
+        }
+
+        const order = data.order?.order || data.order;
+        if (!order) {
+            throw new Error('Order data not found');
+        }
+
+        content.innerHTML = `
+            <div class="order-details">
+                <div class="detail-group">
+                    <h3>Order Information</h3>
+                    <p><strong>Order #:</strong> ${order.number || 'N/A'}</p>
+                    <p><strong>Status:</strong> <span class="status-badge ${getStatusClass(order.status)}">${order.status || 'Unknown'}</span></p>
+                    <p><strong>Created:</strong> ${order.whenCreated || 'N/A'}</p>
+                    <p><strong>Delivery By:</strong> ${order.completeBefore || 'N/A'}</p>
+                    <p><strong>Source:</strong> ${order.sourceKey === 'website' ? 'Website' : 'POS'}</p>
+                </div>
+
+                <div class="detail-group">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> ${order.customer?.name || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${order.phone || 'N/A'}</p>
+                    ${order.deliveryPoint?.address ? `
+                        <p><strong>Address:</strong> ${order.deliveryPoint.address.line1 || order.deliveryPoint.address.street?.name || 'N/A'}</p>
+                        ${order.deliveryPoint.address.house ? `<p><strong>House:</strong> ${order.deliveryPoint.address.house}</p>` : ''}
+                        ${order.deliveryPoint.address.flat ? `<p><strong>Flat:</strong> ${order.deliveryPoint.address.flat}</p>` : ''}
+                    ` : ''}
+                    ${order.deliveryPoint?.comment ? `<p><strong>Delivery Notes:</strong> ${order.deliveryPoint.comment}</p>` : ''}
+                </div>
+
+                <div class="detail-group">
+                    <h3>Order Items</h3>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${(order.items || []).map(item => `
+                                <tr>
+                                    <td>${item.product?.name || 'Unknown'}</td>
+                                    <td>${item.amount}</td>
+                                    <td>${item.price?.toFixed(2) || '0.00'} AED</td>
+                                    <td>${item.resultSum?.toFixed(2) || '0.00'} AED</td>
+                                </tr>
+                            `).join('') || '<tr><td colspan="4">No items</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="detail-group">
+                    <h3>Payment</h3>
+                    ${(order.payments || []).map(p => `
+                        <p><strong>${p.paymentType?.name || 'Payment'}:</strong> ${p.sum?.toFixed(2) || '0.00'} AED</p>
+                    `).join('') || '<p>No payment info</p>'}
+                    <p class="order-total" style="font-size: 1.25rem; margin-top: 1rem;">
+                        <strong>Total: ${order.sum?.toFixed(2) || '0.00'} AED</strong>
+                    </p>
+                </div>
+
+                ${order.comment ? `
+                    <div class="detail-group">
+                        <h3>Order Notes</h3>
+                        <p>${order.comment}</p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        content.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+    }
+}
+
+// Close iiko order modal
+window.closeIikoOrderModal = function() {
+    document.getElementById('iikoOrderModal').classList.remove('active');
+}
+
+// Load iiko orders when page loads (if on orders tab)
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial load of iiko orders after a short delay
+    setTimeout(() => {
+        if (document.getElementById('iikoOrdersContent')?.style.display !== 'none') {
+            loadIikoOrders();
+        }
+    }, 1000);
+});

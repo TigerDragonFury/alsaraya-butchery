@@ -114,21 +114,91 @@
         <section id="orders" class="admin-section">
             <div class="section-header">
                 <h1>Orders Management</h1>
-                <div class="filter-buttons">
+            </div>
+
+            <!-- Order Source Tabs -->
+            <div class="order-tabs" style="display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 2px solid rgba(220, 38, 38, 0.2);">
+                <button class="tab-btn active" onclick="switchOrderTab('iiko')" id="iikoTab" style="padding: 1rem 2rem; background: transparent; border: none; color: var(--primary-red); font-weight: 600; cursor: pointer; border-bottom: 2px solid var(--primary-red); margin-bottom: -2px;">
+                    iiko POS Orders
+                </button>
+                <button class="tab-btn" onclick="switchOrderTab('website')" id="websiteTab" style="padding: 1rem 2rem; background: transparent; border: none; color: var(--cool-gray); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;">
+                    Website Orders
+                </button>
+            </div>
+
+            <!-- iiko Orders Content -->
+            <div id="iikoOrdersContent" class="order-tab-content">
+                <div class="filter-row" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+                    <select id="iikoStatusFilter" onchange="loadIikoOrders()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
+                        <option value="">All Statuses</option>
+                        <option value="ReadyForCooking">Ready for Cooking</option>
+                        <option value="CookingStarted">Cooking Started</option>
+                        <option value="Waiting">Waiting</option>
+                        <option value="OnWay">On Way</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <select id="iikoDaysFilter" onchange="loadIikoOrders()" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
+                        <option value="1">Today</option>
+                        <option value="3">Last 3 Days</option>
+                        <option value="7" selected>Last 7 Days</option>
+                        <option value="14">Last 14 Days</option>
+                        <option value="30">Last 30 Days</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="loadIikoOrders()" style="padding: 0.75rem 1.5rem;">
+                        Refresh
+                    </button>
+                    <span id="iikoOrderCount" style="color: var(--cool-gray); margin-left: auto;">Loading...</span>
+                </div>
+
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="admin-table" id="iikoOrdersTable">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                                <th>Source</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="iikoOrdersBody">
+                            <tr><td colspan="10" class="no-data">Loading iiko orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="iikoPagination" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" id="iikoPrevBtn" onclick="changeIikoPage(-1)" disabled style="padding: 0.5rem 1rem;">Previous</button>
+                    <span id="iikoPageInfo" style="color: var(--cool-gray);">Page 1 of 1</span>
+                    <button class="btn btn-secondary" id="iikoNextBtn" onclick="changeIikoPage(1)" disabled style="padding: 0.5rem 1rem;">Next</button>
+                </div>
+            </div>
+
+            <!-- Website Orders Content (Hidden by default) -->
+            <div id="websiteOrdersContent" class="order-tab-content" style="display: none;">
+                <div class="filter-buttons" style="margin-bottom: 1rem;">
                     <button class="filter-btn active" onclick="filterOrdersByStatus('all')">All</button>
                     <button class="filter-btn" onclick="filterOrdersByStatus('pending')">Pending</button>
                     <button class="filter-btn" onclick="filterOrdersByStatus('processing')">Processing</button>
                     <button class="filter-btn" onclick="filterOrdersByStatus('completed')">Completed</button>
                     <button class="filter-btn" onclick="filterOrdersByStatus('cancelled')">Cancelled</button>
                 </div>
-            </div>
-            
-            <div class="search-filter" style="margin-bottom: 1.5rem;">
-                <input type="text" id="orderSearch" placeholder="🔍 Search orders..." style="width: 100%; padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" oninput="filterOrders()">
-            </div>
 
-            <div class="orders-grid" id="ordersGrid">
-                <div class="no-data">Loading orders...</div>
+                <div class="search-filter" style="margin-bottom: 1.5rem;">
+                    <input type="text" id="orderSearch" placeholder="Search orders..." style="width: 100%; padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" oninput="filterOrders()">
+                </div>
+
+                <div class="orders-grid" id="ordersGrid">
+                    <div class="no-data">Loading orders...</div>
+                </div>
             </div>
         </section>
 
@@ -231,6 +301,19 @@
             </div>
             <div id="orderDetailsContent">
                 <!-- Order details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- iiko Order Details Modal -->
+    <div class="modal" id="iikoOrderModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>iiko Order Details</h2>
+                <button class="close-modal" onclick="closeIikoOrderModal()">&times;</button>
+            </div>
+            <div id="iikoOrderDetailsContent">
+                <!-- iiko order details will be populated here -->
             </div>
         </div>
     </div>

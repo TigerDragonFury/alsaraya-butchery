@@ -428,6 +428,119 @@ app.get('/api/iiko/orders', async (req, res) => {
     }
 });
 
+// Fetch paginated orders from iiko (for admin panel)
+app.get('/api/iiko/orders/paginated', async (req, res) => {
+    try {
+        const token = await getIikoToken();
+
+        // Parse query parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const daysBack = parseInt(req.query.days) || 7;
+        const status = req.query.status || null;
+
+        // Calculate date range
+        const dateFrom = new Date();
+        dateFrom.setDate(dateFrom.getDate() - daysBack);
+        dateFrom.setHours(0, 0, 0, 0);
+
+        const dateTo = new Date();
+        dateTo.setDate(dateTo.getDate() + 1); // Include today
+        dateTo.setHours(23, 59, 59, 999);
+
+        // Build statuses array
+        const statuses = status
+            ? [status]
+            : ['Unconfirmed', 'WaitCooking', 'ReadyForCooking', 'CookingStarted',
+               'CookingCompleted', 'Waiting', 'OnWay', 'Delivered', 'Closed', 'Cancelled'];
+
+        const response = await axios.post(
+            `${IIKO_CONFIG.apiUrl}/api/1/deliveries/by_delivery_date_and_status`,
+            {
+                organizationIds: [IIKO_CONFIG.orgId],
+                deliveryDateFrom: dateFrom.toISOString(),
+                deliveryDateTo: dateTo.toISOString(),
+                statuses: statuses
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // Extract orders from response structure
+        let allOrders = [];
+        if (response.data.ordersByOrganizations) {
+            response.data.ordersByOrganizations.forEach(org => {
+                if (org.orders) {
+                    allOrders = allOrders.concat(org.orders);
+                }
+            });
+        } else if (response.data.orders) {
+            allOrders = response.data.orders;
+        }
+
+        // Sort by order number descending (most recent first)
+        allOrders.sort((a, b) => {
+            const numA = a.order?.number || 0;
+            const numB = b.order?.number || 0;
+            return numB - numA;
+        });
+
+        // Pagination
+        const totalOrders = allOrders.length;
+        const totalPages = Math.ceil(totalOrders / limit);
+        const startIndex = (page - 1) * limit;
+        const paginatedOrders = allOrders.slice(startIndex, startIndex + limit);
+
+        // Format orders for response
+        const formattedOrders = paginatedOrders.map(order => ({
+            id: order.id,
+            number: order.order?.number || 'N/A',
+            status: order.order?.status || order.creationStatus || 'Unknown',
+            customer: order.order?.customer?.name || 'N/A',
+            phone: order.order?.phone || 'N/A',
+            address: order.order?.deliveryPoint?.address?.line1 || 'N/A',
+            total: order.order?.sum || 0,
+            items: order.order?.items?.map(item => ({
+                name: item.product?.name || 'Unknown',
+                quantity: item.amount,
+                price: item.price
+            })) || [],
+            payment: order.order?.payments?.[0]?.paymentType?.name || 'N/A',
+            created: order.order?.whenCreated || null,
+            deliveryTime: order.order?.completeBefore || null,
+            comment: order.order?.comment || '',
+            sourceKey: order.order?.sourceKey || 'pos'
+        }));
+
+        res.json({
+            success: true,
+            orders: formattedOrders,
+            pagination: {
+                page,
+                limit,
+                totalOrders,
+                totalPages,
+                hasNext: page < totalPages,
+                hasPrev: page > 1
+            },
+            dateRange: {
+                from: dateFrom.toISOString(),
+                to: dateTo.toISOString()
+            }
+        });
+    } catch (error) {
+        console.error('Failed to fetch paginated orders:', error.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Get specific order by ID
 app.get('/api/iiko/orders/:orderId', async (req, res) => {
     try {
