@@ -58,89 +58,17 @@
             <!-- Left Sidebar Filters (Desktop) -->
             <aside class="sidebar-filters">
                 <h3>Categories</h3>
-                <div class="filter-category active" data-filter="all">
-                    <div class="cat-icon">🛒</div>
-                    <div class="cat-info">
-                        <div class="cat-name">All Products</div>
-                        <div class="cat-count">View Everything</div>
+                <div id="sidebarCategories">
+                    <!-- "All Products" is always shown -->
+                    <div class="filter-category active" data-filter="all">
+                        <div class="cat-icon">🛒</div>
+                        <div class="cat-info">
+                            <div class="cat-name">All Products</div>
+                            <div class="cat-count">View Everything</div>
+                        </div>
                     </div>
-                </div>
-                <div class="filter-category" data-filter="beef">
-                    <div class="cat-icon">🥩</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Beef</div>
-                        <div class="cat-count">Premium Cuts</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="lamb">
-                    <div class="cat-icon">🍖</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Lamb</div>
-                        <div class="cat-count">Fresh Lamb</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="chicken">
-                    <div class="cat-icon">🍗</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Chicken</div>
-                        <div class="cat-count">Farm Fresh</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="raw-meat">
-                    <div class="cat-icon">🥩</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Raw Meat</div>
-                        <div class="cat-count">Fresh Daily</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="bowels">
-                    <div class="cat-icon">🫀</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Bowels</div>
-                        <div class="cat-count">Specialty</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="trays">
-                    <div class="cat-icon">🍽️</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Trays</div>
-                        <div class="cat-count">Ready to Cook</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="appetizers">
-                    <div class="cat-icon">🥟</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Appetizers</div>
-                        <div class="cat-count">Snacks & More</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="skewers">
-                    <div class="cat-icon">🍢</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Skewers</div>
-                        <div class="cat-count">BBQ Ready</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="boxes">
-                    <div class="cat-icon">📦</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Boxes</div>
-                        <div class="cat-count">Value Packs</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="marinated">
-                    <div class="cat-icon">🍖</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Marinated</div>
-                        <div class="cat-count">Seasoned</div>
-                    </div>
-                </div>
-                <div class="filter-category" data-filter="specialty">
-                    <div class="cat-icon">⭐</div>
-                    <div class="cat-info">
-                        <div class="cat-name">Specialty</div>
-                        <div class="cat-count">Premium Selection</div>
-                    </div>
+                    <!-- Categories loaded dynamically from Supabase -->
+                    <div class="loading-categories" style="padding: 1rem; color: #94A3B8; text-align: center;">Loading...</div>
                 </div>
 
                 <!-- Filter Options -->
@@ -174,19 +102,9 @@
             <!-- Products Grid -->
             <div class="products-container">
                 <!-- Mobile Filters (shown on mobile) -->
-                <div class="filters">
+                <div class="filters" id="mobileFilters">
                     <button class="filter-btn active" data-filter="all" data-icon="🛒">All</button>
-                    <button class="filter-btn" data-filter="beef" data-icon="🥩">Beef</button>
-                    <button class="filter-btn" data-filter="lamb" data-icon="🍖">Lamb</button>
-                    <button class="filter-btn" data-filter="chicken" data-icon="🍗">Chicken</button>
-                    <button class="filter-btn" data-filter="raw-meat" data-icon="🥩">Raw Meat</button>
-                    <button class="filter-btn" data-filter="bowels" data-icon="🫀">Bowels</button>
-                    <button class="filter-btn" data-filter="trays" data-icon="🍽️">Trays</button>
-                    <button class="filter-btn" data-filter="appetizers" data-icon="🥟">Appetizers</button>
-                    <button class="filter-btn" data-filter="skewers" data-icon="🍢">Skewers</button>
-                    <button class="filter-btn" data-filter="boxes" data-icon="📦">Boxes</button>
-                    <button class="filter-btn" data-filter="marinated" data-icon="🍖">Marinated</button>
-                    <button class="filter-btn" data-filter="specialty" data-icon="⭐">Specialty</button>
+                    <!-- Categories loaded dynamically from Supabase -->
                 </div>
 
                 <div class="products-grid" id="productsGrid">
@@ -312,6 +230,90 @@
         const shopSupabase = supabase;
 
         let allProducts = [];
+        let allCategories = [];
+
+        // Fetch categories from database
+        async function fetchCategories() {
+            try {
+                const { data, error } = await shopSupabase
+                    .from('categories')
+                    .select('*')
+                    .order('name');
+
+                if (error) throw error;
+
+                allCategories = data || [];
+                renderCategories(allCategories);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                // Remove loading indicator
+                const loadingEl = document.querySelector('.loading-categories');
+                if (loadingEl) loadingEl.remove();
+            }
+        }
+
+        // Render categories in sidebar and mobile filters
+        function renderCategories(categories) {
+            const sidebarContainer = document.getElementById('sidebarCategories');
+            const mobileContainer = document.getElementById('mobileFilters');
+
+            // Remove loading indicator
+            const loadingEl = document.querySelector('.loading-categories');
+            if (loadingEl) loadingEl.remove();
+
+            // Render sidebar categories
+            if (sidebarContainer) {
+                const sidebarHTML = categories.map(cat => `
+                    <div class="filter-category" data-filter="${cat.slug}">
+                        <div class="cat-icon">${cat.icon || '📦'}</div>
+                        <div class="cat-info">
+                            <div class="cat-name">${cat.name}</div>
+                            <div class="cat-count">${cat.description || ''}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                sidebarContainer.insertAdjacentHTML('beforeend', sidebarHTML);
+
+                // Add click handlers for new categories
+                sidebarContainer.querySelectorAll('.filter-category').forEach(cat => {
+                    cat.addEventListener('click', (e) => {
+                        const element = e.currentTarget;
+                        document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
+                        element.classList.add('active');
+                        renderProducts(element.dataset.filter);
+
+                        // Also update mobile filter buttons
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        const matchingBtn = document.querySelector(`.filter-btn[data-filter="${element.dataset.filter}"]`);
+                        if (matchingBtn) matchingBtn.classList.add('active');
+                    });
+                });
+            }
+
+            // Render mobile filter buttons
+            if (mobileContainer) {
+                const mobileHTML = categories.map(cat => `
+                    <button class="filter-btn" data-filter="${cat.slug}" data-icon="${cat.icon || '📦'}">${cat.name}</button>
+                `).join('');
+
+                mobileContainer.insertAdjacentHTML('beforeend', mobileHTML);
+
+                // Add click handlers for new buttons
+                mobileContainer.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        renderProducts(e.target.dataset.filter);
+
+                        // Also update sidebar categories
+                        document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
+                        const matchingCat = document.querySelector(`.filter-category[data-filter="${e.target.dataset.filter}"]`);
+                        if (matchingCat) matchingCat.classList.add('active');
+                    });
+                });
+            }
+        }
 
         // Fetch products from database
         async function fetchProducts() {
@@ -442,33 +444,37 @@
             showNotification(`${name} added to cart!`);
         }
 
-        // Load products on page load
+        // Load categories and products on page load
+        fetchCategories();
         fetchProducts();
 
-        // Filter Products - Regular buttons
+        // Filter Products - Event listeners added dynamically in renderCategories()
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            // "All" button click handler (always present)
+            const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+            if (allBtn) {
+                allBtn.addEventListener('click', (e) => {
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     e.target.classList.add('active');
-                    renderProducts(e.target.dataset.filter);
-                });
-            });
-
-            // Sidebar Filter Categories
-            document.querySelectorAll('.filter-category').forEach(cat => {
-                cat.addEventListener('click', (e) => {
-                    const element = e.currentTarget;
+                    renderProducts('all');
                     document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
-                    element.classList.add('active');
-                    renderProducts(element.dataset.filter);
-                    
-                    // Also update mobile filter buttons
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    const matchingBtn = document.querySelector(`.filter-btn[data-filter="${element.dataset.filter}"]`);
-                    if (matchingBtn) matchingBtn.classList.add('active');
+                    const allCat = document.querySelector('.filter-category[data-filter="all"]');
+                    if (allCat) allCat.classList.add('active');
                 });
-            });
+            }
+
+            // "All Products" sidebar click handler (always present)
+            const allCat = document.querySelector('.filter-category[data-filter="all"]');
+            if (allCat) {
+                allCat.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    renderProducts('all');
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+                    if (allBtn) allBtn.classList.add('active');
+                });
+            }
 
             // Mobile Bottom Nav Cart Icon
             const cartIconBottom = document.getElementById('cartIconBottom');
