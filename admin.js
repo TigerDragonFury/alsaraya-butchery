@@ -1162,8 +1162,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Image Search Functionality (Pexels API)
 // =============================================
 
-// Pexels API Key (free tier - 200 requests/month)
-const PEXELS_API_KEY = 'PtlhkXIDUXiOORqRUB3VvyM8EyuriKuMW8t2mYo0L1gBWslvRQk7NVUb';
+// Pexels API Key
+const PEXELS_API_KEY = 'hKwBmqDZRqvV6to2AeRrPWGrFriIdTOh0jDINQHOH5lpGLJ37N5UASLa';
 
 // Open image search modal
 window.openImageSearchModal = function() {
