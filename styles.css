@@ -3656,13 +3656,23 @@ footer {
    STICKY FILTER BAR
    ============================================ */
 .sticky-filter-bar {
-    position: sticky;
-    top: 60px;
-    z-index: 100;
+    position: fixed;
+    top: 65px; /* Below the navbar */
+    left: 0;
+    right: 0;
+    z-index: 999; /* Just below navbar */
     background: linear-gradient(180deg, var(--dark-black) 0%, var(--soft-black) 100%);
     border-bottom: 2px solid var(--primary-red);
     padding: 0.75rem 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sticky-filter-bar.visible {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .filter-bar-container {
