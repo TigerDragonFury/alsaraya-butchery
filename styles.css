@@ -3665,14 +3665,6 @@ footer {
     border-bottom: 2px solid var(--primary-red);
     padding: 0.75rem 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.sticky-filter-bar.visible {
-    transform: translateY(0);
-    opacity: 1;
 }
 
 .filter-bar-container {
