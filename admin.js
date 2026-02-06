@@ -1213,7 +1213,9 @@ window.searchImages = async function() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to search images');
+            const errorText = await response.text();
+            console.error('Pexels API Error:', response.status, errorText);
+            throw new Error(`Pexels API error (${response.status}): ${errorText || 'Unknown error'}`);
         }
 
         const data = await response.json();
