@@ -1157,3 +1157,173 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1000);
 });
+
+// =============================================
+// Image Search Functionality (Pexels API)
+// =============================================
+
+// Pexels API Key (free tier - 200 requests/month)
+const PEXELS_API_KEY = 'PtlhkXIDUXiOORqRUB3VvyM8EyuriKuMW8t2mYo0L1gBWslvRQk7NVUb';
+
+// Open image search modal
+window.openImageSearchModal = function() {
+    const modal = document.getElementById('imageSearchModal');
+    const searchInput = document.getElementById('imageSearchQuery');
+    const productName = document.getElementById('productName').value;
+
+    // Pre-fill search with product name if available
+    if (productName) {
+        searchInput.value = productName;
+    }
+
+    modal.classList.add('active');
+    searchInput.focus();
+
+    // Search automatically if product name exists
+    if (productName) {
+        searchImages();
+    }
+}
+
+// Close image search modal
+window.closeImageSearchModal = function() {
+    document.getElementById('imageSearchModal').classList.remove('active');
+}
+
+// Search for images using Pexels API
+window.searchImages = async function() {
+    const query = document.getElementById('imageSearchQuery').value.trim();
+    if (!query) {
+        showNotification('Please enter a search term', 'error');
+        return;
+    }
+
+    const resultsContainer = document.getElementById('imageSearchResults');
+    const loadingEl = document.getElementById('imageSearchLoading');
+
+    resultsContainer.innerHTML = '';
+    loadingEl.style.display = 'block';
+
+    try {
+        // Search Pexels for images
+        const response = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query + ' food meat')}&per_page=20&orientation=square`, {
+            headers: {
+                'Authorization': PEXELS_API_KEY
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to search images');
+        }
+
+        const data = await response.json();
+
+        loadingEl.style.display = 'none';
+
+        if (!data.photos || data.photos.length === 0) {
+            resultsContainer.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; color: var(--cool-gray); padding: 3rem;">
+                    No images found. Try a different search term.
+                </div>
+            `;
+            return;
+        }
+
+        // Display image results
+        resultsContainer.innerHTML = data.photos.map(photo => `
+            <div class="image-search-item" onclick="selectSearchImage('${photo.src.medium}', '${photo.src.large}')" style="cursor: pointer; border-radius: 8px; overflow: hidden; border: 2px solid transparent; transition: all 0.3s ease;">
+                <img src="${photo.src.small}" alt="${photo.alt || 'Image'}" style="width: 100%; height: 120px; object-fit: cover; display: block;">
+                <div style="padding: 0.5rem; background: rgba(0,0,0,0.5); font-size: 0.7rem; color: #ccc; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                    by ${photo.photographer}
+                </div>
+            </div>
+        `).join('');
+
+        // Add hover effect styles
+        document.querySelectorAll('.image-search-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.borderColor = 'var(--primary-red)';
+                item.style.transform = 'scale(1.05)';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.borderColor = 'transparent';
+                item.style.transform = 'scale(1)';
+            });
+        });
+
+    } catch (error) {
+        console.error('Error searching images:', error);
+        loadingEl.style.display = 'none';
+        resultsContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--primary-red); padding: 3rem;">
+                Error searching images: ${error.message}
+            </div>
+        `;
+    }
+}
+
+// Select an image and upload to Imgur
+window.selectSearchImage = async function(mediumUrl, largeUrl) {
+    showNotification('Uploading image to Imgur...');
+
+    try {
+        // Fetch the image as blob
+        const imageResponse = await fetch(largeUrl);
+        if (!imageResponse.ok) {
+            throw new Error('Failed to fetch image');
+        }
+
+        const imageBlob = await imageResponse.blob();
+
+        // Convert blob to base64
+        const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(imageBlob);
+        });
+
+        // Upload to Imgur
+        const uploadResponse = await fetch('https://api.imgur.com/3/image', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Client-ID 546c25a59c58ad7',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                image: base64,
+                type: 'base64'
+            })
+        });
+
+        const uploadData = await uploadResponse.json();
+
+        if (uploadData.success) {
+            const imageUrl = uploadData.data.link;
+
+            // Set the image URL in the product form
+            document.getElementById('productImageUrl').value = imageUrl;
+            document.getElementById('previewImg').src = imageUrl;
+            document.getElementById('imagePreview').style.display = 'block';
+
+            // Close the search modal
+            closeImageSearchModal();
+
+            showNotification('Image selected and uploaded successfully!');
+        } else {
+            throw new Error(uploadData.data?.error || 'Upload failed');
+        }
+
+    } catch (error) {
+        console.error('Error selecting image:', error);
+        showNotification('Error uploading image: ' + error.message, 'error');
+    }
+}
+
+// Allow Enter key to search
+document.getElementById('imageSearchQuery')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        searchImages();
+    }
+});

@@ -257,15 +257,16 @@
                 </div>
                 <div class="form-group">
                     <label>Product Image</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="text" id="productImageUrl" placeholder="Image URL or upload..." style="flex: 1;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="productImageUrl" placeholder="Image URL or upload..." style="flex: 1; min-width: 200px;">
                         <input type="file" id="productImageFile" accept="image/*" style="display: none;" onchange="uploadImageToImgur(this)">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('productImageFile').click()" style="white-space: nowrap;">Upload Image</button>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('productImageFile').click()" style="white-space: nowrap;">Upload</button>
+                        <button type="button" class="btn btn-primary" onclick="openImageSearchModal()" style="white-space: nowrap;">Search Images</button>
                     </div>
                     <div id="imagePreview" style="margin-top: 0.5rem; display: none;">
                         <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid rgba(220, 38, 38, 0.2);">
                     </div>
-                    <small style="color: var(--cool-gray); font-size: 0.75rem; display: block; margin-top: 0.25rem;">Upload to Imgur or paste image URL</small>
+                    <small style="color: var(--cool-gray); font-size: 0.75rem; display: block; margin-top: 0.25rem;">Upload, paste URL, or search for images online</small>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
@@ -332,6 +333,31 @@
                     <button type="submit" class="btn btn-primary">Save Category</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Image Search Modal -->
+    <div class="modal" id="imageSearchModal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h2>Search Product Images</h2>
+                <button class="close-modal" onclick="closeImageSearchModal()">&times;</button>
+            </div>
+            <div style="padding: 1rem; border-bottom: 1px solid rgba(220, 38, 38, 0.2);">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="imageSearchQuery" placeholder="Search for images (e.g., beef steak, lamb chops)..." style="flex: 1; padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;">
+                    <button class="btn btn-primary" onclick="searchImages()" style="white-space: nowrap;">Search</button>
+                </div>
+                <small style="color: var(--cool-gray); font-size: 0.75rem; display: block; margin-top: 0.5rem;">Images from Pexels. Click an image to select it.</small>
+            </div>
+            <div id="imageSearchResults" style="flex: 1; overflow-y: auto; padding: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                <div style="grid-column: 1/-1; text-align: center; color: var(--cool-gray); padding: 3rem;">
+                    Enter a search term to find images
+                </div>
+            </div>
+            <div id="imageSearchLoading" style="display: none; text-align: center; padding: 2rem; color: var(--cool-gray);">
+                Searching for images...
+            </div>
         </div>
     </div>
 
