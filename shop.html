@@ -59,7 +59,7 @@
             <div class="filter-bar-desktop">
                 <div class="filter-item">
                     <label>Category</label>
-                    <select id="filterCategory" onchange="applyFilters()">
+                    <select id="filterCategory" onchange="applyFilters('desktop-category')">
                         <option value="all">All Categories</option>
                         <!-- Categories loaded dynamically -->
                     </select>
@@ -108,7 +108,7 @@
             </div>
             <div class="mobile-filter-panel" id="mobileCategoryPanel">
                 <div class="mobile-panel-content">
-                    <select id="mobileFilterCategory" onchange="applyFilters(); closeMobilePanel();">
+                    <select id="mobileFilterCategory" onchange="applyFilters('mobile-category'); closeMobilePanel();">
                         <option value="all">All Categories</option>
                     </select>
                     <button class="panel-close-btn" onclick="closeMobilePanel()">✕</button>
@@ -624,11 +624,21 @@
         }
 
         // Apply all filters
-        function applyFilters() {
-            // Get filter values (check both desktop and mobile)
+        function applyFilters(source = '') {
+            // Get filter values - use source to determine which input triggered the change
             const categoryDesktop = document.getElementById('filterCategory')?.value || 'all';
             const categoryMobile = document.getElementById('mobileFilterCategory')?.value || 'all';
-            const category = categoryMobile !== 'all' ? categoryMobile : categoryDesktop;
+
+            // Determine category based on which input triggered the change
+            let category;
+            if (source === 'desktop-category') {
+                category = categoryDesktop;
+            } else if (source === 'mobile-category') {
+                category = categoryMobile;
+            } else {
+                // For non-category changes, use whichever is not 'all' (prefer current state)
+                category = categoryDesktop !== 'all' ? categoryDesktop : categoryMobile;
+            }
 
             const sortDesktop = document.getElementById('filterSort')?.value || 'name-asc';
             const sortMobile = document.getElementById('mobileFilterSort')?.value || 'name-asc';
@@ -643,6 +653,16 @@
             if (document.getElementById('mobileFilterCategory')) document.getElementById('mobileFilterCategory').value = category;
             if (document.getElementById('filterSort')) document.getElementById('filterSort').value = sortBy;
             if (document.getElementById('mobileFilterSort')) document.getElementById('mobileFilterSort').value = sortBy;
+
+            // Scroll to top of products when category changes
+            if (source === 'desktop-category' || source === 'mobile-category') {
+                const shopSection = document.getElementById('shop');
+                if (shopSection) {
+                    const offset = 150; // Account for sticky header and filter bar
+                    const shopTop = shopSection.offsetTop - offset;
+                    window.scrollTo({ top: shopTop, behavior: 'smooth' });
+                }
+            }
 
             // Filter products
             let filtered = [...allProducts];

@@ -3657,7 +3657,7 @@ footer {
    ============================================ */
 .sticky-filter-bar {
     position: fixed;
-    top: 65px; /* Below the navbar */
+    top: 87px; /* Below the navbar */
     left: 0;
     right: 0;
     z-index: 999; /* Just below navbar */
@@ -3868,7 +3868,7 @@ footer {
     }
 
     .sticky-filter-bar {
-        top: 55px;
+        top: 82px;
     }
 }
 
@@ -3878,7 +3878,7 @@ footer {
     }
 
     .sticky-filter-bar {
-        top: 50px;
+        top: 82px;
     }
 }
 
