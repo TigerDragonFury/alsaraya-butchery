@@ -52,6 +52,82 @@
         </div>
     </section>
 
+    <!-- Sticky Filter Bar -->
+    <div class="sticky-filter-bar" id="stickyFilterBar">
+        <div class="filter-bar-container">
+            <!-- Desktop View -->
+            <div class="filter-bar-desktop">
+                <div class="filter-item">
+                    <label>Category</label>
+                    <select id="filterCategory" onchange="applyFilters()">
+                        <option value="all">All Categories</option>
+                        <!-- Categories loaded dynamically -->
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Sort By</label>
+                    <select id="filterSort" onchange="applyFilters()">
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="price-asc">Price (Low to High)</option>
+                        <option value="price-desc">Price (High to Low)</option>
+                    </select>
+                </div>
+                <div class="filter-item search-item">
+                    <label>Search</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="filterSearch" placeholder="Search products..." oninput="applyFilters()">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+                <button class="filter-reset-btn" onclick="resetFilters()">Reset</button>
+            </div>
+
+            <!-- Mobile View -->
+            <div class="filter-bar-mobile">
+                <button class="filter-icon-btn" id="mobileSearchBtn" onclick="toggleMobileFilter('search')" title="Search">
+                    <span class="icon">🔍</span>
+                </button>
+                <button class="filter-icon-btn" id="mobileCategoryBtn" onclick="toggleMobileFilter('category')" title="Category">
+                    <span class="icon">📁</span>
+                </button>
+                <button class="filter-icon-btn" id="mobileSortBtn" onclick="toggleMobileFilter('sort')" title="Sort">
+                    <span class="icon">↕️</span>
+                </button>
+                <button class="filter-icon-btn" id="mobileResetBtn" onclick="resetFilters()" title="Reset">
+                    <span class="icon">🔄</span>
+                </button>
+            </div>
+
+            <!-- Mobile Expanded Panels -->
+            <div class="mobile-filter-panel" id="mobileSearchPanel">
+                <div class="mobile-panel-content">
+                    <input type="text" id="mobileFilterSearch" placeholder="Search products..." oninput="applyFilters()">
+                    <button class="panel-close-btn" onclick="closeMobilePanel()">✕</button>
+                </div>
+            </div>
+            <div class="mobile-filter-panel" id="mobileCategoryPanel">
+                <div class="mobile-panel-content">
+                    <select id="mobileFilterCategory" onchange="applyFilters(); closeMobilePanel();">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <button class="panel-close-btn" onclick="closeMobilePanel()">✕</button>
+                </div>
+            </div>
+            <div class="mobile-filter-panel" id="mobileSortPanel">
+                <div class="mobile-panel-content">
+                    <select id="mobileFilterSort" onchange="applyFilters(); closeMobilePanel();">
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="price-asc">Price (Low to High)</option>
+                        <option value="price-desc">Price (High to Low)</option>
+                    </select>
+                    <button class="panel-close-btn" onclick="closeMobilePanel()">✕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Shop Section -->
     <section class="shop reveal" id="shop">
         <div class="shop-layout">
@@ -244,6 +320,7 @@
 
                 allCategories = data || [];
                 renderCategories(allCategories);
+                populateFilterBar(allCategories);
             } catch (error) {
                 console.error('Error fetching categories:', error);
                 // Remove loading indicator
@@ -524,6 +601,225 @@
                 });
             }
         });
+
+        // ============================================
+        // STICKY FILTER BAR FUNCTIONS
+        // ============================================
+
+        // Populate filter bar dropdowns
+        function populateFilterBar(categories) {
+            const desktopSelect = document.getElementById('filterCategory');
+            const mobileSelect = document.getElementById('mobileFilterCategory');
+
+            const optionsHTML = categories.map(cat =>
+                `<option value="${cat.slug}">${cat.name}</option>`
+            ).join('');
+
+            if (desktopSelect) {
+                desktopSelect.innerHTML = '<option value="all">All Categories</option>' + optionsHTML;
+            }
+            if (mobileSelect) {
+                mobileSelect.innerHTML = '<option value="all">All Categories</option>' + optionsHTML;
+            }
+        }
+
+        // Apply all filters
+        function applyFilters() {
+            // Get filter values (check both desktop and mobile)
+            const categoryDesktop = document.getElementById('filterCategory')?.value || 'all';
+            const categoryMobile = document.getElementById('mobileFilterCategory')?.value || 'all';
+            const category = categoryMobile !== 'all' ? categoryMobile : categoryDesktop;
+
+            const sortDesktop = document.getElementById('filterSort')?.value || 'name-asc';
+            const sortMobile = document.getElementById('mobileFilterSort')?.value || 'name-asc';
+            const sortBy = sortMobile !== 'name-asc' ? sortMobile : sortDesktop;
+
+            const searchDesktop = document.getElementById('filterSearch')?.value?.toLowerCase() || '';
+            const searchMobile = document.getElementById('mobileFilterSearch')?.value?.toLowerCase() || '';
+            const searchTerm = searchMobile || searchDesktop;
+
+            // Sync values between desktop and mobile
+            if (document.getElementById('filterCategory')) document.getElementById('filterCategory').value = category;
+            if (document.getElementById('mobileFilterCategory')) document.getElementById('mobileFilterCategory').value = category;
+            if (document.getElementById('filterSort')) document.getElementById('filterSort').value = sortBy;
+            if (document.getElementById('mobileFilterSort')) document.getElementById('mobileFilterSort').value = sortBy;
+
+            // Filter products
+            let filtered = [...allProducts];
+
+            // Category filter
+            if (category !== 'all') {
+                const selectedCategory = allCategories.find(c => c.slug === category);
+                if (selectedCategory) {
+                    filtered = filtered.filter(p => {
+                        if (p.category_id) {
+                            return p.category_id === selectedCategory.id;
+                        }
+                        if (p.category) {
+                            const productCat = p.category.toLowerCase();
+                            return productCat === selectedCategory.name.toLowerCase() ||
+                                   productCat === selectedCategory.slug.toLowerCase();
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    (p.arabic_name && p.arabic_name.toLowerCase().includes(searchTerm)) ||
+                    (p.description && p.description.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            // Sort products
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'name-asc':
+                        return a.name.localeCompare(b.name);
+                    case 'name-desc':
+                        return b.name.localeCompare(a.name);
+                    case 'price-asc':
+                        return parseFloat(a.price) - parseFloat(b.price);
+                    case 'price-desc':
+                        return parseFloat(b.price) - parseFloat(a.price);
+                    default:
+                        return 0;
+                }
+            });
+
+            // Update sidebar/mobile category buttons
+            document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            const activeCat = document.querySelector(`.filter-category[data-filter="${category}"]`);
+            const activeBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+            if (activeCat) activeCat.classList.add('active');
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Render filtered products
+            renderFilteredProducts(filtered);
+        }
+
+        // Render filtered products (similar to renderProducts but takes array)
+        function renderFilteredProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const currentLang = localStorage.getItem('language') || 'en';
+
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #94A3B8;">
+                        <h3>No products found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = products.map(product => {
+                const displayName = currentLang === 'ar' && product.arabic_name ? product.arabic_name : product.name;
+                const defaultImage = 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&h=350&fit=crop';
+                const productImage = product.image_url || defaultImage;
+
+                return `
+                    <div class="product-card" data-category="${product.category}">
+                        <div class="product-image">
+                            <a href="product-detail.html?id=${product.id}">
+                                <img src="${productImage}" alt="${displayName}" loading="lazy">
+                            </a>
+                            ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">
+                                <a href="product-detail.html?id=${product.id}">${displayName}</a>
+                            </h3>
+                            <p class="product-description">${product.description || ''}</p>
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    ${parseFloat(product.price).toFixed(2)} AED<span>/${product.unit || 'kg'}</span>
+                                </div>
+                                <button class="add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.category}', '${product.unit || 'kg'}', '${product.iiko_product_id || ''}')">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Re-apply reveal animation
+            setTimeout(() => {
+                document.querySelectorAll('.product-card').forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50 + (index * 30));
+                });
+            }, 50);
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            // Reset all filter inputs
+            if (document.getElementById('filterCategory')) document.getElementById('filterCategory').value = 'all';
+            if (document.getElementById('filterSort')) document.getElementById('filterSort').value = 'name-asc';
+            if (document.getElementById('filterSearch')) document.getElementById('filterSearch').value = '';
+            if (document.getElementById('mobileFilterCategory')) document.getElementById('mobileFilterCategory').value = 'all';
+            if (document.getElementById('mobileFilterSort')) document.getElementById('mobileFilterSort').value = 'name-asc';
+            if (document.getElementById('mobileFilterSearch')) document.getElementById('mobileFilterSearch').value = '';
+
+            // Close mobile panels
+            closeMobilePanel();
+
+            // Reset sidebar/mobile buttons
+            document.querySelectorAll('.filter-category').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            const allCat = document.querySelector('.filter-category[data-filter="all"]');
+            const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+            if (allCat) allCat.classList.add('active');
+            if (allBtn) allBtn.classList.add('active');
+
+            // Render all products
+            renderProducts('all');
+        }
+
+        // Toggle mobile filter panels
+        function toggleMobileFilter(type) {
+            const panels = ['search', 'category', 'sort'];
+            const buttons = {
+                search: document.getElementById('mobileSearchBtn'),
+                category: document.getElementById('mobileCategoryBtn'),
+                sort: document.getElementById('mobileSortBtn')
+            };
+
+            panels.forEach(panel => {
+                const panelEl = document.getElementById(`mobile${panel.charAt(0).toUpperCase() + panel.slice(1)}Panel`);
+                if (panel === type) {
+                    panelEl.classList.toggle('active');
+                    buttons[panel]?.classList.toggle('active');
+
+                    // Focus input if search panel opened
+                    if (panel === 'search' && panelEl.classList.contains('active')) {
+                        setTimeout(() => {
+                            document.getElementById('mobileFilterSearch')?.focus();
+                        }, 100);
+                    }
+                } else {
+                    panelEl.classList.remove('active');
+                    buttons[panel]?.classList.remove('active');
+                }
+            });
+        }
+
+        // Close all mobile panels
+        function closeMobilePanel() {
+            document.querySelectorAll('.mobile-filter-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.filter-icon-btn').forEach(b => b.classList.remove('active'));
+        }
     </script>
 </body>
 </html>
