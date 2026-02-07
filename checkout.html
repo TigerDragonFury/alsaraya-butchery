@@ -262,6 +262,11 @@
         }
 
         /* Responsive */
+        /* Mobile Sticky Checkout Footer */
+        .mobile-checkout-footer {
+            display: none;
+        }
+        
         @media (max-width: 768px) {
             .page-hero {
                 margin-top: 70px;
@@ -278,7 +283,176 @@
                 padding: 1.5rem;
             }
             .checkout-section-wrapper {
-                padding: 30px 0 120px;
+                padding: 30px 0 220px; /* Extra space for sticky footer */
+            }
+            
+            /* Hide desktop checkout button on mobile */
+            .btn-checkout {
+                display: none;
+            }
+            
+            /* Mobile Sticky Footer */
+            .mobile-checkout-footer {
+                display: block;
+                position: fixed;
+                bottom: 70px; /* Above mobile nav */
+                left: 0;
+                right: 0;
+                background: var(--white);
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+                z-index: 998; /* Below mobile nav but above content */
+                animation: slideUp 0.3s ease;
+            }
+            
+            /* Collapsible Product List */
+            .mobile-order-summary {
+                border-bottom: 1px solid var(--gray-200);
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .mobile-summary-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem 1.25rem;
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 0, 0, 0.02));
+                cursor: pointer;
+                user-select: none;
+            }
+            
+            .mobile-summary-header:active {
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.08), rgba(255, 0, 0, 0.04));
+            }
+            
+            .mobile-summary-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .mobile-summary-title {
+                font-size: 0.85rem;
+                color: var(--text-secondary);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .mobile-summary-title i {
+                color: var(--primary);
+            }
+            
+            .mobile-summary-total {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--primary);
+            }
+            
+            .mobile-summary-toggle {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+            }
+            
+            .mobile-summary-toggle i {
+                transition: transform 0.3s ease;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-summary-toggle.expanded i {
+                transform: rotate(180deg);
+            }
+            
+            .mobile-summary-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+            
+            .mobile-summary-content.expanded {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            .mobile-items-list {
+                padding: 0.75rem 1.25rem;
+                background: var(--white);
+            }
+            
+            .mobile-order-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid var(--gray-100);
+            }
+            
+            .mobile-order-item:last-child {
+                border-bottom: none;
+            }
+            
+            .mobile-item-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .mobile-item-name {
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: var(--text-primary);
+            }
+            
+            .mobile-item-qty {
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+            }
+            
+            .mobile-item-price {
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: var(--primary);
+            }
+            
+            .mobile-summary-details {
+                padding: 0.75rem 1.25rem;
+                background: rgba(255, 0, 0, 0.02);
+                border-top: 1px solid var(--gray-100);
+            }
+            
+            .mobile-summary-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.35rem 0;
+                font-size: 0.85rem;
+                color: var(--text-secondary);
+            }
+            
+            /* Mobile Place Order Button */
+            .mobile-place-order {
+                padding: 1rem 1.25rem;
+                background: var(--white);
+            }
+            
+            .mobile-place-order .btn-checkout {
+                display: flex;
+                padding: 0.9rem 1.5rem;
+                margin: 0;
+                box-shadow: 0 2px 10px rgba(37, 211, 102, 0.3);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
 
@@ -559,6 +733,46 @@
         </div>
     </section>
 
+    <!-- Mobile Sticky Checkout Footer -->
+    <div class="mobile-checkout-footer">
+        <div class="mobile-order-summary">
+            <div class="mobile-summary-header" onclick="toggleMobileSummary()">
+                <div class="mobile-summary-info">
+                    <div class="mobile-summary-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span id="mobileItemCount">0 items</span>
+                    </div>
+                    <div class="mobile-summary-total" id="mobileTotalAmount">0.00 AED</div>
+                </div>
+                <div class="mobile-summary-toggle" id="mobileSummaryToggle">
+                    <span>View details</span>
+                    <i class="fas fa-chevron-up"></i>
+                </div>
+            </div>
+            <div class="mobile-summary-content" id="mobileSummaryContent">
+                <div class="mobile-items-list" id="mobileItemsList">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+                <div class="mobile-summary-details">
+                    <div class="mobile-summary-row">
+                        <span>Subtotal:</span>
+                        <span id="mobileSubtotal">0.00 AED</span>
+                    </div>
+                    <div class="mobile-summary-row">
+                        <span>Delivery Fee:</span>
+                        <span id="mobileDeliveryFee">5.00 AED</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-place-order">
+            <button type="submit" class="btn-checkout" onclick="placeOrder(event)">
+                <i class="fab fa-whatsapp"></i>
+                Place Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-main">
@@ -832,9 +1046,19 @@
             const subtotalEl = document.getElementById('subtotal');
             const deliveryFeeEl = document.getElementById('deliveryFee');
             const totalAmountEl = document.getElementById('totalAmount');
+            
+            // Mobile elements
+            const mobileItemsList = document.getElementById('mobileItemsList');
+            const mobileItemCount = document.getElementById('mobileItemCount');
+            const mobileSubtotal = document.getElementById('mobileSubtotal');
+            const mobileDeliveryFee = document.getElementById('mobileDeliveryFee');
+            const mobileTotalAmount = document.getElementById('mobileTotalAmount');
 
             if (cart.length === 0) {
                 orderItemsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Your cart is empty. <a href="shop.html" style="color: var(--primary);">Continue shopping</a></p>';
+                if (mobileItemsList) mobileItemsList.innerHTML = '';
+                if (mobileItemCount) mobileItemCount.textContent = '0 items';
+                if (mobileTotalAmount) mobileTotalAmount.textContent = '0.00 AED';
                 return;
             }
 
@@ -842,6 +1066,7 @@
             const deliveryFee = 5.00;
             const total = subtotal + deliveryFee;
 
+            // Desktop view
             orderItemsList.innerHTML = cart.map(item => `
                 <div class="summary-row" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 0, 0, 0.1);">
                     <span>${item.name} x ${item.quantity}</span>
@@ -852,6 +1077,44 @@
             subtotalEl.textContent = `${subtotal.toFixed(2)} AED`;
             deliveryFeeEl.textContent = `${deliveryFee.toFixed(2)} AED`;
             totalAmountEl.textContent = `${total.toFixed(2)} AED`;
+            
+            // Mobile view
+            if (mobileItemsList) {
+                mobileItemsList.innerHTML = cart.map(item => `
+                    <div class="mobile-order-item">
+                        <div class="mobile-item-info">
+                            <div class="mobile-item-name">${item.name}</div>
+                            <div class="mobile-item-qty">Qty: ${item.quantity}</div>
+                        </div>
+                        <div class="mobile-item-price">${(item.price * item.quantity).toFixed(2)} AED</div>
+                    </div>
+                `).join('');
+            }
+            
+            if (mobileItemCount) {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                mobileItemCount.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
+            }
+            if (mobileSubtotal) mobileSubtotal.textContent = `${subtotal.toFixed(2)} AED`;
+            if (mobileDeliveryFee) mobileDeliveryFee.textContent = `${deliveryFee.toFixed(2)} AED`;
+            if (mobileTotalAmount) mobileTotalAmount.textContent = `${total.toFixed(2)} AED`;
+        }
+        
+        // Toggle mobile summary
+        function toggleMobileSummary() {
+            const content = document.getElementById('mobileSummaryContent');
+            const toggle = document.getElementById('mobileSummaryToggle');
+            
+            if (!content || !toggle) return;
+            
+            content.classList.toggle('expanded');
+            toggle.classList.toggle('expanded');
+            
+            if (content.classList.contains('expanded')) {
+                toggle.querySelector('span').textContent = 'Hide details';
+            } else {
+                toggle.querySelector('span').textContent = 'View details';
+            }
         }
 
         // Place Order
