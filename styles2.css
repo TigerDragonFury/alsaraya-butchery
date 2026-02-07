@@ -2059,6 +2059,14 @@ ul {
     transition: var(--transition);
 }
 
+.btn-auth i {
+    font-size: 18px;
+}
+
+.btn-auth span {
+    display: none; /* Hide text on mobile, show icon only */
+}
+
 .btn-auth:hover {
     background: var(--primary);
     color: var(--white);
@@ -2069,9 +2077,9 @@ ul {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
-    background: var(--light);
-    border: 1px solid var(--gray-300);
+    padding: 10px 20px;
+    background: var(--white);
+    border: 2px solid var(--gray-300);
     border-radius: 50px;
     color: var(--text-primary);
     font-size: 14px;
@@ -2079,6 +2087,18 @@ ul {
     cursor: pointer;
     transition: var(--transition);
     position: relative;
+}
+
+.user-menu-btn.logged-in {
+    border-color: var(--primary);
+}
+
+.user-menu-btn.logged-in i {
+    color: var(--primary);
+}
+
+.user-menu-btn span {
+    display: none; /* Hide text on mobile, show icon only */
 }
 
 .user-menu-btn:hover {

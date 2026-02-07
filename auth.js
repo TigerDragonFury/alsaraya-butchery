@@ -458,9 +458,8 @@ function updateUIForLoggedInUser() {
         const authBtnContainer = document.getElementById('authBtnContainer');
         if (authBtnContainer) {
             authBtnContainer.innerHTML = `
-                <button class="user-menu-btn" id="userMenuBtn" onclick="toggleUserMenu()">
+                <button class="user-menu-btn logged-in" id="userMenuBtn" onclick="toggleUserMenu()" title="${userProfile?.full_name || 'Account'}">
                     <i class="fas fa-user-circle"></i>
-                    <span>${userProfile?.full_name || 'Account'}</span>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
                     <a href="profile.html">
@@ -479,6 +478,9 @@ function updateUIForLoggedInUser() {
             `;
         }
     }
+    
+    // Update mobile nav profile icon to red
+    updateMobileNavAuthState();
 }
 
 function updateUIForGuestUser() {
@@ -487,12 +489,37 @@ function updateUIForGuestUser() {
         const authBtnContainer = document.getElementById('authBtnContainer');
         if (authBtnContainer) {
             authBtnContainer.innerHTML = `
-                <button class="btn-auth" onclick="openAuthModal('login')">
-                    <i class="fas fa-user"></i> Login
+                <button class="btn-auth" onclick="openAuthModal('login')" title="Login">
+                    <i class="fas fa-user"></i>
                 </button>
             `;
         }
     }
+    
+    // Update mobile nav profile icon to white and add click handler
+    updateMobileNavAuthState();
+}
+
+// Update mobile navigation profile button based on auth state
+function updateMobileNavAuthState() {
+    const mobileProfileLinks = document.querySelectorAll('a[href="profile.html"].mobile-nav-item');
+    const isLoggedIn = currentUser && userProfile;
+    
+    mobileProfileLinks.forEach(link => {
+        if (isLoggedIn) {
+            // Logged in - red icon, go to profile
+            link.style.color = 'var(--primary)';
+            link.onclick = null;
+        } else {
+            // Not logged in - white icon, show login
+            link.style.color = '';
+            link.onclick = (e) => {
+                e.preventDefault();
+                openAuthModal('login');
+                return false;
+            };
+        }
+    });
 }
 
 function toggleUserMenu() {
