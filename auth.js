@@ -427,9 +427,307 @@ window.setDefaultAddress = setDefaultAddress;
 window.updateUserProfile = updateUserProfile;
 window.toggleUserMenu = toggleUserMenu;
 
+// ============================================
+// MODAL CONTROL FUNCTIONS
+// ============================================
+
+// Auth Modal Functions
+let currentPhone = '';
+
+function openAuthModal(mode = 'login') {
+    document.getElementById('authModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        resetAuthForm();
+    }
+}
+
+function resetAuthForm() {
+    const loginPhone = document.getElementById('loginPhone');
+    const otpForm = document.getElementById('otpForm');
+    
+    if (loginPhone) loginPhone.value = '';
+    if (otpForm) otpForm.style.display = 'none';
+    
+    document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+}
+
+async function handleSendOTP() {
+    const phoneInput = document.getElementById('loginPhone');
+    const phone = phoneInput.value.trim();
+    
+    if (!phone) {
+        showNotification('Please enter your phone number', 'error');
+        return;
+    }
+    
+    const result = await sendOTP(phone);
+    if (result.success) {
+        currentPhone = result.phone;
+        document.getElementById('otpForm').style.display = 'block';
+        const firstInput = document.querySelector('.otp-input');
+        if (firstInput) firstInput.focus();
+    }
+}
+
+async function handleVerifyOTP() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+    
+    if (otp.length !== 6) {
+        showNotification('Please enter the 6-digit OTP', 'error');
+        return;
+    }
+    
+    const result = await verifyOTP(currentPhone, otp);
+    if (result.success) {
+        closeAuthModal();
+    }
+}
+
+// Profile Modal Functions
+function showProfile() {
+    if (!userProfile) return;
+    
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profilePhone = document.getElementById('profilePhone');
+    
+    if (profileName) profileName.value = userProfile.full_name || '';
+    if (profileEmail) profileEmail.value = userProfile.email || '';
+    if (profilePhone) profilePhone.value = userProfile.phone_number || '';
+    
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Addresses Modal Functions
+async function showAddresses() {
+    const addresses = await loadUserAddresses();
+    renderAddressesList(addresses);
+    
+    const modal = document.getElementById('addressesModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeAddressesModal() {
+    const modal = document.getElementById('addressesModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        hideAddressForm();
+    }
+}
+
+function renderAddressesList(addresses) {
+    const list = document.getElementById('addressesList');
+    if (!list) return;
+    
+    if (addresses.length === 0) {
+        list.innerHTML = '<p class="no-addresses">No addresses saved yet. Add your first address!</p>';
+        return;
+    }
+    
+    list.innerHTML = addresses.map(addr => `
+        <div class="address-card ${addr.is_default ? 'default' : ''}">
+            <div class="address-header">
+                <span class="address-label">
+                    <i class="fas fa-${addr.label === 'Home' ? 'home' : addr.label === 'Work' ? 'briefcase' : 'map-marker-alt'}"></i>
+                    ${addr.label}
+                </span>
+                ${addr.is_default ? '<span class="default-badge">Default</span>' : ''}
+            </div>
+            <div class="address-details">
+                <p><strong>${addr.full_name}</strong></p>
+                <p>${addr.street_address}</p>
+                <p>${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}</p>
+                <p>${addr.area}, ${addr.city}</p>
+                <p><i class="fas fa-phone"></i> ${addr.phone_number}</p>
+            </div>
+            <div class="address-actions">
+                ${!addr.is_default ? `<button onclick="setDefaultAddress('${addr.id}')" class="btn-icon" title="Set as default"><i class="fas fa-star"></i></button>` : ''}
+                <button onclick="editAddress('${addr.id}')" class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                <button onclick="confirmDeleteAddress('${addr.id}')" class="btn-icon btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showAddAddressForm() {
+    const formTitle = document.getElementById('addressFormTitle');
+    const form = document.getElementById('addressForm');
+    const addressId = document.getElementById('addressId');
+    const formContainer = document.getElementById('addressFormContainer');
+    
+    if (formTitle) formTitle.textContent = 'Add New Address';
+    if (form) form.reset();
+    if (addressId) addressId.value = '';
+    if (formContainer) formContainer.style.display = 'block';
+}
+
+function hideAddressForm() {
+    const formContainer = document.getElementById('addressFormContainer');
+    const form = document.getElementById('addressForm');
+    
+    if (formContainer) formContainer.style.display = 'none';
+    if (form) form.reset();
+}
+
+function editAddress(addressId) {
+    const address = userAddresses.find(a => a.id === addressId);
+    if (!address) return;
+    
+    document.getElementById('addressFormTitle').textContent = 'Edit Address';
+    document.getElementById('addressId').value = address.id;
+    document.getElementById('addressLabel').value = address.label;
+    document.getElementById('addressFullName').value = address.full_name;
+    document.getElementById('addressPhone').value = address.phone_number;
+    document.getElementById('addressArea').value = address.area;
+    document.getElementById('addressStreet').value = address.street_address;
+    document.getElementById('addressBuilding').value = address.building || '';
+    document.getElementById('addressFloor').value = address.floor || '';
+    document.getElementById('addressApartment').value = address.apartment || '';
+    document.getElementById('addressLandmark').value = address.landmark || '';
+    document.getElementById('addressDefault').checked = address.is_default;
+    
+    document.getElementById('addressFormContainer').style.display = 'block';
+}
+
+async function confirmDeleteAddress(addressId) {
+    if (confirm('Are you sure you want to delete this address?')) {
+        const result = await deleteUserAddress(addressId);
+        if (result.success) {
+            const addresses = await loadUserAddresses();
+            renderAddressesList(addresses);
+        }
+    }
+}
+
+// ============================================
+// EVENT LISTENERS SETUP
+// ============================================
+
+function setupAuthEventListeners() {
+    // OTP Input Handling
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
+
+    // Profile Form Submit
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const updates = {
+                full_name: document.getElementById('profileName').value,
+                email: document.getElementById('profileEmail').value
+            };
+            
+            const result = await updateUserProfile(updates);
+            if (result.success) {
+                closeProfileModal();
+                updateUIForLoggedInUser();
+            }
+        });
+    }
+
+    // Address Form Submit
+    const addressForm = document.getElementById('addressForm');
+    if (addressForm) {
+        addressForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const addressData = {
+                label: document.getElementById('addressLabel').value,
+                full_name: document.getElementById('addressFullName').value,
+                phone_number: document.getElementById('addressPhone').value,
+                area: document.getElementById('addressArea').value,
+                street_address: document.getElementById('addressStreet').value,
+                building: document.getElementById('addressBuilding').value || null,
+                floor: document.getElementById('addressFloor').value || null,
+                apartment: document.getElementById('addressApartment').value || null,
+                landmark: document.getElementById('addressLandmark').value || null,
+                is_default: document.getElementById('addressDefault').checked
+            };
+            
+            const addressId = document.getElementById('addressId').value;
+            
+            let result;
+            if (addressId) {
+                result = await updateUserAddress(addressId, addressData);
+            } else {
+                result = await addUserAddress(addressData);
+            }
+            
+            if (result.success) {
+                hideAddressForm();
+                const addresses = await loadUserAddresses();
+                renderAddressesList(addresses);
+            }
+        });
+    }
+}
+
+// Make functions globally available
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.handleSendOTP = handleSendOTP;
+window.handleVerifyOTP = handleVerifyOTP;
+window.signInWithGoogle = signInWithGoogle;
+window.showProfile = showProfile;
+window.closeProfileModal = closeProfileModal;
+window.showAddresses = showAddresses;
+window.closeAddressesModal = closeAddressesModal;
+window.showAddAddressForm = showAddAddressForm;
+window.hideAddressForm = hideAddressForm;
+window.editAddress = editAddress;
+window.confirmDeleteAddress = confirmDeleteAddress;
+window.setDefaultAddress = setDefaultAddress;
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
 // Initialize on page load
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAuth);
+    document.addEventListener('DOMContentLoaded', () => {
+        initAuth();
+        setupAuthEventListeners();
+    });
 } else {
     initAuth();
+    // Setup event listeners after components are loaded
+    setTimeout(setupAuthEventListeners, 100);
 }
