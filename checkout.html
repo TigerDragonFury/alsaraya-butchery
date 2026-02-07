@@ -20,6 +20,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
     
+    <!-- Google Maps Places API (for address autocomplete) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqs6k9yZisdszgk-eUYZIryRyRSEgVR6M&libraries=places" async defer></script>
+    
     <script src="https://js.stripe.com/v3/"></script>
     <script src="iiko-integration.js"></script>
     <style>
@@ -423,8 +426,11 @@
                         <input type="email" id="customerEmail" placeholder="your.email@example.com">
                     </div>
                     <div class="form-group">
-                        <label for="deliveryAddress">Delivery Address *</label>
-                        <textarea id="deliveryAddress" required placeholder="Enter your complete delivery address"></textarea>
+                        <label for="deliveryAddress">Delivery Address * <small>(Start typing to search)</small></label>
+                        <input type="text" id="deliveryAddress" required placeholder="Start typing your address..." />
+                        <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                            <i class="fas fa-map-marker-alt"></i> Powered by Google Maps - Select from suggestions
+                        </small>
                     </div>
 
                     <div class="form-group">
@@ -1217,7 +1223,81 @@
             displayOrderSummary();
             initializeStripe();
             initializeCheckout();
+            
+            // Initialize Google Maps Autocomplete after a short delay
+            setTimeout(initializeAddressAutocomplete, 1000);
         });
+        
+        // Initialize Google Maps address autocomplete
+        function initializeAddressAutocomplete() {
+            if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                console.log('Google Maps not loaded yet, will retry...');
+                setTimeout(initializeAddressAutocomplete, 1000);
+                return;
+            }
+            
+            const addressInput = document.getElementById('deliveryAddress');
+            if (!addressInput) return;
+            
+            // Create autocomplete instance restricted to UAE
+            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                componentRestrictions: { country: 'ae' },
+                fields: ['address_components', 'formatted_address', 'geometry', 'name'],
+                types: ['address']
+            });
+            
+            // When user selects an address from dropdown
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                
+                if (!place.address_components) {
+                    console.log('No address details available');
+                    return;
+                }
+                
+                // Extract address components
+                let streetNumber = '';
+                let route = '';
+                let area = '';
+                let city = '';
+                let emirate = '';
+                
+                for (const component of place.address_components) {
+                    const types = component.types;
+                    
+                    if (types.includes('street_number')) {
+                        streetNumber = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        route = component.long_name;
+                    }
+                    if (types.includes('sublocality_level_1') || types.includes('neighborhood')) {
+                        area = component.long_name;
+                    }
+                    if (types.includes('locality')) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        emirate = component.long_name;
+                    }
+                }
+                
+                // Format the complete address
+                const addressParts = [];
+                if (streetNumber || route) {
+                    addressParts.push([streetNumber, route].filter(Boolean).join(' '));
+                } else if (place.name) {
+                    addressParts.push(place.name);
+                }
+                if (area) addressParts.push(area);
+                if (city && city !== area) addressParts.push(city);
+                if (emirate && emirate !== city) addressParts.push(emirate);
+                
+                document.getElementById('deliveryAddress').value = addressParts.join(', ');
+                
+                console.log('Address selected:', { streetNumber, route, area, city, emirate });
+            });
+        }
 
         // ========================================
         // CHECKOUT INITIALIZATION
