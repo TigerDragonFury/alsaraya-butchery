@@ -252,7 +252,7 @@ async function loadUserProfile() {
         const { data, error } = await supabase
             .from('user_profiles')
             .select('*')
-            .eq('id', currentUser.id)
+            .eq('id', currentUser.uid)
             .single();
 
         if (error && error.code !== 'PGRST116') throw error;
@@ -273,10 +273,10 @@ async function createUserProfile() {
         const { data, error } = await supabase
             .from('user_profiles')
             .insert([{
-                id: currentUser.id,
-                email: currentUser.email,
-                phone_number: currentUser.phone,
-                full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]
+                id: currentUser.uid,
+                email: currentUser.email || null,
+                phone_number: currentUser.phoneNumber || null,
+                full_name: currentUser.displayName || null
             }])
             .select()
             .single();
@@ -295,7 +295,7 @@ async function updateUserProfile(updates) {
         const { data, error } = await supabase
             .from('user_profiles')
             .update(updates)
-            .eq('id', currentUser.id)
+            .eq('id', currentUser.uid)
             .select()
             .single();
 
@@ -322,7 +322,7 @@ async function loadUserAddresses() {
         const { data, error } = await supabase
             .from('user_addresses')
             .select('*')
-            .eq('user_id', currentUser.id)
+            .eq('user_id', currentUser.uid)
             .order('is_default', { ascending: false })
             .order('created_at', { ascending: false });
 
@@ -343,7 +343,7 @@ async function addUserAddress(addressData) {
         const { data, error } = await supabase
             .from('user_addresses')
             .insert([{
-                user_id: currentUser.id,
+                user_id: currentUser.uid,
                 ...addressData
             }])
             .select()
@@ -369,7 +369,7 @@ async function updateUserAddress(addressId, updates) {
             .from('user_addresses')
             .update(updates)
             .eq('id', addressId)
-            .eq('user_id', currentUser.id)
+            .eq('user_id', currentUser.uid)
             .select()
             .single();
 
@@ -393,7 +393,7 @@ async function deleteUserAddress(addressId) {
             .from('user_addresses')
             .delete()
             .eq('id', addressId)
-            .eq('user_id', currentUser.id);
+            .eq('user_id', currentUser.uid);
 
         if (error) throw error;
 
@@ -416,7 +416,7 @@ async function setDefaultAddress(addressId) {
             .from('user_addresses')
             .update({ is_default: true })
             .eq('id', addressId)
-            .eq('user_id', currentUser.id);
+            .eq('user_id', currentUser.uid);
 
         if (error) throw error;
 
