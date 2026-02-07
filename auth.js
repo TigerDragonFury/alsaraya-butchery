@@ -7,7 +7,7 @@
 // Authentication State
 let currentUser = null;
 let userProfile = null;
-let userAddresses = [];
+let userAddresses = null; // null = not loaded yet, [] = loaded but empty, [...] = loaded with data
 let confirmationResult = null; // Firebase phone verification
 
 // Initialize Authentication
@@ -39,7 +39,7 @@ async function initAuth() {
                 // User is signed out
                 currentUser = null;
                 userProfile = null;
-                userAddresses = [];
+                userAddresses = null;
                 updateUIForGuestUser();
             }
         });
@@ -312,7 +312,10 @@ async function updateUserProfile(updates) {
 // ============================================
 
 async function loadUserAddresses() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        userAddresses = [];
+        return [];
+    }
 
     try {
         const { data, error } = await supabase
@@ -325,9 +328,11 @@ async function loadUserAddresses() {
         if (error) throw error;
 
         userAddresses = data || [];
+        console.log('Loaded', userAddresses.length, 'addresses for user:', currentUser.uid);
         return userAddresses;
     } catch (error) {
         console.error('Load addresses error:', error);
+        userAddresses = []; // Set to empty array even on error so page doesn't wait forever
         return [];
     }
 }

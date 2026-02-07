@@ -1437,9 +1437,13 @@
         // Load saved address buttons for quick selection (checkout version)
         function loadSavedAddressButtonsCheckout() {
             const container = document.getElementById('savedAddressButtonsCheckout');
-            if (!container) return;
+            if (!container) {
+                console.log('savedAddressButtonsCheckout container not found');
+                return;
+            }
             
             const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
+            console.log('loadSavedAddressButtonsCheckout - Addresses:', addresses);
             
             if (addresses && addresses.length > 0) {
                 container.innerHTML = addresses.map(addr => `
@@ -1594,7 +1598,12 @@
             const savedAddressesCard = document.getElementById('savedAddresses');
             const addressCards = document.getElementById('addressCards');
             
-            if (!savedAddressesCard || !addressCards) return;
+            console.log('displaySavedAddresses called with', addresses.length, 'addresses');
+            
+            if (!savedAddressesCard || !addressCards) {
+                console.log('savedAddresses or addressCards element not found');
+                return;
+            }
 
             savedAddressesCard.style.display = 'block';
 
