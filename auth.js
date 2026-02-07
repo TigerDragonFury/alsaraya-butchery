@@ -869,6 +869,11 @@ function setupAuthEventListeners() {
                 hideAddressForm();
                 const addresses = await loadUserAddresses();
                 renderAddressesList(addresses);
+                
+                // Trigger refresh callback for profile page or checkout
+                if (typeof window.onAddressUpdated === 'function') {
+                    window.onAddressUpdated();
+                }
             }
         });
     }
