@@ -309,6 +309,122 @@
             display: none;
         }
         
+        /* Saved Addresses Compact Section */
+        .saved-addresses-compact {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.03), rgba(255, 0, 0, 0.01));
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .saved-addresses-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            background: var(--white);
+            transition: var(--transition);
+        }
+        .saved-addresses-header:hover {
+            background: rgba(255, 0, 0, 0.02);
+        }
+        .saved-addresses-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .saved-addresses-title i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .saved-addresses-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .saved-addresses-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .saved-addresses-toggle.expanded i {
+            transform: rotate(180deg);
+        }
+        .saved-addresses-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .saved-addresses-content.expanded {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .saved-addresses-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            padding: 1rem;
+        }
+        @media (max-width: 768px) {
+            .saved-addresses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .compact-address-card {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+        .compact-address-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.1);
+        }
+        .compact-address-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 0, 0, 0.02));
+        }
+        .compact-address-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .compact-address-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .compact-address-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .compact-address-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .compact-address-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .saved-addresses-actions {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
         /* Section Divider */
         .section-divider {
             border: none;
@@ -648,29 +764,33 @@
             <div class="checkout-card" id="savedAddresses" style="display: none;">
                 <div class="section-header">
                     <div class="section-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <h3>Delivery Address</h3>
-                </div>
-                <div id="addressSelector">
-                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                        <i class="fas fa-info-circle"></i> Select a saved address or enter a new one below
-                    </p>
-                    <div id="addressCards" style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;"></div>
-                    <button class="btn btn-outline btn-block" onclick="useNewAddress()">
-                        <i class="fas fa-plus"></i> Use Different Address
-                    </button>
-                </div>
-            </div>
-
-            <div class="checkout-card">
-                <div class="section-header">
-                    <div class="section-icon">
                         <i class="fas fa-user"></i>
                     </div>
                     <h3>Customer & Delivery Details</h3>
                 </div>
                 <form id="checkoutForm">
+                    <!-- Saved Addresses Collapsible Section -->
+                    <div class="saved-addresses-compact" id="savedAddressesCompact">
+                        <div class="saved-addresses-header" onclick="toggleSavedAddresses()">
+                            <div class="saved-addresses-title">
+                                <i class="fas fa-bookmark"></i>
+                                <span>My Saved Addresses (<span id="savedAddressCount">0</span>)</span>
+                            </div>
+                            <div class="saved-addresses-toggle" id="savedAddressesToggle">
+                                <span>Show</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="saved-addresses-content" id="savedAddressesContent">
+                            <div class="saved-addresses-grid" id="addressCards"></div>
+                            <div class="saved-addresses-actions">
+                                <button type="button" class="btn btn-outline btn-block" onclick="useNewAddress()" style="font-size: 0.9rem; padding: 0.65rem;">
+                                    <i class="fas fa-plus"></i> Use Different Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Customer Info Row -->
                     <div class="form-row">
                         <div class="form-group">
@@ -1951,6 +2071,7 @@
         function displaySavedAddresses(addresses) {
             const savedAddressesCard = document.getElementById('savedAddresses');
             const addressCards = document.getElementById('addressCards');
+            const savedAddressCount = document.getElementById('savedAddressCount');
             
             console.log('displaySavedAddresses called with', addresses.length, 'addresses');
             
@@ -1960,24 +2081,28 @@
             }
 
             savedAddressesCard.style.display = 'block';
+            
+            if (savedAddressCount) {
+                savedAddressCount.textContent = addresses.length;
+            }
 
             addressCards.innerHTML = addresses.map(addr => `
-                <div class="address-option" onclick="selectAddress('${addr.id}')" style="
-                    border: 2px solid var(--gray-200);
-                    border-radius: var(--radius);
-                    padding: 1rem;
-                    cursor: pointer;
-                    transition: var(--transition);
-                    ${addr.is_default ? 'border-color: var(--primary);' : ''}
-                " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='${addr.is_default ? 'var(--primary)' : 'var(--gray-200)'}'" data-address-id="${addr.id}">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                        <strong style="color: var(--text-primary);">${addr.label || 'Home'}${addr.is_default ? ' (Default)' : ''}</strong>
-                        <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem; display: ${addr.is_default ? 'block' : 'none'};"></i>
+                <div class="compact-address-card ${addr.is_default ? 'selected' : ''}" 
+                     onclick="selectAddress('${addr.id}')" 
+                     data-address-id="${addr.id}">
+                    <div class="compact-address-header">
+                        <div class="compact-address-label">
+                            <i class="fas fa-${addr.label === 'Home' ? 'home' : addr.label === 'Work' ? 'briefcase' : 'map-marker-alt'}"></i>
+                            ${addr.label || 'Home'}
+                        </div>
+                        ${addr.is_default ? '<span class="compact-address-badge">DEFAULT</span>' : '<i class="fas fa-check-circle" style="color: var(--primary); display: none;"></i>'}
                     </div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                        ${addr.full_name} • ${addr.phone_number}<br>
-                        ${addr.street_address}, ${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}<br>
-                        ${addr.area}${addr.landmark ? ', ' + addr.landmark : ''}
+                    <div class="compact-address-body">
+                        <div class="compact-address-name">${addr.full_name}</div>
+                        <div>${addr.phone_number}</div>
+                        <div style="margin-top: 0.35rem;">${addr.street_address}</div>
+                        <div>${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}</div>
+                        <div>${addr.area}</div>
                     </div>
                 </div>
             `).join('');
@@ -1986,6 +2111,23 @@
             const defaultAddr = addresses.find(a => a.is_default);
             if (defaultAddr) {
                 selectAddress(defaultAddr.id);
+            }
+        }
+        
+        // Toggle saved addresses section
+        function toggleSavedAddresses() {
+            const content = document.getElementById('savedAddressesContent');
+            const toggle = document.getElementById('savedAddressesToggle');
+            
+            if (!content || !toggle) return;
+            
+            content.classList.toggle('expanded');
+            toggle.classList.toggle('expanded');
+            
+            if (content.classList.contains('expanded')) {
+                toggle.querySelector('span').textContent = 'Hide';
+            } else {
+                toggle.querySelector('span').textContent = 'Show';
             }
         }
 
@@ -1999,16 +2141,18 @@
             if (!address) return;
 
             // Remove active state from all address cards
-            document.querySelectorAll('.address-option').forEach(card => {
-                card.style.borderColor = 'var(--gray-200)';
-                card.querySelector('.fa-check-circle').style.display = 'none';
+            document.querySelectorAll('.compact-address-card').forEach(card => {
+                card.classList.remove('selected');
+                const checkIcon = card.querySelector('.fa-check-circle');
+                if (checkIcon) checkIcon.style.display = 'none';
             });
 
             // Add active state to selected card
             const selectedCard = document.querySelector(`[data-address-id="${addressId}"]`);
             if (selectedCard) {
-                selectedCard.style.borderColor = 'var(--primary)';
-                selectedCard.querySelector('.fa-check-circle').style.display = 'block';
+                selectedCard.classList.add('selected');
+                const checkIcon = selectedCard.querySelector('.fa-check-circle');
+                if (checkIcon) checkIcon.style.display = 'block';
             }
 
             // Populate form with address details
