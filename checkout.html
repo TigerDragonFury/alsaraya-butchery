@@ -1505,11 +1505,12 @@
                         if (firebaseUser) {
                             const user = window.getCurrentUser ? window.getCurrentUser() : null;
                             const profile = window.getUserProfile ? window.getUserProfile() : null;
+                            const addresses = window.getUserAddresses ? window.getUserAddresses() : null;
                             
-                            // Profile is loaded, we're ready
-                            if (user && profile) {
+                            // Profile and addresses are loaded, we're ready
+                            if (user && profile && addresses !== null) {
                                 clearInterval(checkAuth);
-                                console.log('Auth ready with profile:', profile);
+                                console.log('Auth ready with profile and', addresses.length, 'addresses');
                                 resolve();
                                 return;
                             }
