@@ -74,15 +74,23 @@ async function sendOTP(phoneNumber) {
             formattedPhone = '+971' + formattedPhone;
         }
 
-        // Setup reCAPTCHA verifier (invisible)
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible',
-                'callback': (response) => {
-                    // reCAPTCHA solved
-                }
-            });
+        // Clear existing reCAPTCHA verifier to avoid "already rendered" error
+        if (window.recaptchaVerifier) {
+            try {
+                window.recaptchaVerifier.clear();
+            } catch (e) {
+                console.log('Error clearing reCAPTCHA:', e);
+            }
+            window.recaptchaVerifier = null;
         }
+
+        // Setup fresh reCAPTCHA verifier (invisible)
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response) => {
+                // reCAPTCHA solved
+            }
+        });
 
         const appVerifier = window.recaptchaVerifier;
         
