@@ -2,44 +2,614 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FONTS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CUSTOM STYLE -->
+    <link rel="stylesheet" href="styles2.css">
+
+    <!-- PAGE TITLE -->
     <title>Product Details - Al Saraya Butchery</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <!-- FAV ICON -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* Product Detail Page Styles */
+        .breadcrumb-section {
+            background: var(--light);
+            padding: 20px 0;
+            margin-top: 115px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .breadcrumb-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .breadcrumb-section a:hover {
+            color: var(--primary);
+        }
+
+        .breadcrumb-section span {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .breadcrumb-section .separator {
+            color: var(--gray-400);
+            margin: 0 10px;
+        }
+
+        .product-detail-section {
+            padding: 60px 0 100px;
+            background: var(--light);
+        }
+
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        /* Product Image */
+        .product-detail-image {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+        }
+
+        .product-detail-image .product-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: var(--white);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Product Info */
+        .product-detail-info {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .product-detail-info h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .product-category-tag {
+            background: var(--light);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .product-stock {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .product-stock.in-stock {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .product-stock.out-of-stock {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .product-price-large {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+
+        .product-price-large .unit {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .product-description {
+            margin-bottom: 30px;
+        }
+
+        .product-description h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .product-description p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            background: var(--light);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+        }
+
+        .quantity-selector button {
+            width: 45px;
+            height: 45px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .quantity-selector button:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .quantity-selector input {
+            width: 50px;
+            height: 45px;
+            text-align: center;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Rubik', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .quantity-selector input:focus {
+            outline: none;
+        }
+
+        .btn-add-to-cart {
+            flex: 1;
+            padding: 14px 30px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Rubik', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-add-to-cart:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-add-to-cart:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .product-details-list {
+            border-top: 1px solid var(--gray-200);
+            padding-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .back-to-shop {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .back-to-shop:hover {
+            color: var(--primary-dark);
+            gap: 12px;
+        }
+
+        /* Related Products */
+        .related-section {
+            padding: 60px 0;
+            background: var(--white);
+        }
+
+        .related-section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .related-grid .product-card {
+            background: var(--light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .related-grid .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .related-grid .product-image {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .related-grid .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .related-grid .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--primary);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .related-grid .product-info {
+            padding: 15px;
+        }
+
+        .related-grid .product-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .related-grid .product-info h4 a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .related-grid .product-info h4 a:hover {
+            color: var(--primary);
+        }
+
+        .related-grid .product-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-grid .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .related-grid .price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .related-grid .unit {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .related-grid .add-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .related-grid .add-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* Floating Add to Cart Bar (Mobile) */
+        .floating-cart-bar {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            padding: 12px 20px;
+            z-index: 500;
+            display: none;
+        }
+
+        .floating-cart-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .floating-product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .floating-product-price .floating-unit {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .floating-product-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .floating-cart-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floating-quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 4px;
+        }
+
+        .floating-qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-add-to-cart-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .floating-add-to-cart-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .breadcrumb-section {
+                margin-top: 75px;
+            }
+
+            .product-detail-section {
+                padding: 30px 0 120px;
+            }
+
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .product-detail-image img {
+                height: 300px;
+            }
+
+            .product-detail-info {
+                padding: 25px;
+            }
+
+            .product-detail-info h1 {
+                font-size: 24px;
+            }
+
+            .product-price-large {
+                font-size: 28px;
+            }
+
+            .floating-cart-bar {
+                display: block;
+            }
+
+            .related-section h2 {
+                font-size: 22px;
+            }
+
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="container">
-            <a href="index.html" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"></a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html#home">Home</a></li>
-                <li><a href="index.html#about">About</a></li>
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="tracking.html">Track Order</a></li>
-                <li><a href="index.html#contact">Contact</a></li>
-                <li class="cart-icon" id="cartIcon">
-                    🛒
-                    <span class="cart-count" id="cartCount">0</span>
-                </li>
-            </ul>
-            <div class="mobile-menu" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div class="header-contact">
+                        <a href="tel:+97123339111"><i class="fas fa-phone"></i> (02) 333 9111</a>
+                        <span class="divider">|</span>
+                        <a href="mailto:info@alsarayabutchery.com"><i class="fas fa-envelope"></i> info@alsarayabutchery.com</a>
+                    </div>
+                    <div class="header-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-main-content">
+                    <a href="index.html" class="logo">
+                        <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
+                    </a>
+                    <nav class="nav-menu" id="navMenu">
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="shop.html" class="active">Shop</a></li>
+                            <li><a href="index.html#categories">Categories</a></li>
+                            <li><a href="index.html#popular">Popular</a></li>
+                            <li><a href="tracking.html">Track Order</a></li>
+                            <li><a href="index.html#contact">Contact</a></li>
+                        </ul>
+                    </nav>
+                    <div class="header-actions">
+                        <button class="cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </button>
+                        <button class="mobile-menu-btn" id="mobileMenuBtn">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <!-- Breadcrumb -->
-    <section class="breadcrumb">
+    <section class="breadcrumb-section">
         <div class="container">
-            <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="breadcrumbProduct">Product</span>
+            <a href="index.html">Home</a>
+            <span class="separator">/</span>
+            <a href="shop.html">Shop</a>
+            <span class="separator">/</span>
+            <span id="breadcrumbProduct">Product</span>
         </div>
     </section>
 
     <!-- Product Detail Section -->
-    <section class="product-detail">
+    <section class="product-detail-section">
         <div class="container">
             <div class="product-detail-grid">
                 <!-- Product Image -->
@@ -52,12 +622,12 @@
                 <div class="product-detail-info">
                     <h1 id="productName">Loading...</h1>
                     <div class="product-meta">
-                        <span class="product-category" id="productCategory"></span>
+                        <span class="product-category-tag" id="productCategory"></span>
                         <span class="product-stock" id="productStock"></span>
                     </div>
-                    
+
                     <div class="product-price-large">
-                        $<span id="productPrice">0.00</span><span class="unit">/<span id="productUnit">kg</span></span>
+                        <span id="productPrice">0.00</span> AED<span class="unit">/<span id="productUnit">kg</span></span>
                     </div>
 
                     <div class="product-description">
@@ -71,180 +641,180 @@
                             <input type="number" id="quantity" value="1" min="1">
                             <button onclick="incrementQuantity()">+</button>
                         </div>
-                        <button class="btn btn-primary btn-large" id="addToCartBtn" onclick="addProductToCart()">
-                            Add to Cart
+                        <button class="btn-add-to-cart" id="addToCartBtn" onclick="addProductToCart()">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
                     </div>
 
                     <div class="product-details-list">
                         <div class="detail-item">
-                            <span class="detail-label">Category:</span>
+                            <span class="detail-label">Category</span>
                             <span class="detail-value" id="categoryDetail"></span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Unit:</span>
+                            <span class="detail-label">Unit</span>
                             <span class="detail-value" id="unitDetail"></span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Availability:</span>
+                            <span class="detail-label">Availability</span>
                             <span class="detail-value" id="availabilityDetail"></span>
                         </div>
                     </div>
 
-                    <a href="shop.html" class="back-to-shop">← Back to Shop</a>
+                    <a href="shop.html" class="back-to-shop">
+                        <i class="fas fa-arrow-left"></i> Back to Shop
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Related Products -->
-    <section class="related-products">
+    <section class="related-section">
         <div class="container">
             <h2>Related Products</h2>
-            <div class="products-grid" id="relatedProductsGrid">
+            <div class="related-grid" id="relatedProductsGrid">
                 <!-- Related products will be loaded here -->
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Al Saraya</h3>
-                <p>Your trusted source for premium quality meats since 1995. We're committed to excellence in every cut.</p>
-                <div class="social-links">
-                    <a href="#" class="social-icon">f</a>
-                    <a href="#" class="social-icon">📷</a>
-                    <a href="#" class="social-icon">𝕏</a>
-                    <a href="#" class="social-icon">in</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <div class="footer-links">
-                    <a href="index.html#home">Home</a>
-                    <a href="shop.html">Shop</a>
-                    <a href="tracking.html">Track Order</a>
-                    <a href="index.html#contact">Contact</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Products</h3>
-                <div class="footer-links">
-                    <a href="shop.html">Fresh Beef</a>
-                    <a href="shop.html">Premium Lamb</a>
-                    <a href="shop.html">Farm Chicken</a>
-                    <a href="shop.html">Specialty Cuts</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Information</h3>
-                <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Delivery Info</a>
-                    <a href="#">FAQ</a>
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="index.html" class="footer-logo">
+                            <img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya">
+                        </a>
+                        <p>Your trusted source for premium quality halal meats since 1995. We're committed to excellence in every cut.</p>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-whatsapp"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="shop.html">Shop</a></li>
+                            <li><a href="tracking.html">Track Order</a></li>
+                            <li><a href="index.html#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Categories</h4>
+                        <ul>
+                            <li><a href="shop.html">Beef</a></li>
+                            <li><a href="shop.html">Lamb</a></li>
+                            <li><a href="shop.html">Chicken</a></li>
+                            <li><a href="shop.html">Specialty</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Delivery Info</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-contact">
+                        <h4>Contact Info</h4>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i> Al Bateen, Abu Dhabi</li>
+                            <li><i class="fas fa-phone-alt"></i> (02) 333 9111</li>
+                            <li><i class="fas fa-envelope"></i> info@alsarayabutchery.com</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Al Saraya Butchery. All rights reserved. Crafted with passion.</p>
+            <div class="container">
+                <p>&copy; 2026 Al Saraya Butchery. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Cart Modal -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <div class="cart-header">
-                <h2>Shopping Cart</h2>
-                <button class="close-cart" id="closeCart">✕</button>
-            </div>
-            <div class="cart-items" id="cartItems">
-                <p class="empty-cart">Your cart is empty</p>
-            </div>
-            <div class="cart-footer">
-                <div class="cart-total">
-                    <span>Total:</span>
-                    <span class="total-amount" id="cartTotal">0.00 AED</span>
-                </div>
-                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">Proceed to Checkout</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Add to Cart Bar (Mobile Only) -->
+    <!-- Floating Add to Cart Bar (Mobile) -->
     <div class="floating-cart-bar">
         <div class="floating-cart-content">
             <div class="floating-cart-info">
                 <div class="floating-product-price">
-                    $<span id="floatingPrice">0.00</span>
+                    <span id="floatingPrice">0.00</span> AED
                     <span class="floating-unit">/<span id="floatingUnit">kg</span></span>
                 </div>
                 <div class="floating-product-name" id="floatingProductName">Product</div>
             </div>
             <div class="floating-cart-actions">
                 <div class="floating-quantity-selector">
-                    <button onclick="decrementQuantity()" class="floating-qty-btn">−</button>
+                    <button onclick="decrementQuantity()" class="floating-qty-btn">-</button>
                     <span id="floatingQuantity">1</span>
                     <button onclick="incrementQuantity()" class="floating-qty-btn">+</button>
                 </div>
                 <button class="floating-add-to-cart-btn" onclick="addProductToCart()">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                    </svg>
-                    Add
+                    <i class="fas fa-cart-plus"></i> Add
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav">
-        <a href="index.html" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-            </div>
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="shop.html" class="nav-item active">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-            </div>
+        <a href="shop.html" class="mobile-nav-item active">
+            <i class="fas fa-store"></i>
             <span>Shop</span>
         </a>
-        <a href="#" id="cartIconBottom" class="nav-item cart-item-nav">
-            <div class="nav-icon cart-icon-wrapper">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-                <span class="cart-count" id="cartCountMobile">0</span>
-            </div>
+        <a href="#" class="mobile-nav-item cart-nav-item" id="cartNavBtn">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="mobile-cart-count" id="mobileCartCount">0</span>
             <span>Cart</span>
         </a>
-        <a href="tracking.html" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                </svg>
-            </div>
+        <a href="tracking.html" class="mobile-nav-item">
+            <i class="fas fa-truck"></i>
             <span>Track</span>
         </a>
-        <a href="index.html#contact" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                </svg>
-            </div>
+        <a href="index.html#contact" class="mobile-nav-item">
+            <i class="fas fa-phone"></i>
             <span>Contact</span>
         </a>
     </nav>
 
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">0.00 AED</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App JS -->
     <script src="app.js"></script>
+
     <script>
         let currentProduct = null;
 
@@ -287,12 +857,12 @@
                 document.getElementById('productPrice').textContent = parseFloat(product.price).toFixed(2);
                 document.getElementById('productUnit').textContent = product.unit || 'kg';
                 document.getElementById('productDescription').textContent = product.description || 'Premium quality product from Al Saraya Butchery. Fresh and carefully selected for your satisfaction.';
-                
+
                 // Update floating bar
                 document.getElementById('floatingPrice').textContent = parseFloat(product.price).toFixed(2);
                 document.getElementById('floatingUnit').textContent = product.unit || 'kg';
                 document.getElementById('floatingProductName').textContent = product.name;
-                
+
                 // Badge
                 if (product.badge) {
                     document.getElementById('productBadge').textContent = product.badge;
@@ -308,7 +878,7 @@
                     stockEl.textContent = 'Out of Stock';
                     stockEl.className = 'product-stock out-of-stock';
                     document.getElementById('addToCartBtn').disabled = true;
-                    document.getElementById('addToCartBtn').textContent = 'Out of Stock';
+                    document.getElementById('addToCartBtn').innerHTML = '<i class="fas fa-times-circle"></i> Out of Stock';
                 }
 
                 // Details list
@@ -340,36 +910,36 @@
 
                 const grid = document.getElementById('relatedProductsGrid');
                 if (!products || products.length === 0) {
-                    grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No related products found.</p>';
+                    grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1/-1;">No related products found.</p>';
                     return;
                 }
 
                 const defaultImage = 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&h=350&fit=crop';
-                
-                grid.innerHTML = products.map(product => `
-                    <div class="product-card">
-                        <div class="product-image">
-                            <a href="product-detail.html?id=${product.id}">
-                                <img src="${product.image_url || defaultImage}" alt="${product.name}" loading="lazy">
+
+                grid.innerHTML = products.map(product => {
+                    const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    return `
+                        <div class="product-card">
+                            <a href="product-detail.html?id=${product.id}" class="product-image">
+                                <img src="${product.image_url || defaultImage}" alt="${safeName}" loading="lazy">
+                                ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
                             </a>
-                            ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">
-                                <a href="product-detail.html?id=${product.id}">${product.name}</a>
-                            </h3>
-                            <p class="product-description">${product.description || ''}</p>
-                            <div class="product-footer">
-                                <div class="product-price">
-                                    ${parseFloat(product.price).toFixed(2)} AED<span>/${product.unit || 'kg'}</span>
+                            <div class="product-info">
+                                <h4><a href="product-detail.html?id=${product.id}">${product.name}</a></h4>
+                                <p class="product-desc">${product.description || ''}</p>
+                                <div class="product-footer">
+                                    <div>
+                                        <span class="price">${parseFloat(product.price).toFixed(2)} AED</span>
+                                        <span class="unit">/${product.unit || 'kg'}</span>
+                                    </div>
+                                    <button class="add-btn" onclick="addToCartFromDB(${product.id}, '${safeName}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
                                 </div>
-                                <button class="add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">
-                                    Add to Cart
-                                </button>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
             } catch (error) {
                 console.error('Error loading related products:', error);
@@ -391,7 +961,6 @@
             updateFloatingQuantity();
         }
 
-        // Update floating bar quantity display
         function updateFloatingQuantity() {
             const quantity = document.getElementById('quantity').value;
             document.getElementById('floatingQuantity').textContent = quantity;
@@ -405,11 +974,61 @@
             addToCartFromDB(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.category, currentProduct.unit || 'kg', quantity);
         }
 
-        // Load product on page load
-        document.addEventListener('DOMContentLoaded', () => {
+        // Setup event listeners
+        document.addEventListener('DOMContentLoaded', function() {
             loadProductDetails();
-            updateCart();
+            updateCartCount();
             updateFloatingQuantity();
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+
+            if (mobileMenuBtn && navMenu) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Cart modal
+            const cartBtn = document.getElementById('cartBtn');
+            const cartNavBtn = document.getElementById('cartNavBtn');
+            const cartClose = document.getElementById('cartClose');
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartModal = document.getElementById('cartModal');
+
+            function openCart() {
+                cartModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                displayCart();
+            }
+
+            function closeCart() {
+                cartModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            if (cartBtn) cartBtn.addEventListener('click', openCart);
+            if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => { e.preventDefault(); openCart(); });
+            if (cartClose) cartClose.addEventListener('click', closeCart);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (header) {
+                    header.classList.toggle('scrolled', window.scrollY > 50);
+                }
+            });
         });
     </script>
 </body>
