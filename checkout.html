@@ -1233,6 +1233,23 @@
             
             // Initialize Google Maps Autocomplete after a short delay
             setTimeout(initializeAddressAutocomplete, 1000);
+            
+            // Set up callback for when addresses are updated from profile page
+            window.onAddressUpdated = async () => {
+                console.log('Addresses updated, refreshing checkout...');
+                const user = window.getCurrentUser ? window.getCurrentUser() : null;
+                const profile = window.getUserProfile ? window.getUserProfile() : null;
+                const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
+                
+                if (user && profile) {
+                    // Refresh saved addresses display
+                    if (addresses && addresses.length > 0) {
+                        displaySavedAddresses(addresses);
+                    }
+                    // Refresh quick-select buttons
+                    loadSavedAddressButtonsCheckout();
+                }
+            };
         });
         
         // Initialize Google Maps with draggable marker
