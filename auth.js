@@ -134,12 +134,8 @@ async function verifyOTP(phoneNumber, otp) {
         const result = await confirmationResult.confirm(otp);
         const firebaseUser = result.user;
         
-        // Sync with Supabase database
-        currentUser = {
-            id: firebaseUser.uid,
-            phone: firebaseUser.phoneNumber,
-            email: firebaseUser.email
-        };
+        // Set currentUser to the Firebase user object (has uid, phoneNumber, email, etc.)
+        currentUser = firebaseUser;
         
         // Create/update user profile in Supabase
         await syncFirebaseUserToSupabase(firebaseUser);
