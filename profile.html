@@ -1265,9 +1265,13 @@
         // Load saved address buttons for quick selection
         function loadSavedAddressButtons() {
             const container = document.getElementById('savedAddressButtons');
-            if (!container) return;
+            if (!container) {
+                console.log('savedAddressButtons container not found');
+                return;
+            }
             
             const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
+            console.log('loadSavedAddressButtons (profile) - Addresses:', addresses);
             
             if (addresses && addresses.length > 0) {
                 container.innerHTML = addresses.map(addr => `
