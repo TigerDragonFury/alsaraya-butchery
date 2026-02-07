@@ -1,0 +1,436 @@
+<!-- Authentication Modal Component -->
+<!-- Include this in your HTML pages after the cart modal -->
+
+<!-- Auth Modal -->
+<div class="auth-modal" id="authModal">
+    <div class="auth-overlay" onclick="closeAuthModal()"></div>
+    <div class="auth-container">
+        <button class="auth-close" onclick="closeAuthModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Login Tab -->
+        <div class="auth-tab" id="loginTab">
+            <h2>Welcome Back!</h2>
+            <p class="auth-subtitle">Sign in to your account</p>
+            
+            <div class="auth-methods">
+                <!-- Google Sign In -->
+                <button class="auth-google-btn" onclick="signInWithGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+                
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+                
+                <!-- Phone Number Login -->
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <div class="phone-input-group">
+                            <span class="phone-prefix">+971</span>
+                            <input type="tel" id="loginPhone" placeholder="50 123 4567" maxlength="11" />
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block" onclick="handleSendOTP()">
+                        Send OTP
+                    </button>
+                </div>
+                
+                <!-- OTP Verification (Hidden initially) -->
+                <div class="auth-form otp-form" id="otpForm" style="display: none;">
+                    <div class="form-group">
+                        <label>Enter 6-digit OTP</label>
+                        <div class="otp-inputs">
+                            <input type="text" maxlength="1" class="otp-input" data-index="0" />
+                            <input type="text" maxlength="1" class="otp-input" data-index="1" />
+                            <input type="text" maxlength="1" class="otp-input" data-index="2" />
+                            <input type="text" maxlength="1" class="otp-input" data-index="3" />
+                            <input type="text" maxlength="1" class="otp-input" data-index="4" />
+                            <input type="text" maxlength="1" class="otp-input" data-index="5" />
+                        </div>
+                        <p class="otp-resend">
+                            Didn't receive code? <a href="#" onclick="handleSendOTP(); return false;">Resend</a>
+                        </p>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block" onclick="handleVerifyOTP()">
+                        Verify & Login
+                    </button>
+                </div>
+            </div>
+            
+            <p class="auth-footer">
+                By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="profile-modal" id="profileModal" style="display: none;">
+    <div class="auth-overlay" onclick="closeProfileModal()"></div>
+    <div class="profile-container">
+        <button class="auth-close" onclick="closeProfileModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h2><i class="fas fa-user"></i> My Profile</h2>
+        
+        <form class="profile-form" id="profileForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="profileName" required />
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="profileEmail" />
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="profilePhone" readonly />
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                Update Profile
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Addresses Modal -->
+<div class="addresses-modal" id="addressesModal" style="display: none;">
+    <div class="auth-overlay" onclick="closeAddressesModal()"></div>
+    <div class="addresses-container">
+        <button class="auth-close" onclick="closeAddressesModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="addresses-header">
+            <h2><i class="fas fa-map-marker-alt"></i> My Addresses</h2>
+            <button class="btn btn-primary" onclick="showAddAddressForm()">
+                <i class="fas fa-plus"></i> Add New
+            </button>
+        </div>
+        
+        <div class="addresses-list" id="addressesList">
+            <!-- Addresses will be loaded here -->
+        </div>
+        
+        <!-- Add/Edit Address Form (Hidden initially) -->
+        <div class="address-form-container" id="addressFormContainer" style="display: none;">
+            <h3 id="addressFormTitle">Add New Address</h3>
+            <form class="address-form" id="addressForm">
+                <input type="hidden" id="addressId" />
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Label</label>
+                        <select id="addressLabel" required>
+                            <option value="Home">Home</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="addressFullName" required />
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="addressPhone" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Area</label>
+                        <input type="text" id="addressArea" required />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Street Address</label>
+                    <textarea id="addressStreet" rows="2" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Building</label>
+                        <input type="text" id="addressBuilding" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Floor</label>
+                        <input type="text" id="addressFloor" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Apartment</label>
+                        <input type="text" id="addressApartment" />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Landmark (Optional)</label>
+                    <input type="text" id="addressLandmark" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="addressDefault" />
+                        Set as default address
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="hideAddressForm()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Save Address
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auth Modal Functions
+let currentPhone = '';
+
+function openAuthModal(mode = 'login') {
+    document.getElementById('authModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('active');
+    document.body.style.overflow = '';
+    resetAuthForm();
+}
+
+function resetAuthForm() {
+    document.getElementById('loginPhone').value = '';
+    document.getElementById('otpForm').style.display = 'none';
+    document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+}
+
+async function handleSendOTP() {
+    const phoneInput = document.getElementById('loginPhone');
+    const phone = phoneInput.value.trim();
+    
+    if (!phone) {
+        showNotification('Please enter your phone number', 'error');
+        return;
+    }
+    
+    const result = await sendOTP(phone);
+    if (result.success) {
+        currentPhone = result.phone;
+        document.getElementById('otpForm').style.display = 'block';
+        document.querySelectorAll('.otp-input')[0].focus();
+    }
+}
+
+async function handleVerifyOTP() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+    
+    if (otp.length !== 6) {
+        showNotification('Please enter the 6-digit OTP', 'error');
+        return;
+    }
+    
+    const result = await verifyOTP(currentPhone, otp);
+    if (result.success) {
+        closeAuthModal();
+    }
+}
+
+// OTP Input Handling
+document.addEventListener('DOMContentLoaded', () => {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
+});
+
+// Profile Modal Functions
+function showProfile() {
+    if (!userProfile) return;
+    
+    document.getElementById('profileName').value = userProfile.full_name || '';
+    document.getElementById('profileEmail').value = userProfile.email || '';
+    document.getElementById('profilePhone').value = userProfile.phone_number || '';
+    
+    document.getElementById('profileModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProfileModal() {
+    document.getElementById('profileModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const updates = {
+        full_name: document.getElementById('profileName').value,
+        email: document.getElementById('profileEmail').value
+    };
+    
+    const result = await updateUserProfile(updates);
+    if (result.success) {
+        closeProfileModal();
+        updateUIForLoggedInUser();
+    }
+});
+
+// Addresses Modal Functions
+async function showAddresses() {
+    const addresses = await loadUserAddresses();
+    renderAddressesList(addresses);
+    
+    document.getElementById('addressesModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddressesModal() {
+    document.getElementById('addressesModal').style.display = 'none';
+    document.body.style.overflow = '';
+    hideAddressForm();
+}
+
+function renderAddressesList(addresses) {
+    const list = document.getElementById('addressesList');
+    
+    if (addresses.length === 0) {
+        list.innerHTML = '<p class="no-addresses">No addresses saved yet. Add your first address!</p>';
+        return;
+    }
+    
+    list.innerHTML = addresses.map(addr => `
+        <div class="address-card ${addr.is_default ? 'default' : ''}">
+            <div class="address-header">
+                <span class="address-label">
+                    <i class="fas fa-${addr.label === 'Home' ? 'home' : addr.label === 'Work' ? 'briefcase' : 'map-marker-alt'}"></i>
+                    ${addr.label}
+                </span>
+                ${addr.is_default ? '<span class="default-badge">Default</span>' : ''}
+            </div>
+            <div class="address-details">
+                <p><strong>${addr.full_name}</strong></p>
+                <p>${addr.street_address}</p>
+                <p>${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}</p>
+                <p>${addr.area}, ${addr.city}</p>
+                <p><i class="fas fa-phone"></i> ${addr.phone_number}</p>
+            </div>
+            <div class="address-actions">
+                ${!addr.is_default ? `<button onclick="setDefaultAddress('${addr.id}')" class="btn-icon" title="Set as default"><i class="fas fa-star"></i></button>` : ''}
+                <button onclick="editAddress('${addr.id}')" class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                <button onclick="confirmDeleteAddress('${addr.id}')" class="btn-icon btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showAddAddressForm() {
+    document.getElementById('addressFormTitle').textContent = 'Add New Address';
+    document.getElementById('addressForm').reset();
+    document.getElementById('addressId').value = '';
+    document.getElementById('addressFormContainer').style.display = 'block';
+}
+
+function hideAddressForm() {
+    document.getElementById('addressFormContainer').style.display = 'none';
+    document.getElementById('addressForm').reset();
+}
+
+function editAddress(addressId) {
+    const address = userAddresses.find(a => a.id === addressId);
+    if (!address) return;
+    
+    document.getElementById('addressFormTitle').textContent = 'Edit Address';
+    document.getElementById('addressId').value = address.id;
+    document.getElementById('addressLabel').value = address.label;
+    document.getElementById('addressFullName').value = address.full_name;
+    document.getElementById('addressPhone').value = address.phone_number;
+    document.getElementById('addressArea').value = address.area;
+    document.getElementById('addressStreet').value = address.street_address;
+    document.getElementById('addressBuilding').value = address.building || '';
+    document.getElementById('addressFloor').value = address.floor || '';
+    document.getElementById('addressApartment').value = address.apartment || '';
+    document.getElementById('addressLandmark').value = address.landmark || '';
+    document.getElementById('addressDefault').checked = address.is_default;
+    
+    document.getElementById('addressFormContainer').style.display = 'block';
+}
+
+async function confirmDeleteAddress(addressId) {
+    if (confirm('Are you sure you want to delete this address?')) {
+        const result = await deleteUserAddress(addressId);
+        if (result.success) {
+            const addresses = await loadUserAddresses();
+            renderAddressesList(addresses);
+        }
+    }
+}
+
+document.getElementById('addressForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const addressData = {
+        label: document.getElementById('addressLabel').value,
+        full_name: document.getElementById('addressFullName').value,
+        phone_number: document.getElementById('addressPhone').value,
+        area: document.getElementById('addressArea').value,
+        street_address: document.getElementById('addressStreet').value,
+        building: document.getElementById('addressBuilding').value || null,
+        floor: document.getElementById('addressFloor').value || null,
+        apartment: document.getElementById('addressApartment').value || null,
+        landmark: document.getElementById('addressLandmark').value || null,
+        is_default: document.getElementById('addressDefault').checked
+    };
+    
+    const addressId = document.getElementById('addressId').value;
+    
+    let result;
+    if (addressId) {
+        result = await updateUserAddress(addressId, addressData);
+    } else {
+        result = await addUserAddress(addressData);
+    }
+    
+    if (result.success) {
+        hideAddressForm();
+        const addresses = await loadUserAddresses();
+        renderAddressesList(addresses);
+    }
+});
+</script>
