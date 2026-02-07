@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles2.css">
+    <title>My Profile - Al Saraya Butchery</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
+    
+    <!-- Supabase (for database) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Firebase (for FREE phone authentication) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <style>
+        .page-hero {
+            margin-top: 115px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 60px 0;
+            text-align: center;
+            color: var(--white);
+        }
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .profile-section {
+            padding: 60px 0 80px;
+            background: var(--light);
+            min-height: 60vh;
+        }
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .profile-sidebar {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 3rem;
+            margin: 0 auto 1.5rem;
+        }
+        .profile-name {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .profile-phone {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .profile-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .profile-menu li {
+            margin-bottom: 0.5rem;
+        }
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        .profile-menu a:hover,
+        .profile-menu a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .profile-menu i {
+            width: 20px;
+            text-align: center;
+        }
+        .profile-content {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .info-item label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .info-item input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .info-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .orders-list {
+            margin-top: 2rem;
+        }
+        .order-card {
+            background: var(--light);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+        .order-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .order-id {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #FEF3C7; color: #92400E; }
+        .status-confirmed { background: #DBEAFE; color: #1E40AF; }
+        .status-processing { background: #E0E7FF; color: #4338CA; }
+        .status-delivered { background: #D1FAE5; color: #065F46; }
+        .status-cancelled { background: #FEE2E2; color: #991B1B; }
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .order-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .order-detail-item label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        .order-detail-item span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .order-items {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        .order-items h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+        }
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .address-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .address-card {
+            background: var(--light);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            position: relative;
+        }
+        .address-card.default {
+            border-color: var(--primary);
+        }
+        .address-label {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .address-card.default .address-label {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        .address-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .address-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+        .address-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .address-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-edit {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .btn-edit:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .btn-delete {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        .btn-delete:hover {
+            background: #991B1B;
+            color: var(--white);
+        }
+        @media (max-width: 768px) {
+            .page-hero {
+                margin-top: 70px;
+                padding: 40px 0;
+            }
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+            .profile-section {
+                padding: 30px 0 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header"></header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h1>My Profile</h1>
+            <p>Manage your account and view your orders</p>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <div class="profile-container">
+            <div class="profile-grid">
+                <!-- Sidebar -->
+                <aside class="profile-sidebar">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-name" id="profileName">Guest User</div>
+                    <div class="profile-phone" id="profilePhone">Not logged in</div>
+                    <ul class="profile-menu">
+                        <li><a href="#" class="active" onclick="showTab('info'); return false;"><i class="fas fa-user"></i> Profile Info</a></li>
+                        <li><a href="#" onclick="showTab('orders'); return false;"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
+                        <li><a href="#" onclick="showTab('addresses'); return false;"><i class="fas fa-map-marker-alt"></i> Addresses</a></li>
+                        <li><a href="#" onclick="signOut(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="profile-content">
+                    <!-- Profile Info Tab -->
+                    <div id="infoTab" class="tab-content">
+                        <h2 class="section-title">Profile Information</h2>
+                        <form id="updateProfileForm">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <input type="text" id="fullName" placeholder="Enter your full name">
+                                </div>
+                                <div class="info-item">
+                                    <label>Email</label>
+                                    <input type="email" id="email" placeholder="your.email@example.com">
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="phone" readonly>
+                                </div>
+                                <div class="info-item">
+                                    <label>Member Since</label>
+                                    <input type="text" id="memberSince" readonly>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Orders Tab -->
+                    <div id="ordersTab" class="tab-content" style="display: none;">
+                        <h2 class="section-title">My Orders</h2>
+                        <div class="orders-list" id="ordersList">
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                <h3>No orders yet</h3>
+                                <p>Your order history will appear here</p>
+                                <a href="shop.html" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Addresses Tab -->
+                    <div id="addressesTab" class="tab-content" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 class="section-title" style="margin: 0;">My Addresses</h2>
+                            <button class="btn btn-primary" onclick="showAddresses()">
+                                <i class="fas fa-plus"></i> Add Address
+                            </button>
+                        </div>
+                        <div class="address-grid" id="addressesGrid">
+                            <div class="empty-state">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <h3>No addresses saved</h3>
+                                <p>Add your delivery addresses for faster checkout</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer"></footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav" id="mobileNav"></nav>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal"></div>
+
+    <!-- App JS -->
+    <script src="app.js"></script>
+    
+    <!-- Authentication JS -->
+    <script src="auth.js"></script>
+
+    <!-- Authentication Modals -->
+    <div class="auth-modal" id="authModal"></div>
+    <div class="profile-modal" id="profileModal" style="display: none;"></div>
+    <div class="addresses-modal" id="addressesModal" style="display: none;"></div>
+
+    <script>
+        // Check if user is logged in
+        async function checkAuth() {
+            if (!currentUser || !currentUser()) {
+                window.location.href = 'index.html?login=required';
+                return false;
+            }
+            return true;
+        }
+
+        // Load user profile data
+        async function loadUserData() {
+            const user = currentUser();
+            const profile = userProfile();
+            
+            if (!user) {
+                await checkAuth();
+                return;
+            }
+
+            // Update sidebar
+            document.getElementById('profileName').textContent = profile?.full_name || 'Guest User';
+            document.getElementById('profilePhone').textContent = profile?.phone_number || user.phoneNumber || 'No phone';
+            
+            // Update profile avatar
+            const initials = (profile?.full_name || 'G').split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('profileAvatar').innerHTML = initials;
+
+            // Update form fields
+            document.getElementById('fullName').value = profile?.full_name || '';
+            document.getElementById('email').value = profile?.email || '';
+            document.getElementById('phone').value = profile?.phone_number || user.phoneNumber || '';
+            
+            // Format member since date
+            const memberSince = profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) : 'Recently';
+            document.getElementById('memberSince').value = memberSince;
+
+            // Load orders
+            await loadUserOrders();
+            
+            // Load addresses
+            await loadUserAddressesTab();
+        }
+
+        // Load user orders
+        async function loadUserOrders() {
+            const ordersList = document.getElementById('ordersList');
+            const user = currentUser();
+            
+            if (!user) return;
+
+            try {
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('user_id', user.uid || user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (orders && orders.length > 0) {
+                    ordersList.innerHTML = orders.map(order => {
+                        const statusClass = `status-${(order.status || 'pending').toLowerCase()}`;
+                        const items = order.items ? JSON.parse(order.items) : [];
+                        
+                        return `
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-id">#${order.id.substring(0, 8)}</div>
+                                    <div class="order-status ${statusClass}">${order.status || 'Pending'}</div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-detail-item">
+                                        <label>Order Date</label>
+                                        <span>${new Date(order.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div class="order-detail-item">
+                                        <label>Total Amount</label>
+                                        <span>${(order.total_amount || 0).toFixed(2)} AED</span>
+                                    </div>
+                                    <div class="order-detail-item">
+                                        <label>Payment Method</label>
+                                        <span>${order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card'}</span>
+                                    </div>
+                                </div>
+                                <div class="order-items">
+                                    <h4>Items (${items.length})</h4>
+                                    ${items.map(item => `
+                                        <div class="order-item">
+                                            <span>${item.name} (${item.quantity} ${item.unit || 'pcs'})</span>
+                                            <span>${(item.price * item.quantity).toFixed(2)} AED</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    ordersList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No orders yet</h3>
+                            <p>Your order history will appear here</p>
+                            <a href="shop.html" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showNotification('Failed to load orders', 'error');
+            }
+        }
+
+        // Load user addresses for the tab
+        async function loadUserAddressesTab() {
+            const addressesGrid = document.getElementById('addressesGrid');
+            const addresses = userAddresses();
+            
+            if (!addresses || addresses.length === 0) {
+                addressesGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>No addresses saved</h3>
+                        <p>Add your delivery addresses for faster checkout</p>
+                    </div>
+                `;
+                return;
+            }
+
+            addressesGrid.innerHTML = addresses.map(addr => `
+                <div class="address-card ${addr.is_default ? 'default' : ''}">
+                    <div class="address-label">${addr.label || 'Home'}${addr.is_default ? ' (Default)' : ''}</div>
+                    <div class="address-name">${addr.full_name}</div>
+                    <div class="address-text">
+                        ${addr.phone_number}<br>
+                        ${addr.street_address}<br>
+                        ${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}<br>
+                        ${addr.area}
+                        ${addr.landmark ? '<br>Landmark: ' + addr.landmark : ''}
+                    </div>
+                    <div class="address-actions">
+                        <button class="btn-edit" onclick="editAddress('${addr.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="confirmDeleteAddress('${addr.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            
+            // Update active menu item
+            document.querySelectorAll('.profile-menu a').forEach(link => link.classList.remove('active'));
+            event.target.closest('a').classList.add('active');
+        }
+
+        // Update profile form submission
+        document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            
+            try {
+                await updateUserProfile({ full_name: fullName, email: email });
+                showNotification('Profile updated successfully!', 'success');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showNotification('Failed to update profile', 'error');
+            }
+        });
+
+        // Initialize page
+        window.addEventListener('load', async () => {
+            // Wait for auth to initialize
+            setTimeout(async () => {
+                await loadUserData();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

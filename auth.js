@@ -573,33 +573,68 @@ function resetAuthForm() {
 async function handleSendOTP() {
     const phoneInput = document.getElementById('loginPhone');
     const phone = phoneInput.value.trim();
+    const sendButton = event.target;
     
     if (!phone) {
         showNotification('Please enter your phone number', 'error');
         return;
     }
     
-    const result = await sendOTP(phone);
-    if (result.success) {
-        currentPhone = result.phone;
-        document.getElementById('otpForm').style.display = 'block';
-        const firstInput = document.querySelector('.otp-input');
-        if (firstInput) firstInput.focus();
+    // Show loading state
+    const originalText = sendButton.innerHTML;
+    sendButton.disabled = true;
+    sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    
+    try {
+        const result = await sendOTP(phone);
+        if (result.success) {
+            currentPhone = result.phone;
+            document.getElementById('otpForm').style.display = 'block';
+            const firstInput = document.querySelector('.otp-input');
+            if (firstInput) firstInput.focus();
+            sendButton.innerHTML = '<i class="fas fa-check"></i> OTP Sent';
+        } else {
+            sendButton.innerHTML = originalText;
+        }
+    } catch (error) {
+        sendButton.innerHTML = originalText;
+    } finally {
+        setTimeout(() => {
+            sendButton.disabled = false;
+            sendButton.innerHTML = originalText;
+        }, 2000);
     }
 }
 
 async function handleVerifyOTP() {
     const otpInputs = document.querySelectorAll('.otp-input');
     const otp = Array.from(otpInputs).map(input => input.value).join('');
+    const verifyButton = event.target;
     
     if (otp.length !== 6) {
         showNotification('Please enter the 6-digit OTP', 'error');
         return;
     }
     
-    const result = await verifyOTP(currentPhone, otp);
-    if (result.success) {
-        closeAuthModal();
+    // Show loading state
+    const originalText = verifyButton.innerHTML;
+    verifyButton.disabled = true;
+    verifyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+    
+    try {
+        const result = await verifyOTP(currentPhone, otp);
+        if (result.success) {
+            verifyButton.innerHTML = '<i class="fas fa-check"></i> Success!';
+            setTimeout(() => {
+                closeAuthModal();
+            }, 500);
+        } else {
+            verifyButton.innerHTML = originalText;
+            verifyButton.disabled = false;
+        }
+    } catch (error) {
+        verifyButton.innerHTML = originalText;
+        verifyButton.disabled = false;
     }
 }
 

@@ -357,6 +357,48 @@
     <!-- Checkout Section -->
     <section class="checkout-section-wrapper">
         <div class="checkout-container">
+            <!-- Login/Guest Prompt (shown only if not logged in) -->
+            <div class="checkout-card" id="loginPrompt" style="display: none;">
+                <div style="text-align: center; padding: 1rem 0;">
+                    <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">Continue as Guest or Login?</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Login to use saved addresses and track your orders
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 500px; margin: 0 auto;">
+                        <button class="btn btn-outline" onclick="continueAsGuest()" style="padding: 1rem;">
+                            <i class="fas fa-shopping-bag"></i><br>
+                            <span style="font-size: 0.9rem; margin-top: 0.5rem; display: block;">Continue as Guest</span>
+                        </button>
+                        <button class="btn btn-primary" onclick="openAuthModal('login')" style="padding: 1rem;">
+                            <i class="fas fa-sign-in-alt"></i><br>
+                            <span style="font-size: 0.9rem; margin-top: 0.5rem; display: block;">Login / Register</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Addresses (shown only for logged-in users) -->
+            <div class="checkout-card" id="savedAddresses" style="display: none;">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Delivery Address</h3>
+                </div>
+                <div id="addressSelector">
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                        <i class="fas fa-info-circle"></i> Select a saved address or enter a new one below
+                    </p>
+                    <div id="addressCards" style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;"></div>
+                    <button class="btn btn-outline btn-block" onclick="useNewAddress()">
+                        <i class="fas fa-plus"></i> Use Different Address
+                    </button>
+                </div>
+            </div>
+
             <div class="checkout-card">
                 <div class="section-header">
                     <div class="section-icon">
@@ -371,7 +413,7 @@
                     </div>
                     <div class="form-group">
                         <label for="customerMobile">Mobile Number *</label>
-                        <input type="tel" id="customerMobile" required placeholder="+1 (555) 123-4567" pattern="[\+]?[0-9\s\-\(\)]+">
+                        <input type="tel" id="customerMobile" required placeholder="+971 50 123 4567" pattern="[\+]?[0-9\s\-\(\)]+">
                     </div>
                     <div class="form-group">
                         <label for="customerEmail">Email (Optional)</label>
@@ -989,12 +1031,17 @@
 
             try {
                 const uaeTimestamp = getUAETime();
+                
+                // Get logged in user if available
+                const user = window.currentUser ? window.currentUser() : null;
+                const userId = user ? (user.uid || user.id) : null;
 
                 // Save order to Supabase
                 const { data: orderData, error: orderError } = await supabase
                     .from('orders')
                     .insert([
                         {
+                            user_id: userId,  // Track user if logged in, null for guest orders
                             customer_name: name,
                             customer_mobile: mobile,
                             customer_email: email || null,
@@ -1166,7 +1213,146 @@
         document.addEventListener('DOMContentLoaded', () => {
             displayOrderSummary();
             initializeStripe();
+            initializeCheckout();
         });
+
+        // ========================================
+        // CHECKOUT INITIALIZATION
+        // ========================================
+        async function initializeCheckout() {
+            // Wait for auth to initialize 
+            setTimeout(async () => {
+                const user = window.currentUser ? window.currentUser() : null;
+                const profile = window.userProfile ? window.userProfile() : null;
+                const addresses = window.userAddresses ? window.userAddresses() : [];
+
+                if (user && profile) {
+                    // User is logged in
+                    await populateUserData(user, profile, addresses);
+                } else {
+                    // Show login prompt (user can choose to continue as guest)
+                    showLoginPrompt();
+                }
+            }, 1000);
+        }
+
+        function showLoginPrompt() {
+            const loginPrompt = document.getElementById('loginPrompt');
+            if (loginPrompt) {
+                loginPrompt.style.display = 'block';
+            }
+        }
+
+        function continueAsGuest() {
+            const loginPrompt = document.getElementById('loginPrompt');
+            if (loginPrompt) {
+                loginPrompt.style.display = 'none';
+            }
+            // Clear any pre-filled data
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerMobile').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('deliveryAddress').value = '';
+            showNotification('Continuing as guest. You can login anytime!', 'info');
+        }
+
+        async function populateUserData(user, profile, addresses) {
+            // Hide login prompt
+            const loginPrompt = document.getElementById('loginPrompt');
+            if (loginPrompt) {
+                loginPrompt.style.display = 'none';
+            }
+
+            // Pre-fill customer information
+            document.getElementById('customerName').value = profile.full_name || '';
+            document.getElementById('customerMobile').value = profile.phone_number || user.phoneNumber || '';
+            document.getElementById('customerEmail').value = profile.email || '';
+
+            // Show saved addresses if available
+            if (addresses && addresses.length > 0) {
+                displaySavedAddresses(addresses);
+            }
+        }
+
+        function displaySavedAddresses(addresses) {
+            const savedAddressesCard = document.getElementById('savedAddresses');
+            const addressCards = document.getElementById('addressCards');
+            
+            if (!savedAddressesCard || !addressCards) return;
+
+            savedAddressesCard.style.display = 'block';
+
+            addressCards.innerHTML = addresses.map(addr => `
+                <div class="address-option" onclick="selectAddress('${addr.id}')" style="
+                    border: 2px solid var(--gray-200);
+                    border-radius: var(--radius);
+                    padding: 1rem;
+                    cursor: pointer;
+                    transition: var(--transition);
+                    ${addr.is_default ? 'border-color: var(--primary);' : ''}
+                " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='${addr.is_default ? 'var(--primary)' : 'var(--gray-200)'}'" data-address-id="${addr.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <strong style="color: var(--text-primary);">${addr.label || 'Home'}${addr.is_default ? ' (Default)' : ''}</strong>
+                        <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem; display: ${addr.is_default ? 'block' : 'none'};"></i>
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                        ${addr.full_name} • ${addr.phone_number}<br>
+                        ${addr.street_address}, ${[addr.building, addr.floor, addr.apartment].filter(Boolean).join(', ')}<br>
+                        ${addr.area}${addr.landmark ? ', ' + addr.landmark : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Auto-select default address
+            const defaultAddr = addresses.find(a => a.is_default);
+            if (defaultAddr) {
+                selectAddress(defaultAddr.id);
+            }
+        }
+
+        function selectAddress(addressId) {
+            const user = window.currentUser ? window.currentUser() : null;
+            if (!user) return;
+
+            const addresses = window.userAddresses ? window.userAddresses() : [];
+            const address = addresses.find(a => a.id === addressId);
+            
+            if (!address) return;
+
+            // Remove active state from all address cards
+            document.querySelectorAll('.address-option').forEach(card => {
+                card.style.borderColor = 'var(--gray-200)';
+                card.querySelector('.fa-check-circle').style.display = 'none';
+            });
+
+            // Add active state to selected card
+            const selectedCard = document.querySelector(`[data-address-id="${addressId}"]`);
+            if (selectedCard) {
+                selectedCard.style.borderColor = 'var(--primary)';
+                selectedCard.querySelector('.fa-check-circle').style.display = 'block';
+            }
+
+            // Populate form with address details
+            document.getElementById('customerName').value = address.full_name;
+            document.getElementById('customerMobile').value = address.phone_number;
+            document.getElementById('deliveryAddress').value = 
+                `${address.street_address}, ${[address.building, address.floor, address.apartment].filter(Boolean).join(', ')}, ${address.area}${address.landmark ? ', ' + address.landmark : ''}`;
+
+            showNotification(`Selected address: ${address.label}`, 'success');
+        }
+
+        function useNewAddress() {
+            // Deselect all address cards
+            document.querySelectorAll('.address-option').forEach(card => {
+                card.style.borderColor = 'var(--gray-200)';
+                card.querySelector('.fa-check-circle').style.display = 'none';
+            });
+
+            // Clear address field
+            document.getElementById('deliveryAddress').value = '';
+            document.getElementById('deliveryAddress').focus();
+            showNotification('Enter your new delivery address', 'info');
+        }
 
         // ========================================
         // STRIPE PAYMENT INTEGRATION
