@@ -1128,6 +1128,9 @@
                             // Try to geocode
                             const geocoder = new google.maps.Geocoder();
                             geocoder.geocode({ location: pos }, (results, status) => {
+                                console.log('Geocoding status:', status);
+                                console.log('Geocoding results:', results);
+                                
                                 if (status === 'OK' && results[0]) {
                                     document.getElementById('addressStreet').value = results[0].formatted_address;
                                     
@@ -1143,8 +1146,17 @@
                                         }
                                     }
                                 } else if (status === 'REQUEST_DENIED') {
-                                    alert('⚠️ Geocoding API not enabled!\n\nTo see street names instead of coordinates, please enable the Geocoding API in Google Cloud Console.\n\nSee ENABLE-GEOCODING-API.md for instructions.\n\nFor now, you can still use the map and enter address manually.');
+                                    console.error('🚨 Geocoding API ERROR:', status);
+                                    console.error('This usually means:');
+                                    console.error('1. Your API key has HTTP referrer restrictions');
+                                    console.error('2. Geocoding API is not enabled for THIS specific API key');
+                                    console.error('3. Billing is not enabled on your Google Cloud project');
+                                    console.error('\nCheck: https://console.cloud.google.com/google/maps-apis/credentials');
+                                    alert('⚠️ Geocoding API Access Denied\n\nYour API key cannot access Geocoding API.\n\nPossible causes:\n• API key has referrer restrictions\n• Geocoding API not enabled for this key\n• Billing not enabled\n\nCheck browser console for details.');
                                     document.getElementById('addressStreet').value = `Lat: ${pos.lat.toFixed(6)}, Lng: ${pos.lng.toFixed(6)}`;
+                                } else {
+                                    console.warn('Geocoding failed with status:', status);
+                                    document.getElementById('addressStreet').value = `Lat: ${pos.lat.toFixed(6)}, Lng: ${pos.lng.toFixed(6)} (${status})`;
                                 }
                             });
                             
@@ -1178,6 +1190,8 @@
             function updateAddressFromLocation(lat, lng) {
                 // Try geocoding, but don't fail if API is not enabled
                 geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                    console.log('Drag geocoding status:', status);
+                    
                     if (status === 'OK' && results[0]) {
                         console.log('Geocode results:', results[0]);
                         
@@ -1218,14 +1232,14 @@
                         
                         console.log('Address updated:', streetAddress, 'Area:', area || city);
                     } else if (status === 'REQUEST_DENIED') {
-                        console.warn('⚠️ Geocoding API NOT ENABLED - showing coordinates instead of street names');
-                        console.warn('Enable Geocoding API in Google Cloud Console to see street addresses');
-                        console.warn('See ENABLE-GEOCODING-API.md for instructions');
+                        console.error('🚨 Geocoding API REQUEST_DENIED');
+                        console.error('Check: https://console.cloud.google.com/google/maps-apis/credentials');
+                        console.error('Ensure Geocoding API is enabled for key: AIzaSyAqs6k9yZisdszgk-eUYZIryRyRSEgVR6M');
                         // Show coordinates as fallback
-                        document.getElementById('addressStreet').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)} (Enable Geocoding API for address)`;
+                        document.getElementById('addressStreet').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)} (API Key Error)`;
                     } else {
                         console.warn('Geocoder status:', status);
-                        document.getElementById('addressStreet').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                        document.getElementById('addressStreet').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)} (${status})`;
                     }
                 });
             }
