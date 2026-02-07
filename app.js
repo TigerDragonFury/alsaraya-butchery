@@ -212,6 +212,8 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 // Update Cart Count on Load
 function updateCartCount() {
+    // Reload cart from localStorage to ensure sync
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     
     // Update desktop cart count
@@ -220,10 +222,15 @@ function updateCartCount() {
         cartCount.textContent = totalItems;
     }
     
-    // Update mobile cart count
+    // Update mobile cart count (check both possible IDs)
     const cartCountMobile = document.getElementById('cartCountMobile');
     if (cartCountMobile) {
         cartCountMobile.textContent = totalItems;
+    }
+    
+    const mobileCartCount = document.getElementById('mobileCartCount');
+    if (mobileCartCount) {
+        mobileCartCount.textContent = totalItems;
     }
 }
 
@@ -268,6 +275,9 @@ function addToCartFromDB(id, name, price, category, unit, iiko_product_id = null
 
 // Update Cart
 function updateCart() {
+    // Reload cart from localStorage to ensure sync
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
     updateCartCount();
     
     const cartItems = document.getElementById('cartItems');
@@ -296,6 +306,11 @@ function updateCart() {
             </div>
         `).join('');
     }
+}
+
+// Display Cart (alias for updateCart - used by other pages)
+function displayCart() {
+    updateCart();
 }
 
 // Update Quantity
