@@ -462,7 +462,7 @@
                     <div id="addressesTab" class="tab-content" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <h2 class="section-title" style="margin: 0;">My Addresses</h2>
-                            <button class="btn btn-primary" onclick="showAddresses()">
+                            <button class="btn btn-primary" onclick="showAddAddressForm()">
                                 <i class="fas fa-plus"></i> Add Address
                             </button>
                         </div>
@@ -875,6 +875,38 @@
         
         // Note: Address form submission is handled in auth.js to avoid duplicate submissions
         // DO NOT add another listener here
+        
+        // Function to show add address form directly (without showing addresses list first)
+        function showAddAddressForm() {
+            // Open the addresses modal
+            const modal = document.getElementById('addressesModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Hide the addresses list and show the form immediately
+            const addressesList = document.getElementById('addressesList');
+            const formContainer = document.getElementById('addressFormContainer');
+            const formTitle = document.getElementById('addressFormTitle');
+            
+            if (addressesList) addressesList.style.display = 'none';
+            if (formContainer) {
+                formContainer.style.display = 'block';
+                if (formTitle) formTitle.textContent = 'Add New Address';
+                
+                // Clear form
+                const form = document.getElementById('addressForm');
+                if (form) form.reset();
+                document.getElementById('addressId').value = '';
+                
+                // Focus first input
+                setTimeout(() => {
+                    const firstInput = document.getElementById('addressLabel');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            }
+        }
 
         // Initialize page
         window.addEventListener('load', async () => {
@@ -943,6 +975,7 @@
             // Replace input with autocomplete element
             addressInput.parentNode.insertBefore(autocomplete, addressInput);
             addressInput.style.display = 'none';
+            addressInput.removeAttribute('required');
             
             // Listen for place selection (new event name)
             autocomplete.addEventListener('gmp-placeselect', async ({ place }) => {

@@ -633,9 +633,9 @@
             <i class="fas fa-truck"></i>
             <span>Track</span>
         </a>
-        <a href="index.html#contact" class="mobile-nav-item">
-            <i class="fas fa-phone"></i>
-            <span>Contact</span>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
         </a>
     </nav>
 
@@ -1252,6 +1252,7 @@
             // Replace input with autocomplete element
             addressInput.parentNode.insertBefore(autocomplete, addressInput);
             addressInput.style.display = 'none';
+            addressInput.removeAttribute('required');
             
             // Listen for place selection (new event name)
             autocomplete.addEventListener('gmp-placeselect', async ({ place }) => {
