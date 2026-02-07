@@ -1247,18 +1247,38 @@
                 let attempts = 0;
                 const checkAuth = setInterval(() => {
                     attempts++;
-                    const user = window.getCurrentUser ? window.getCurrentUser() : null;
                     
-                    // Check if auth is initialized
+                    // Check if Firebase is ready
                     if (typeof firebase !== 'undefined' && firebase.auth) {
-                        // If user exists or we've waited long enough
-                        if (user || attempts > 20) {
+                        const firebaseUser = firebase.auth().currentUser;
+                        
+                        // If no Firebase user, we're done waiting (guest user)
+                        if (!firebaseUser && attempts > 10) {
                             clearInterval(checkAuth);
+                            console.log('No user logged in (guest)');
                             resolve();
+                            return;
                         }
-                    } else if (attempts > 30) {
-                        // Timeout after 3 seconds
+                        
+                        // If Firebase user exists, wait for profile to sync
+                        if (firebaseUser) {
+                            const user = window.getCurrentUser ? window.getCurrentUser() : null;
+                            const profile = window.getUserProfile ? window.getUserProfile() : null;
+                            
+                            // Profile is loaded, we're ready
+                            if (user && profile) {
+                                clearInterval(checkAuth);
+                                console.log('Auth ready with profile:', profile);
+                                resolve();
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // Timeout after 5 seconds
+                    if (attempts > 50) {
                         clearInterval(checkAuth);
+                        console.log('Auth wait timeout');
                         resolve();
                     }
                 }, 100);
