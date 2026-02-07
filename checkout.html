@@ -1384,8 +1384,16 @@
             // Populate form with address details
             document.getElementById('customerName').value = address.full_name;
             document.getElementById('customerMobile').value = address.phone_number;
-            document.getElementById('deliveryAddress').value = 
-                `${address.street_address}, ${[address.building, address.floor, address.apartment].filter(Boolean).join(', ')}, ${address.area}${address.landmark ? ', ' + address.landmark : ''}`;
+            
+            // Format address nicely
+            const addressParts = [address.street_address];
+            if (address.building) addressParts.push(`Building: ${address.building}`);
+            if (address.floor) addressParts.push(`Floor: ${address.floor}`);
+            if (address.apartment) addressParts.push(`Apt: ${address.apartment}`);
+            addressParts.push(address.area);
+            if (address.landmark) addressParts.push(`Near: ${address.landmark}`);
+            
+            document.getElementById('deliveryAddress').value = addressParts.join(', ');
 
             showNotification(`Selected address: ${address.label}`, 'success');
         }

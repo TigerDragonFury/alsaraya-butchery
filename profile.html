@@ -20,6 +20,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
     
+    <!-- Google Maps Places API (for address autocomplete) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaLbPz7WnqWDSN4zU0M5OdL9x6h0cQzg&libraries=places" async defer></script>
+    
     <style>
         .page-hero {
             margin-top: 115px;
@@ -635,8 +638,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Street Address</label>
-                        <textarea id="addressStreet" rows="2" required></textarea>
+                        <label>Street Address <small>(Start typing to search)</small></label>
+                        <textarea id="addressStreet" rows="2" required placeholder="Start typing your address..."></textarea>
+                        <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                            <i class="fas fa-map-marker-alt"></i> Powered by Google Maps - Select from suggestions
+                        </small>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -739,11 +745,13 @@
                     ordersList.innerHTML = orders.map(order => {
                         const statusClass = `status-${(order.status || 'pending').toLowerCase()}`;
                         const items = order.items ? JSON.parse(order.items) : [];
+                        // Convert order.id to string to handle UUID
+                        const orderId = String(order.id || '').substring(0, 8);
                         
                         return `
                             <div class="order-card">
                                 <div class="order-header">
-                                    <div class="order-id">#${order.id.substring(0, 8)}</div>
+                                    <div class="order-id">#${orderId}</div>
                                     <div class="order-status ${statusClass}">${order.status || 'Pending'}</div>
                                 </div>
                                 <div class="order-details">
@@ -860,39 +868,8 @@
             }
         });
         
-        // Address form submission
-        if (document.getElementById('addressForm')) {
-            document.getElementById('addressForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const addressId = document.getElementById('addressId').value;
-                const addressData = {
-                    label: document.getElementById('addressLabel').value,
-                    full_name: document.getElementById('addressFullName').value,
-                    phone_number: document.getElementById('addressPhone').value,
-                    area: document.getElementById('addressArea').value,
-                    street_address: document.getElementById('addressStreet').value,
-                    building: document.getElementById('addressBuilding').value || null,
-                    floor: document.getElementById('addressFloor').value || null,
-                    apartment: document.getElementById('addressApartment').value || null,
-                    landmark: document.getElementById('addressLandmark').value || null,
-                    is_default: document.getElementById('addressDefault').checked
-                };
-                
-                if (addressId) {
-                    // Update existing address
-                    await updateUserAddress(addressId, addressData);
-                } else {
-                    // Add new address
-                    await addUserAddress(addressData);
-                }
-                
-                // Reload addresses
-                await loadUserAddressesTab();
-                hideAddressForm();
-                closeAddressesModal();
-            });
-        }
+        // Note: Address form submission is handled in auth.js to avoid duplicate submissions
+        // DO NOT add another listener here
 
         // Initialize page
         window.addEventListener('load', async () => {
@@ -932,7 +909,79 @@
             if (tab) {
                 showTab(tab);
             }
+            
+            // Initialize Google Maps Autocomplete after a short delay
+            setTimeout(initializeAddressAutocomplete, 1000);
         });
+        
+        // Initialize Google Maps address autocomplete
+        function initializeAddressAutocomplete() {
+            if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                console.log('Google Maps not loaded yet, will retry...');
+                setTimeout(initializeAddressAutocomplete, 1000);
+                return;
+            }
+            
+            const addressInput = document.getElementById('addressStreet');
+            if (!addressInput) return;
+            
+            // Create autocomplete instance restricted to UAE
+            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                componentRestrictions: { country: 'ae' },
+                fields: ['address_components', 'formatted_address', 'geometry', 'name'],
+                types: ['address']
+            });
+            
+            // When user selects an address from dropdown
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                
+                if (!place.address_components) {
+                    console.log('No address details available');
+                    return;
+                }
+                
+                // Extract address components
+                let streetNumber = '';
+                let route = '';
+                let area = '';
+                let city = '';
+                let emirate = '';
+                
+                for (const component of place.address_components) {
+                    const types = component.types;
+                    
+                    if (types.includes('street_number')) {
+                        streetNumber = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        route = component.long_name;
+                    }
+                    if (types.includes('sublocality_level_1') || types.includes('neighborhood')) {
+                        area = component.long_name;
+                    }
+                    if (types.includes('locality')) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        emirate = component.long_name;
+                    }
+                }
+                
+                // Auto-fill the street address
+                const streetAddress = [streetNumber, route].filter(Boolean).join(' ') || place.name || place.formatted_address;
+                document.getElementById('addressStreet').value = streetAddress;
+                
+                // Auto-fill the area if found
+                if (area || city) {
+                    const areaInput = document.getElementById('addressArea');
+                    areaInput.value = area || city;
+                    areaInput.dispatchEvent(new Event('change'));
+                }
+                
+                console.log('Address selected:', { streetAddress, area, city, emirate });
+            });
+        }
         
         // Wait for auth to be ready
         async function waitForAuth() {
