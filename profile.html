@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- reCAPTCHA Container (required for Firebase phone auth) -->
+    <div id="recaptcha-container"></div>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -327,6 +330,9 @@
     </style>
 </head>
 <body>
+    <!-- reCAPTCHA Container (required for Firebase phone auth) -->
+    <div id="recaptcha-container"></div>
+    
     <!-- Header -->
     <header class="header" id="header">
         <div class="header-top">
@@ -895,13 +901,29 @@
         window.addEventListener('load', async () => {
             // Setup cart button
             const cartBtn = document.getElementById('cartBtn');
-            if (cartBtn) {
-                cartBtn.addEventListener('click', () => {
-                    if (typeof openCart === 'function') {
-                        openCart();
-                    }
-                });
+            const cartModal = document.getElementById('cartModal');
+            const cartClose = document.getElementById('cartClose');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            function openCart() {
+                if (cartModal) {
+                    cartModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    // Display cart if function exists
+                    if (typeof displayCart === 'function') displayCart();
+                }
             }
+            
+            function closeCart() {
+                if (cartModal) {
+                    cartModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            if (cartBtn) cartBtn.addEventListener('click', openCart);
+            if (cartClose) cartClose.addEventListener('click', closeCart);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
             
             // Wait for auth to initialize
             await waitForAuth();
