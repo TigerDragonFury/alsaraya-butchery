@@ -1,37 +1,42 @@
 // ============================================
 // AL SARAYA AUTHENTICATION SYSTEM
 // Handles login, registration, Google OAuth, and user management
+// Using Firebase for FREE phone authentication (10,000 SMS/month)
 // ============================================
 
 // Authentication State
 let currentUser = null;
 let userProfile = null;
 let userAddresses = [];
+let confirmationResult = null; // Firebase phone verification
 
 // Initialize Authentication
 async function initAuth() {
     try {
-        // Check current session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
-            currentUser = session.user;
-            await loadUserProfile();
-            await loadUserAddresses();
-            updateUIForLoggedInUser();
-        } else {
+        // Check if Firebase is loaded
+        if (typeof firebase === 'undefined') {
+            console.warn('Firebase not loaded yet');
             updateUIForGuestUser();
+            return;
         }
 
-        // Listen for auth changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                currentUser = session.user;
-                loadUserProfile();
-                loadUserAddresses();
+        // Listen for Firebase auth state changes
+        firebase.auth().onAuthStateChanged(async (firebaseUser) => {
+            if (firebaseUser) {
+                // User is signed in with Firebase
+                currentUser = firebaseUser;
+                
+                // Sync with Supabase database
+                await syncFirebaseUserToSupabase(firebaseUser);
+                
+                // Load user profile and addresses from Supabase
+                await loadUserProfile();
+                await loadUserAddresses();
+                
                 updateUIForLoggedInUser();
                 closeAuthModal();
-            } else if (event === 'SIGNED_OUT') {
+            } else {
+                // User is signed out
                 currentUser = null;
                 userProfile = null;
                 userAddresses = [];
@@ -40,15 +45,21 @@ async function initAuth() {
         });
     } catch (error) {
         console.error('Auth initialization error:', error);
+        updateUIForGuestUser();
     }
 }
 
 // ============================================
-// PHONE NUMBER AUTHENTICATION
+// PHONE NUMBER AUTHENTICATION (Firebase - FREE)
 // ============================================
 
 async function sendOTP(phoneNumber) {
     try {
+        // Check if Firebase is loaded
+        if (typeof firebase === 'undefined') {
+            throw new Error('Firebase not loaded. Please refresh the page.');
+        }
+
         // Validate UAE phone number format
         const phoneRegex = /^(\+971|00971|971|0)?[0-9]{9}$/;
         if (!phoneRegex.test(phoneNumber.replace(/\s/g, ''))) {
@@ -63,41 +74,138 @@ async function sendOTP(phoneNumber) {
             formattedPhone = '+971' + formattedPhone;
         }
 
-        const { error } = await supabase.auth.signInWithOtp({
-            phone: formattedPhone,
-        });
+        // Setup reCAPTCHA verifier (invisible)
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {
+                    // reCAPTCHA solved
+                }
+            });
+        }
 
-        if (error) throw error;
-
-        showNotification('OTP sent to your phone!', 'success');
+        const appVerifier = window.recaptchaVerifier;
+        
+        // Send OTP via Firebase
+        confirmationResult = await firebase.auth().signInWithPhoneNumber(formattedPhone, appVerifier);
+        
+        showNotification('OTP sent to your phone! (Free via Firebase)', 'success');
         return { success: true, phone: formattedPhone };
     } catch (error) {
         console.error('Send OTP error:', error);
-        showNotification(error.message, 'error');
-        return { success: false, error: error.message };
+        
+        // Better error messages
+        let errorMsg = error.message;
+        if (error.code === 'auth/invalid-phone-number') {
+            errorMsg = 'Invalid phone number format';
+        } else if (error.code === 'auth/too-many-requests') {
+            errorMsg = 'Too many requests. Please try again later.';
+        } else if (error.code === 'auth/quota-exceeded') {
+            errorMsg = 'SMS quota exceeded. Please contact support.';
+        }
+        
+        showNotification(errorMsg, 'error');
+        
+        // Reset reCAPTCHA on error
+        if (window.recaptchaVerifier) {
+            window.recaptchaVerifier.clear();
+            window.recaptchaVerifier = null;
+        }
+        
+        return { success: false, error: errorMsg };
     }
 }
 
 async function verifyOTP(phoneNumber, otp) {
     try {
-        const { data, error } = await supabase.auth.verifyOtp({
-            phone: phoneNumber,
-            token: otp,
-            type: 'sms'
-        });
+        if (!confirmationResult) {
+            throw new Error('Please request OTP first');
+        }
 
-        if (error) throw error;
-
-        currentUser = data.user;
+        // Verify OTP with Firebase
+        const result = await confirmationResult.confirm(otp);
+        const firebaseUser = result.user;
+        
+        // Sync with Supabase database
+        currentUser = {
+            id: firebaseUser.uid,
+            phone: firebaseUser.phoneNumber,
+            email: firebaseUser.email
+        };
+        
+        // Create/update user profile in Supabase
+        await syncFirebaseUserToSupabase(firebaseUser);
         await loadUserProfile();
         await loadUserAddresses();
         
         showNotification('Successfully logged in!', 'success');
-        return { success: true, user: data.user };
+        return { success: true, user: currentUser };
     } catch (error) {
         console.error('Verify OTP error:', error);
-        showNotification('Invalid OTP. Please try again.', 'error');
-        return { success: false, error: error.message };
+        
+        let errorMsg = 'Invalid OTP. Please try again.';
+        if (error.code === 'auth/invalid-verification-code') {
+            errorMsg = 'Invalid OTP code. Please check and try again.';
+        } else if (error.code === 'auth/code-expired') {
+            errorMsg = 'OTP expired. Please request a new one.';
+        }
+        
+        showNotification(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+    }
+}
+
+// Sync Firebase user to Supabase database
+async function syncFirebaseUserToSupabase(firebaseUser) {
+    try {
+        // Check if user profile exists
+        const { data: existingProfile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', firebaseUser.uid)
+            .single();
+
+        if (!existingProfile) {
+            // Create new profile
+            const { error } = await supabase
+                .from('user_profiles')
+                .insert([{
+                    id: firebaseUser.uid,
+                    phone_number: firebaseUser.phoneNumber,
+                    email: firebaseUser.email || null,
+                    full_name: firebaseUser.displayName || null,
+                    created_at: new Date().toISOString()
+                }]);
+
+            if (error) throw error;
+        } else {
+            // Update existing profile
+            const { error } = await supabase
+                .from('user_profiles')
+                .update({
+                    phone_number: firebaseUser.phoneNumber,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', firebaseUser.uid);
+
+            if (error) throw error;
+        }
+    } catch (error) {
+        console.error('Error syncing user to Supabase:', error);
+    }
+}
+
+// Logout from Firebase
+async function firebaseSignOut() {
+    try {
+        await firebase.auth().signOut();
+        currentUser = null;
+        userProfile = null;
+        userAddresses = [];
+        updateUIForGuestUser();
+        showNotification('Logged out successfully', 'success');
+    } catch (error) {
+        console.error('Logout error:', error);
     }
 }
 
@@ -320,12 +428,8 @@ async function setDefaultAddress(addressId) {
 
 async function signOut() {
     try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-
-        currentUser = null;
-        userProfile = null;
-        userAddresses = [];
+        // Call Firebase sign out (which triggers onAuthStateChanged)
+        await firebaseSignOut();
         
         showNotification('Signed out successfully', 'success');
         

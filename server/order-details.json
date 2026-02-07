@@ -1,0 +1,131 @@
+{
+  "correlationId": "5249dd24-8f53-4ebd-a6dd-d2380d2d88d2",
+  "orders": [
+    {
+      "id": "d9d81618-daa7-4b4d-af08-67642dd78d0d",
+      "posId": "ee2d87db-4728-4935-90fa-6143301a879d",
+      "externalNumber": null,
+      "organizationId": "32d5187a-c03f-4b28-8c7f-901e91dc639c",
+      "timestamp": 1770305501857,
+      "creationStatus": "Success",
+      "errorInfo": null,
+      "order": {
+        "parentDeliveryId": null,
+        "customer": {
+          "type": "regular",
+          "id": "59a6603f-def7-46e8-b333-65971449b67b",
+          "name": "Walk In",
+          "surname": null,
+          "comment": null,
+          "gender": "NotSpecified",
+          "inBlacklist": false,
+          "blacklistReason": null,
+          "birthdate": null
+        },
+        "phone": "+97100000000",
+        "deliveryPoint": null,
+        "status": "Closed",
+        "cancelInfo": null,
+        "courierInfo": null,
+        "completeBefore": "2026-02-05 19:46:37.256",
+        "whenCreated": "2026-02-05 19:30:52.872",
+        "whenConfirmed": "2026-02-05 19:30:52.872",
+        "whenPrinted": "2026-02-05 19:31:40.109",
+        "whenCookingCompleted": "2026-02-05 19:31:40.109",
+        "whenSended": "2026-02-05 19:31:40.437",
+        "whenDelivered": "2026-02-05 19:31:40.437",
+        "comment": "",
+        "problem": null,
+        "operator": {
+          "id": "3eeb3129-0cd5-4170-bf06-0094849719ac",
+          "name": "JACKY",
+          "phone": null
+        },
+        "marketingSource": null,
+        "deliveryDuration": 15,
+        "indexInCourierRoute": null,
+        "cookingStartTime": "2026-02-05 19:31:37.256",
+        "isDeleted": false,
+        "whenReceivedByApi": null,
+        "whenReceivedFromFront": "2026-02-05 15:31:40.127",
+        "movedFromDeliveryId": null,
+        "movedFromTerminalGroupId": null,
+        "movedFromOrganizationId": null,
+        "externalCourierService": null,
+        "movedToDeliveryId": null,
+        "movedToTerminalGroupId": null,
+        "movedToOrganizationId": null,
+        "menuId": null,
+        "deliveryZone": null,
+        "estimatedTime": null,
+        "isAsap": null,
+        "whenPacked": null,
+        "sum": 44.4,
+        "number": 268232,
+        "sourceKey": null,
+        "whenBillPrinted": "2026-02-05 19:31:39.953",
+        "whenClosed": "2026-02-05 19:31:40.468",
+        "conception": null,
+        "guestsInfo": {
+          "count": 1,
+          "splitBetweenPersons": false
+        },
+        "items": [
+          {
+            "type": "Product",
+            "product": {
+              "id": "3e46ef81-3170-59a6-0173-bf6ccc7ec49c",
+              "name": "فخد دجاج متبل  Chicken DrumStick"
+            },
+            "modifiers": null,
+            "codes": null,
+            "price": 40,
+            "cost": 44.4,
+            "pricePredefined": true,
+            "positionId": "6080f7af-40b6-4c12-be62-fdc7b8ed0633",
+            "taxPercent": 5,
+            "resultSum": 44.4,
+            "status": "Served",
+            "deleted": null,
+            "amount": 1.11,
+            "comment": null,
+            "whenPrinted": "2026-02-05 19:31:40.109",
+            "size": null,
+            "comboInformation": null
+          }
+        ],
+        "combos": null,
+        "payments": [
+          {
+            "paymentType": {
+              "id": "fc2c1633-4b25-41ef-9d21-152732f7fee5",
+              "name": "Visa",
+              "kind": "Card"
+            },
+            "sum": 44.4,
+            "isPreliminary": false,
+            "isExternal": false,
+            "isProcessedExternally": false,
+            "isFiscalizedExternally": false,
+            "isPrepay": false
+          }
+        ],
+        "tips": null,
+        "discounts": null,
+        "orderType": {
+          "id": "5b1508f9-fe5b-d6af-cb8d-043af587d5c2",
+          "name": "Collection",
+          "orderServiceType": "DeliveryByClient"
+        },
+        "terminalGroupId": "c7d35f12-dd03-c268-0173-09bb2e4900ce",
+        "processedPaymentsSum": 44.4,
+        "loyaltyInfo": {
+          "coupon": null,
+          "appliedManualConditions": null,
+          "dynamicDiscounts": null
+        },
+        "externalData": null
+      }
+    }
+  ]
+}
