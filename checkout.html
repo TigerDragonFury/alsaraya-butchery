@@ -82,6 +82,11 @@
             padding: 2rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+        .checkout-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
         .checkout-card .section-header {
             display: flex;
@@ -102,6 +107,7 @@
             color: var(--white);
             font-size: 1.2rem;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
         }
         .checkout-card .section-header h3 {
             font-size: 1.3rem;
@@ -119,26 +125,39 @@
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .form-group label i {
+            color: var(--primary);
+            font-size: 0.85rem;
         }
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.8rem 1rem;
+            padding: 0.9rem 1rem;
             border: 2px solid var(--gray-200);
             border-radius: var(--radius);
             font-size: 1rem;
             font-family: 'Rubik', sans-serif;
             color: var(--text-primary);
             background: var(--white);
-            transition: var(--transition);
+            transition: all 0.3s ease;
+        }
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--gray-300);
         }
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
         .form-group textarea {
             min-height: 80px;
@@ -165,26 +184,39 @@
             margin-top: 1.5rem;
             padding-top: 1rem;
             border-top: 2px solid var(--gray-100);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.02), rgba(255, 0, 0, 0.01));
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
         }
         .summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
             font-size: 0.95rem;
             color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .summary-row:hover {
+            color: var(--text-primary);
         }
         .summary-row.total {
-            padding-top: 1rem;
-            margin-top: 0.5rem;
+            padding-top: 1.25rem;
+            margin-top: 0.75rem;
             border-top: 2px dashed var(--gray-200);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-primary);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 0, 0, 0.02));
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem -0.5rem 0;
         }
         .summary-row.total span:last-child {
             color: var(--primary);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            font-weight: 800;
         }
 
         /* Delivery Time Info */
@@ -464,6 +496,26 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Order Item Animation */
+        .order-item-animated {
+            animation: slideInUp 0.4s ease forwards;
+        }
+        .order-item-animated:nth-child(1) { animation-delay: 0.05s; }
+        .order-item-animated:nth-child(2) { animation-delay: 0.1s; }
+        .order-item-animated:nth-child(3) { animation-delay: 0.15s; }
+        .order-item-animated:nth-child(4) { animation-delay: 0.2s; }
+        .order-item-animated:nth-child(5) { animation-delay: 0.25s; }
     </style>
 </head>
 <body>
@@ -1068,9 +1120,9 @@
 
             // Desktop view
             orderItemsList.innerHTML = cart.map(item => `
-                <div class="summary-row" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 0, 0, 0.1);">
-                    <span>${item.name} x ${item.quantity}</span>
-                    <span style="color: var(--primary); font-weight: 600;">${(item.price * item.quantity).toFixed(2)} AED</span>
+                <div class="summary-row order-item-animated" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 0, 0, 0.1); opacity: 0;">
+                    <span><strong>${item.name}</strong> × ${item.quantity}</span>
+                    <span style="color: var(--primary); font-weight: 700; font-size: 1.05rem;">${(item.price * item.quantity).toFixed(2)} AED</span>
                 </div>
             `).join('');
 
