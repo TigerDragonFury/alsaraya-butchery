@@ -2,483 +2,747 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Saraya Butchery - Premium Quality Meats Delivered</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <!-- FONTS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+
+    <!-- CUSTOM STYLE -->
     <link rel="stylesheet" href="styles2.css">
-    <script src="translations.js"></script>
+
+    <!-- PAGE TITLE -->
+    <title>Al Saraya - Premium Halal Butchery</title>
+
+    <!-- FAV ICON -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="v2-body">
-    <!-- Navigation -->
-    <nav id="navbar" class="v2-navbar">
-        <div class="container">
-            <a href="index2.html" class="logo">
-                <img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img">
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="tracking.html">Track Order</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li class="cart-icon" id="cartIcon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    <span class="cart-count" id="cartCount">0</span>
-                </li>
-            </ul>
-            <div class="mobile-menu" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div class="header-contact">
+                        <a href="tel:+97123339111"><i class="fas fa-phone"></i> (02) 333 9111</a>
+                        <span class="divider">|</span>
+                        <a href="mailto:info@alsarayabutchery.com"><i class="fas fa-envelope"></i> info@alsarayabutchery.com</a>
+                    </div>
+                    <div class="header-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-main-content">
+                    <a href="index2.html" class="logo">
+                        <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
+                    </a>
+                    <nav class="nav-menu" id="navMenu">
+                        <ul>
+                            <li><a href="index2.html" class="active">Home</a></li>
+                            <li><a href="shop.html">Shop</a></li>
+                            <li><a href="#categories">Categories</a></li>
+                            <li><a href="#popular">Popular</a></li>
+                            <li><a href="tracking.html">Track Order</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </nav>
+                    <div class="header-actions">
+                        <button class="cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </button>
+                        <button class="mobile-menu-btn" id="mobileMenuBtn">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <!-- Hero Section -->
-    <section class="v2-hero" id="home">
-        <div class="v2-hero-bg">
-            <img src="https://i.imgur.com/QHZGwMJ.jpeg" alt="Premium Meat" class="v2-hero-image">
-            <div class="v2-hero-overlay"></div>
-        </div>
-        <div class="v2-hero-content">
-            <div class="v2-hero-badges">
-                <span class="v2-badge"><span class="badge-icon">&#10003;</span> 100% Halal</span>
-                <span class="v2-badge"><span class="badge-icon">&#9733;</span> Premium Quality</span>
-                <span class="v2-badge"><span class="badge-icon">&#128666;</span> Fast Delivery</span>
-            </div>
-            <h1 class="v2-hero-title">
-                Premium Quality<br>
-                <span class="highlight">Meats</span> Delivered
-            </h1>
-            <p class="v2-hero-subtitle">
-                Fresh, halal-certified cuts delivered to your doorstep in Abu Dhabi.
-                Experience the taste of excellence with Al Saraya.
-            </p>
-            <div class="v2-hero-actions">
-                <a href="shop.html" class="v2-btn v2-btn-primary">
-                    <span>Order Now</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </a>
-                <a href="#how-it-works" class="v2-btn v2-btn-secondary">
-                    <span>How It Works</span>
-                </a>
-            </div>
-            <div class="v2-hero-stats">
-                <div class="v2-stat">
-                    <span class="v2-stat-number">30+</span>
-                    <span class="v2-stat-label">Years Experience</span>
+    <!-- Hero Slider Section -->
+    <section class="hero-section">
+        <div class="swiper hero-slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="hero-slide" style="background-image: url('https://i.imgur.com/aDEnvBR.jpeg');">
+                        <div class="container">
+                            <div class="hero-content">
+                                <span class="hero-badge">100% Halal Certified</span>
+                                <h1 class="hero-title">
+                                    ENJOY PREMIUM<br>
+                                    <span class="highlight">QUALITY MEAT</span>
+                                </h1>
+                                <p class="hero-desc">Fresh, halal-certified cuts delivered to your doorstep. Experience the taste of excellence with Al Saraya Butchery.</p>
+                                <div class="hero-buttons">
+                                    <a href="shop.html" class="btn btn-primary">
+                                        Order Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                <div class="hero-offer">
+                                    <div class="offer-badge">
+                                        <span class="percent">20%</span>
+                                        <span class="off">OFF</span>
+                                    </div>
+                                    <span class="offer-text">First Order</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="v2-stat-divider"></div>
-                <div class="v2-stat">
-                    <span class="v2-stat-number">50K+</span>
-                    <span class="v2-stat-label">Happy Customers</span>
-                </div>
-                <div class="v2-stat-divider"></div>
-                <div class="v2-stat">
-                    <span class="v2-stat-number">100+</span>
-                    <span class="v2-stat-label">Products</span>
+                <div class="swiper-slide">
+                    <div class="hero-slide" style="background-image: url('https://i.imgur.com/MyHhL1b.jpeg');">
+                        <div class="container">
+                            <div class="hero-content">
+                                <span class="hero-badge">Fresh Daily</span>
+                                <h1 class="hero-title">
+                                    FINEST CUTS<br>
+                                    <span class="highlight">BEST PRICES</span>
+                                </h1>
+                                <p class="hero-desc">From our butcher's block to your kitchen. Premium lamb, beef, and chicken cuts selected with care.</p>
+                                <div class="hero-buttons">
+                                    <a href="shop.html" class="btn btn-primary">
+                                        Shop Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="v2-hero-scroll">
-            <span>Scroll Down</span>
-            <div class="v2-scroll-indicator"></div>
+            <div class="swiper-pagination"></div>
         </div>
     </section>
 
-    <!-- Feature Strip -->
-    <section class="v2-features-strip">
-        <div class="v2-feature">
-            <div class="v2-feature-icon">&#128666;</div>
-            <div class="v2-feature-text">
-                <strong>Free Delivery</strong>
-                <span>Orders over 100 AED</span>
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Fast Delivery</h4>
+                        <p>Same day delivery across Abu Dhabi</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Fresh Meat</h4>
+                        <p>100% fresh & halal certified</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Free Delivery</h4>
+                        <p>On orders above 100 AED</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>24/7 Support</h4>
+                        <p>Contact us anytime</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="v2-feature">
-            <div class="v2-feature-icon">&#128338;</div>
-            <div class="v2-feature-text">
-                <strong>Same Day</strong>
-                <span>Quick Delivery</span>
-            </div>
-        </div>
-        <div class="v2-feature">
-            <div class="v2-feature-icon">&#128274;</div>
-            <div class="v2-feature-text">
-                <strong>Secure Payment</strong>
-                <span>Cash or Card</span>
-            </div>
-        </div>
-        <div class="v2-feature">
-            <div class="v2-feature-icon">&#127942;</div>
-            <div class="v2-feature-text">
-                <strong>Top Quality</strong>
-                <span>Premium Cuts</span>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-images">
+                    <div class="about-img-main">
+                        <img src="https://i.imgur.com/OkGOI8h.jpeg" alt="Premium Meat">
+                    </div>
+                    <div class="about-img-secondary">
+                        <img src="https://i.imgur.com/zy3MaNw.jpeg" alt="Fresh Cuts">
+                    </div>
+                    <div class="experience-badge">
+                        <span class="years">8+</span>
+                        <span class="text">Years of Experience</span>
+                    </div>
+                </div>
+                <div class="about-content">
+                    <span class="section-badge">About Us</span>
+                    <h2 class="section-title">Where Quality Meets <span class="highlight">Tradition</span></h2>
+                    <p class="about-text">At Al Saraya Butchery, we've been serving Abu Dhabi with premium halal meats for over 30 years. Our expert butchers hand-select every cut to ensure the finest quality reaches your table.</p>
+                    <ul class="about-features">
+                        <li><i class="fas fa-check-circle"></i> Premium quality halal meats</li>
+                        <li><i class="fas fa-check-circle"></i> Expert butchers with decades of experience</li>
+                        <li><i class="fas fa-check-circle"></i> Same-day delivery with temperature control</li>
+                        <li><i class="fas fa-check-circle"></i> 100% satisfaction guaranteed</li>
+                    </ul>
+                    <a href="shop.html" class="btn btn-primary">
+                        Explore Our Products <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Categories Section -->
-    <section class="v2-categories" id="categories">
-        <div class="v2-section-header">
-            <span class="v2-section-tag">Categories</span>
-            <h2 class="v2-section-title">Explore Our Selection</h2>
-            <p class="v2-section-subtitle">Choose from our wide range of premium meat categories</p>
-        </div>
-        <div class="v2-categories-grid" id="categoriesGrid">
-            <!-- Categories will be loaded dynamically -->
+    <section class="categories-section" id="categories">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Categories</span>
+                <h2 class="section-title">Browse Our <span class="highlight">Menu</span></h2>
+                <p class="section-desc">Choose from our wide selection of premium meats</p>
+            </div>
+            <div class="categories-slider-wrap">
+                <div class="swiper categories-slider">
+                    <div class="swiper-wrapper" id="categoriesSlider">
+                        <!-- Categories loaded dynamically -->
+                    </div>
+                </div>
+                <div class="swiper-button-prev categories-prev"></div>
+                <div class="swiper-button-next categories-next"></div>
+            </div>
         </div>
     </section>
 
-    <!-- Popular Products -->
-    <section class="v2-products" id="products">
-        <div class="v2-section-header">
-            <span class="v2-section-tag">Best Sellers</span>
-            <h2 class="v2-section-title">Popular Products</h2>
-            <p class="v2-section-subtitle">Our customers' favorite picks</p>
-        </div>
-        <div class="v2-products-grid" id="popularProductsGrid">
-            <!-- Products will be loaded dynamically -->
-        </div>
-        <div class="v2-products-cta">
-            <a href="shop.html" class="v2-btn v2-btn-outline">
-                View All Products
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-            </a>
-        </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="v2-how-it-works" id="how-it-works">
-        <div class="v2-section-header">
-            <span class="v2-section-tag">Simple Steps</span>
-            <h2 class="v2-section-title">How It Works</h2>
-            <p class="v2-section-subtitle">Order your favorite meats in 3 easy steps</p>
-        </div>
-        <div class="v2-steps-grid">
-            <div class="v2-step">
-                <div class="v2-step-number">01</div>
-                <div class="v2-step-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <h3>Choose Products</h3>
-                <p>Browse our selection and add your favorite cuts to cart</p>
+    <!-- Popular Items Section -->
+    <section class="popular-section" id="popular">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Best Sellers</span>
+                <h2 class="section-title">Most <span class="highlight">Popular Items</span></h2>
+                <p class="section-desc">Our customers' favorite cuts</p>
             </div>
-            <div class="v2-step-connector"></div>
-            <div class="v2-step">
-                <div class="v2-step-number">02</div>
-                <div class="v2-step-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                        <line x1="1" y1="10" x2="23" y2="10"></line>
-                    </svg>
-                </div>
-                <h3>Place Order</h3>
-                <p>Checkout securely with cash on delivery or card payment</p>
+            <div class="products-grid" id="popularProducts">
+                <!-- Products loaded dynamically -->
             </div>
-            <div class="v2-step-connector"></div>
-            <div class="v2-step">
-                <div class="v2-step-number">03</div>
-                <div class="v2-step-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="1" y="3" width="15" height="13"></rect>
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                    </svg>
-                </div>
-                <h3>Get Delivered</h3>
-                <p>Receive fresh meat at your doorstep same day</p>
+            <div class="section-cta">
+                <a href="shop.html" class="btn btn-outline">
+                    View All Products <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
 
     <!-- Promo Banner -->
-    <section class="v2-promo-banner">
-        <div class="v2-promo-content">
-            <div class="v2-promo-text">
-                <span class="v2-promo-tag">Limited Time Offer</span>
-                <h2>Get 20% Off Your First Order</h2>
-                <p>New customers enjoy exclusive savings on their first purchase. Use code <strong>WELCOME20</strong> at checkout.</p>
-                <a href="shop.html" class="v2-btn v2-btn-white">Shop Now</a>
-            </div>
-            <div class="v2-promo-image">
-                <img src="https://i.imgur.com/xc5QvIK.jpeg" alt="Special Offer">
+    <section class="promo-section">
+        <div class="container">
+            <div class="promo-card">
+                <div class="promo-content">
+                    <span class="promo-badge">Special Offer</span>
+                    <h2 class="promo-title">Get 20% Off Your First Order!</h2>
+                    <p class="promo-desc">Use code <strong>WELCOME20</strong> at checkout and enjoy premium quality meats at a discounted price.</p>
+                    <a href="shop.html" class="btn btn-white">
+                        Order Now <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="promo-image">
+                    <img src="https://i.imgur.com/Yn0rT7s.jpeg" alt="Special Offer">
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Why Choose Us -->
-    <section class="v2-why-us">
-        <div class="v2-section-header">
-            <span class="v2-section-tag">Our Promise</span>
-            <h2 class="v2-section-title">Why Choose Al Saraya?</h2>
-            <p class="v2-section-subtitle">We're committed to quality and excellence in every cut</p>
-        </div>
-        <div class="v2-benefits-grid">
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#9989;</div>
-                <h3>Premium Quality</h3>
-                <p>Hand-selected cuts from the finest sources, ensuring exceptional taste.</p>
+    <!-- How It Works -->
+    <section class="how-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">How It Works</span>
+                <h2 class="section-title">Easy <span class="highlight">Ordering</span> Process</h2>
+                <p class="section-desc">Get your favorite meats in 3 simple steps</p>
             </div>
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#128330;</div>
-                <h3>100% Halal</h3>
-                <p>All products are certified halal, giving you complete peace of mind.</p>
-            </div>
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#10052;</div>
-                <h3>Always Fresh</h3>
-                <p>Fresh stock daily with strict cold chain standards.</p>
-            </div>
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#128666;</div>
-                <h3>Fast Delivery</h3>
-                <p>Same-day delivery across Abu Dhabi with temperature control.</p>
-            </div>
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#128176;</div>
-                <h3>Best Prices</h3>
-                <p>Competitive pricing without compromising on quality.</p>
-            </div>
-            <div class="v2-benefit-card">
-                <div class="v2-benefit-icon">&#128587;</div>
-                <h3>Expert Butchers</h3>
-                <p>Skilled butchers with decades of experience.</p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h4>Choose Products</h4>
+                    <p>Browse our selection and add items to your cart</p>
+                </div>
+                <div class="step-connector">
+                    <i class="fas fa-long-arrow-alt-right"></i>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h4>Place Your Order</h4>
+                    <p>Checkout with cash on delivery or card payment</p>
+                </div>
+                <div class="step-connector">
+                    <i class="fas fa-long-arrow-alt-right"></i>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h4>Get Delivered</h4>
+                    <p>Receive fresh meat at your doorstep same day</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="v2-testimonials">
-        <div class="v2-section-header">
-            <span class="v2-section-tag">Testimonials</span>
-            <h2 class="v2-section-title">What Our Customers Say</h2>
-        </div>
-        <div class="v2-testimonials-slider">
-            <div class="v2-testimonial-card">
-                <div class="v2-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p class="v2-testimonial-text">"The quality of meat from Al Saraya is exceptional! Always fresh and exactly as ordered. My family loves it!"</p>
-                <div class="v2-testimonial-author">
-                    <div class="v2-author-avatar">M</div>
-                    <div class="v2-author-info">
-                        <strong>Mohammed Al-Rashid</strong>
-                        <span>Al Bateen, Abu Dhabi</span>
-                    </div>
-                </div>
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Testimonials</span>
+                <h2 class="section-title">What Our <span class="highlight">Customers</span> Say</h2>
             </div>
-            <div class="v2-testimonial-card">
-                <div class="v2-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p class="v2-testimonial-text">"I've been ordering from Al Saraya for over 5 years. The butchers really know their craft!"</p>
-                <div class="v2-testimonial-author">
-                    <div class="v2-author-avatar">F</div>
-                    <div class="v2-author-info">
-                        <strong>Fatima Ahmed</strong>
-                        <span>Khalidiya, Abu Dhabi</span>
+            <div class="swiper testimonials-slider">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text">"The quality of meat from Al Saraya is exceptional! Always fresh and exactly as ordered. My family loves it!"</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">
+                                    <span>M</span>
+                                </div>
+                                <div class="author-info">
+                                    <h5>Mohammed Al-Rashid</h5>
+                                    <span>Al Bateen, Abu Dhabi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text">"I've been ordering from Al Saraya for over 5 years. The butchers really know their craft. Best quality in Abu Dhabi!"</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">
+                                    <span>F</span>
+                                </div>
+                                <div class="author-info">
+                                    <h5>Fatima Ahmed</h5>
+                                    <span>Khalidiya, Abu Dhabi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text">"Best butchery in Abu Dhabi! Premium quality, halal certified, and the online ordering is so convenient."</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">
+                                    <span>A</span>
+                                </div>
+                                <div class="author-info">
+                                    <h5>Abdullah Hassan</h5>
+                                    <span>Corniche, Abu Dhabi</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="v2-testimonial-card">
-                <div class="v2-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p class="v2-testimonial-text">"Best butchery in Abu Dhabi! Premium quality, halal certified, and the online ordering is so convenient."</p>
-                <div class="v2-testimonial-author">
-                    <div class="v2-author-avatar">A</div>
-                    <div class="v2-author-info">
-                        <strong>Abdullah Hassan</strong>
-                        <span>Corniche, Abu Dhabi</span>
-                    </div>
-                </div>
+                <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section class="v2-contact" id="contact">
-        <div class="v2-contact-container">
-            <div class="v2-contact-info">
-                <span class="v2-section-tag">Get In Touch</span>
-                <h2>Contact Us</h2>
-                <p>We'd love to hear from you. Reach out for orders or inquiries.</p>
-
-                <div class="v2-contact-items">
-                    <div class="v2-contact-item">
-                        <div class="v2-contact-icon">&#128205;</div>
-                        <div>
-                            <strong>Visit Us</strong>
-                            <p>Hana Tower, 7 Ash Shoulah St<br>Al Bateen, Abu Dhabi</p>
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <span class="section-badge">Contact Us</span>
+                    <h2 class="section-title">Get In <span class="highlight">Touch</span></h2>
+                    <p class="contact-desc">We'd love to hear from you. Reach out for orders or inquiries.</p>
+                    <div class="contact-items">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h5>Visit Us</h5>
+                                <p>Hana Tower, 7 Ash Shoulah St<br>Al Bateen, Abu Dhabi</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="v2-contact-item">
-                        <div class="v2-contact-icon">&#128222;</div>
-                        <div>
-                            <strong>Call Us</strong>
-                            <p>(02) 333 9111<br>Mon-Sat: 8AM - 8PM</p>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h5>Call Us</h5>
+                                <p>(02) 333 9111<br>Mon-Sat: 8AM - 8PM</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="v2-contact-item">
-                        <div class="v2-contact-icon">&#9993;</div>
-                        <div>
-                            <strong>Email Us</strong>
-                            <p>info@alsarayabutchery.com</p>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h5>Email Us</h5>
+                                <p>info@alsarayabutchery.com</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="v2-contact-form-wrapper">
-                <form class="v2-contact-form" id="contactForm">
-                    <div class="v2-form-group">
-                        <input type="text" placeholder="Your Name" required>
-                    </div>
-                    <div class="v2-form-group">
-                        <input type="email" placeholder="Your Email" required>
-                    </div>
-                    <div class="v2-form-group">
-                        <input type="tel" placeholder="Your Phone">
-                    </div>
-                    <div class="v2-form-group">
-                        <textarea placeholder="Your Message" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="v2-btn v2-btn-primary v2-btn-full">Send Message</button>
-                </form>
+                <div class="contact-form-wrap">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" placeholder="Your Phone">
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Your Message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Send Message <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="v2-footer">
-        <div class="v2-footer-main">
-            <div class="v2-footer-brand">
-                <img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya" class="v2-footer-logo">
-                <p>Your trusted source for premium quality halal meats since 1995. We're committed to excellence in every cut.</p>
-                <div class="v2-social-links">
-                    <a href="#" class="v2-social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                        </svg>
-                    </a>
-                    <a href="#" class="v2-social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="currentColor" stroke-width="2"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2"></line>
-                        </svg>
-                    </a>
-                    <a href="#" class="v2-social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                        </svg>
-                    </a>
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="index2.html" class="footer-logo">
+                            <img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya">
+                        </a>
+                        <p>Your trusted source for premium quality halal meats since 1995. We're committed to excellence in every cut.</p>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-whatsapp"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index2.html">Home</a></li>
+                            <li><a href="shop.html">Shop</a></li>
+                            <li><a href="tracking.html">Track Order</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Categories</h4>
+                        <ul>
+                            <li><a href="shop.html">Beef</a></li>
+                            <li><a href="shop.html">Lamb</a></li>
+                            <li><a href="shop.html">Chicken</a></li>
+                            <li><a href="shop.html">Specialty</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Delivery Info</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-contact">
+                        <h4>Contact Info</h4>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i> Al Bateen, Abu Dhabi</li>
+                            <li><i class="fas fa-phone-alt"></i> (02) 333 9111</li>
+                            <li><i class="fas fa-envelope"></i> info@alsarayabutchery.com</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="v2-footer-links">
-                <h4>Quick Links</h4>
-                <a href="#home">Home</a>
-                <a href="shop.html">Shop</a>
-                <a href="tracking.html">Track Order</a>
-                <a href="#contact">Contact</a>
-            </div>
-            <div class="v2-footer-links">
-                <h4>Categories</h4>
-                <a href="shop.html">Beef</a>
-                <a href="shop.html">Lamb</a>
-                <a href="shop.html">Chicken</a>
-                <a href="shop.html">Specialty</a>
-            </div>
-            <div class="v2-footer-links">
-                <h4>Support</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Delivery Info</a>
-                <a href="#">FAQ</a>
-            </div>
         </div>
-        <div class="v2-footer-bottom">
-            <p>&copy; 2026 Al Saraya Butchery. All rights reserved.</p>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 Al Saraya Butchery. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav">
-        <a href="index2.html" class="nav-item active">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-            </div>
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index2.html" class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="shop.html" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-            </div>
+        <a href="shop.html" class="mobile-nav-item">
+            <i class="fas fa-store"></i>
             <span>Shop</span>
         </a>
-        <a href="#" id="cartIconBottom" class="nav-item cart-item-nav">
-            <div class="nav-icon cart-icon-wrapper">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-                <span class="cart-count" id="cartCountMobile">0</span>
-            </div>
+        <a href="#" class="mobile-nav-item cart-nav-item" id="cartNavBtn">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="mobile-cart-count" id="mobileCartCount">0</span>
             <span>Cart</span>
         </a>
-        <a href="tracking.html" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                </svg>
-            </div>
+        <a href="tracking.html" class="mobile-nav-item">
+            <i class="fas fa-truck"></i>
             <span>Track</span>
         </a>
-        <a href="#contact" class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                </svg>
-            </div>
+        <a href="#contact" class="mobile-nav-item">
+            <i class="fas fa-phone"></i>
             <span>Contact</span>
         </a>
     </nav>
 
     <!-- Cart Modal -->
     <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-drawer">
             <div class="cart-header">
-                <h2>Shopping Cart</h2>
-                <button class="close-cart" id="closeCart">&times;</button>
+                <h3><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="cart-items" id="cartItems"></div>
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cartTotal">0.00 AED</span>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items loaded dynamically -->
             </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">0.00 AED</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <!-- App JS -->
     <script src="app.js"></script>
+
     <script>
+        // Use supabase from app.js (already initialized)
+
+        // Wait for DOM and scripts to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Swipers after DOM ready
+            initSwipers();
+
+            // Load data
+            setTimeout(() => {
+                loadCategories();
+                loadPopularProducts();
+                updateCartCountLocal();
+            }, 100);
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // Initialize Swipers
+        function initSwipers() {
+            // Hero slider
+            new Swiper('.hero-slider', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.hero-slider .swiper-pagination',
+                    clickable: true,
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                }
+            });
+
+            // Categories slider
+            window.categoriesSwiper = new Swiper('.categories-slider', {
+                slidesPerView: 2,
+                spaceBetween: 15,
+                navigation: {
+                    nextEl: '.categories-next',
+                    prevEl: '.categories-prev',
+                },
+                breakpoints: {
+                    480: { slidesPerView: 3, spaceBetween: 15 },
+                    768: { slidesPerView: 4, spaceBetween: 20 },
+                    1024: { slidesPerView: 5, spaceBetween: 20 },
+                    1280: { slidesPerView: 6, spaceBetween: 20 },
+                }
+            });
+
+            // Testimonials slider
+            new Swiper('.testimonials-slider', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                pagination: {
+                    el: '.testimonials-slider .swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    768: { slidesPerView: 2, spaceBetween: 25 },
+                    1024: { slidesPerView: 3, spaceBetween: 30 },
+                }
+            });
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Mobile Menu Toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+
+            if (mobileMenuBtn && navMenu) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    }
+                });
+
+                // Close menu when clicking a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    });
+                });
+            }
+
+            // Cart Modal
+            const cartModal = document.getElementById('cartModal');
+            const cartBtn = document.getElementById('cartBtn');
+            const cartClose = document.getElementById('cartClose');
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartNavBtn = document.getElementById('cartNavBtn');
+
+            if (cartBtn) cartBtn.addEventListener('click', openCartModal);
+            if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openCartModal();
+            });
+            if (cartClose) cartClose.addEventListener('click', closeCartModal);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCartModal);
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (header) {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                }
+            });
+
+            // Contact form
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (typeof showNotification === 'function') {
+                        showNotification('Thank you! We\'ll get back to you soon.');
+                    } else {
+                        alert('Thank you! We\'ll get back to you soon.');
+                    }
+                    this.reset();
+                });
+            }
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href.length > 1) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            const headerHeight = document.getElementById('header')?.offsetHeight || 80;
+                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+        }
+
+        // Cart Modal Functions
+        function openCartModal() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                displayCartLocal();
+            }
+        }
+
+        function closeCartModal() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
         // Load Categories
         async function loadCategories() {
-            if (!window.supabase) return;
-
             try {
                 const { data: categories, error } = await supabase
                     .from('categories')
@@ -487,111 +751,196 @@
 
                 if (error) throw error;
 
-                const grid = document.getElementById('categoriesGrid');
+                const slider = document.getElementById('categoriesSlider');
+                if (!slider) return;
+
                 if (!categories || categories.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94A3B8;">No categories available</p>';
+                    slider.innerHTML = '<div class="swiper-slide"><div class="category-card"><p>No categories</p></div></div>';
                     return;
                 }
 
-                grid.innerHTML = categories.slice(0, 6).map(cat => `
-                    <a href="shop.html" class="v2-category-card">
-                        <div class="v2-category-icon">${cat.icon || '🥩'}</div>
-                        <h3>${cat.name}</h3>
-                        <p>${cat.description || ''}</p>
-                        <span class="v2-category-arrow">&#8594;</span>
-                    </a>
+                slider.innerHTML = categories.map(cat => `
+                    <div class="swiper-slide">
+                        <a href="shop.html?category=${cat.slug || ''}" class="category-card">
+                            <div class="category-icon">${cat.icon || '🥩'}</div>
+                            <h4>${cat.name}</h4>
+                        </a>
+                    </div>
                 `).join('');
+
+                // Update swiper
+                if (window.categoriesSwiper) {
+                    window.categoriesSwiper.update();
+                }
 
             } catch (error) {
                 console.error('Error loading categories:', error);
+                const slider = document.getElementById('categoriesSlider');
+                if (slider) {
+                    slider.innerHTML = '<div class="swiper-slide"><div class="category-card"><p>Error loading</p></div></div>';
+                }
             }
         }
 
         // Load Popular Products
         async function loadPopularProducts() {
-            if (!window.supabase) return;
+            const grid = document.getElementById('popularProducts');
+            if (!grid) return;
+
+            // Show loading state
+            grid.innerHTML = '<p class="no-products">Loading products...</p>';
 
             try {
                 const { data: products, error } = await supabase
                     .from('products')
                     .select('*')
                     .eq('in_stock', true)
-                    .not('image_url', 'is', null)
                     .order('created_at', { ascending: false })
                     .limit(8);
 
                 if (error) throw error;
 
-                const grid = document.getElementById('popularProductsGrid');
                 if (!products || products.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94A3B8;">No products available</p>';
+                    grid.innerHTML = '<p class="no-products">No products available</p>';
                     return;
                 }
 
-                grid.innerHTML = products.map(product => `
-                    <div class="v2-product-card">
-                        <a href="product-detail.html?id=${product.id}" class="v2-product-image">
-                            <img src="${product.image_url}" alt="${product.name}" loading="lazy">
-                            ${product.badge ? `<span class="v2-product-badge">${product.badge}</span>` : ''}
-                        </a>
-                        <div class="v2-product-info">
-                            <h3><a href="product-detail.html?id=${product.id}">${product.name}</a></h3>
-                            <p class="v2-product-desc">${product.description || ''}</p>
-                            <div class="v2-product-footer">
-                                <div class="v2-product-price">
-                                    <span class="price">${parseFloat(product.price).toFixed(2)} AED</span>
-                                    <span class="unit">/${product.unit || 'kg'}</span>
+                grid.innerHTML = products.map(product => {
+                    const name = product.name || 'Product';
+                    const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const price = parseFloat(product.price) || 0;
+                    const unit = product.unit || 'kg';
+                    const imageUrl = product.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
+
+                    return `
+                        <div class="product-card">
+                            <a href="product-detail.html?id=${product.id}" class="product-image">
+                                <img src="${imageUrl}" alt="${safeName}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                                ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                            </a>
+                            <div class="product-info">
+                                <h4><a href="product-detail.html?id=${product.id}">${name}</a></h4>
+                                <p class="product-desc">${product.description || ''}</p>
+                                <div class="product-footer">
+                                    <div class="product-price">
+                                        <span class="price">${price.toFixed(2)} AED</span>
+                                        <span class="unit">/${unit}</span>
+                                    </div>
+                                    <button class="add-to-cart-btn" onclick="addToCartLocal(${product.id}, '${safeName}', ${price}, '${unit}')">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
                                 </div>
-                                <button class="v2-add-to-cart" onclick="addToCartFromDB(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.category || ''}', '${product.unit || 'kg'}')">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="9" cy="21" r="1"></circle>
-                                        <circle cx="20" cy="21" r="1"></circle>
-                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </button>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
             } catch (error) {
                 console.error('Error loading products:', error);
+                grid.innerHTML = '<p class="no-products">Error loading products. Please refresh.</p>';
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCategories();
-            loadPopularProducts();
+        // Local Cart Functions (fallback if app.js not loaded)
+        function addToCartLocal(id, name, price, unit) {
+            // Try to use app.js function first
+            if (typeof addToCartFromDB === 'function') {
+                addToCartFromDB(id, name, price, '', unit);
+                return;
+            }
 
-            // Contact form
-            document.getElementById('contactForm')?.addEventListener('submit', (e) => {
-                e.preventDefault();
-                showNotification('Thank you! We\'ll get back to you soon.');
-                e.target.reset();
-            });
+            // Fallback local implementation
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingIndex = cart.findIndex(item => item.id === id);
 
-            // Mobile cart icon
-            document.getElementById('cartIconBottom')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('cartModal').classList.add('active');
-                displayCart();
-            });
-
-            // Smooth scroll for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const href = this.getAttribute('href');
-                    if (href !== '#') {
-                        e.preventDefault();
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: price,
+                    unit: unit,
+                    quantity: 1
                 });
-            });
-        });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCountLocal();
+
+            // Show notification
+            if (typeof showNotification === 'function') {
+                showNotification(`${name} added to cart!`);
+            } else {
+                console.log(`${name} added to cart!`);
+            }
+        }
+
+        function updateCartCountLocal() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+            const cartCount = document.getElementById('cartCount');
+            const mobileCartCount = document.getElementById('mobileCartCount');
+
+            if (cartCount) cartCount.textContent = count;
+            if (mobileCartCount) mobileCartCount.textContent = count;
+        }
+
+        function displayCartLocal() {
+            // Try to use app.js function first
+            if (typeof displayCart === 'function') {
+                displayCart();
+                return;
+            }
+
+            // Fallback local implementation
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            if (!cartItems || !cartTotal) return;
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; padding: 40px; color: #6c757d;">Your cart is empty</p>';
+                cartTotal.textContent = '0.00 AED';
+                return;
+            }
+
+            let total = 0;
+            cartItems.innerHTML = cart.map((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px; font-size: 15px;">${item.name}</h4>
+                            <p style="margin: 0; font-size: 13px; color: #6c757d;">${item.price.toFixed(2)} AED × ${item.quantity}</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: 600; color: #ff0000;">${itemTotal.toFixed(2)} AED</span>
+                            <button onclick="removeFromCartLocal(${index})" style="background: #ff4444; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer;">×</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            cartTotal.textContent = total.toFixed(2) + ' AED';
+        }
+
+        function removeFromCartLocal(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCountLocal();
+            displayCartLocal();
+        }
+
+        // Make functions globally available
+        window.openCartModal = openCartModal;
+        window.closeCartModal = closeCartModal;
+        window.addToCartLocal = addToCartLocal;
+        window.removeFromCartLocal = removeFromCartLocal;
     </script>
 </body>
 </html>
