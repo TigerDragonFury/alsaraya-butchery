@@ -439,7 +439,81 @@
     <!-- Authentication Modals -->
     <div class="auth-modal" id="authModal"></div>
     <div class="profile-modal" id="profileModal" style="display: none;"></div>
-    <div class="addresses-modal" id="addressesModal" style="display: none;"></div>
+    
+    <!-- Addresses Modal -->
+    <div class="addresses-modal" id="addressesModal" style="display: none;">
+        <div class="auth-overlay" onclick="closeAddressesModal()"></div>
+        <div class="addresses-container">
+            <button class="auth-close" onclick="closeAddressesModal()"><i class="fas fa-times"></i></button>
+            <div class="addresses-header">
+                <h2><i class="fas fa-map-marker-alt"></i> My Addresses</h2>
+                <button class="btn btn-primary" onclick="showAddAddressForm()"><i class="fas fa-plus"></i> Add New</button>
+            </div>
+            <div class="addresses-list" id="addressesList"></div>
+            <div class="address-form-container" id="addressFormContainer" style="display: none;">
+                <h3 id="addressFormTitle">Add New Address</h3>
+                <form class="address-form" id="addressForm">
+                    <input type="hidden" id="addressId" />
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Label</label>
+                            <select id="addressLabel" required>
+                                <option value="Home">Home</option>
+                                <option value="Work">Work</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="addressFullName" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="addressPhone" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Area</label>
+                            <input type="text" id="addressArea" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <textarea id="addressStreet" rows="2" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Building</label>
+                            <input type="text" id="addressBuilding" />
+                        </div>
+                        <div class="form-group">
+                            <label>Floor</label>
+                            <input type="text" id="addressFloor" />
+                        </div>
+                        <div class="form-group">
+                            <label>Apartment</label>
+                            <input type="text" id="addressApartment" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Landmark (Optional)</label>
+                        <input type="text" id="addressLandmark" />
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="addressDefault" />
+                            Set as default address
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="hideAddressForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Check if user is logged in
@@ -620,19 +694,79 @@
             try {
                 await updateUserProfile({ full_name: fullName, email: email });
                 showNotification('Profile updated successfully!', 'success');
+                // Reload user data to update sidebar
+                await loadUserData();
             } catch (error) {
                 console.error('Error updating profile:', error);
                 showNotification('Failed to update profile', 'error');
             }
         });
+        
+        // Address form submission
+        if (document.getElementById('addressForm')) {
+            document.getElementById('addressForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const addressId = document.getElementById('addressId').value;
+                const addressData = {
+                    label: document.getElementById('addressLabel').value,
+                    full_name: document.getElementById('addressFullName').value,
+                    phone_number: document.getElementById('addressPhone').value,
+                    area: document.getElementById('addressArea').value,
+                    street_address: document.getElementById('addressStreet').value,
+                    building: document.getElementById('addressBuilding').value || null,
+                    floor: document.getElementById('addressFloor').value || null,
+                    apartment: document.getElementById('addressApartment').value || null,
+                    landmark: document.getElementById('addressLandmark').value || null,
+                    is_default: document.getElementById('addressDefault').checked
+                };
+                
+                if (addressId) {
+                    // Update existing address
+                    await updateUserAddress(addressId, addressData);
+                } else {
+                    // Add new address
+                    await addUserAddress(addressData);
+                }
+                
+                // Reload addresses
+                await loadUserAddressesTab();
+                hideAddressForm();
+                closeAddressesModal();
+            });
+        }
 
         // Initialize page
         window.addEventListener('load', async () => {
             // Wait for auth to initialize
-            setTimeout(async () => {
-                await loadUserData();
-            }, 1000);
+            await waitForAuth();
+            await loadUserData();
+            
+            // Check for URL parameters to switch tabs
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) {
+                showTab(tab);
+            }
         });
+        
+        // Wait for auth to be ready
+        async function waitForAuth() {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const checkAuth = setInterval(() => {
+                    attempts++;
+                    if (typeof firebase !== 'undefined' && firebase.auth) {
+                        clearInterval(checkAuth);
+                        // Give it a moment to check existing session
+                        setTimeout(resolve, 500);
+                    } else if (attempts > 20) {
+                        clearInterval(checkAuth);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
     </script>
 </body>
 </html>

@@ -1220,20 +1220,46 @@
         // CHECKOUT INITIALIZATION
         // ========================================
         async function initializeCheckout() {
-            // Wait for auth to initialize 
-            setTimeout(async () => {
-                const user = window.currentUser ? window.currentUser() : null;
-                const profile = window.userProfile ? window.userProfile() : null;
-                const addresses = window.userAddresses ? window.userAddresses() : [];
+            // Wait for Firebase auth to be ready
+            await waitForAuth();
+            
+            const user = window.currentUser ? window.currentUser() : null;
+            const profile = window.userProfile ? window.userProfile() : null;
+            const addresses = window.userAddresses ? window.userAddresses() : [];
 
-                if (user && profile) {
-                    // User is logged in
-                    await populateUserData(user, profile, addresses);
-                } else {
-                    // Show login prompt (user can choose to continue as guest)
-                    showLoginPrompt();
-                }
-            }, 1000);
+            console.log('Checkout init - User:', user, 'Profile:', profile);
+
+            if (user && profile) {
+                // User is logged in
+                await populateUserData(user, profile, addresses);
+            } else {
+                // Show login prompt (user can choose to continue as guest)
+                showLoginPrompt();
+            }
+        }
+        
+        // Wait for auth to be ready
+        async function waitForAuth() {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const checkAuth = setInterval(() => {
+                    attempts++;
+                    const user = window.currentUser ? window.currentUser() : null;
+                    
+                    // Check if auth is initialized
+                    if (typeof firebase !== 'undefined' && firebase.auth) {
+                        // If user exists or we've waited long enough
+                        if (user || attempts > 20) {
+                            clearInterval(checkAuth);
+                            resolve();
+                        }
+                    } else if (attempts > 30) {
+                        // Timeout after 3 seconds
+                        clearInterval(checkAuth);
+                        resolve();
+                    }
+                }, 100);
+            });
         }
 
         function showLoginPrompt() {

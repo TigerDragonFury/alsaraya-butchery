@@ -467,13 +467,13 @@ function updateUIForLoggedInUser() {
                     <span>${userProfile?.full_name || 'Account'}</span>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
-                    <a href="#" onclick="showProfile(); return false;">
+                    <a href="profile.html">
                         <i class="fas fa-user"></i> My Profile
                     </a>
-                    <a href="#" onclick="showAddresses(); return false;">
+                    <a href="profile.html?tab=addresses">
                         <i class="fas fa-map-marker-alt"></i> My Addresses
                     </a>
-                    <a href="orders.html">
+                    <a href="profile.html?tab=orders">
                         <i class="fas fa-shopping-bag"></i> My Orders
                     </a>
                     <a href="#" onclick="signOut(); return false;">
