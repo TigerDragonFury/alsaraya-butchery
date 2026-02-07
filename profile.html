@@ -848,6 +848,11 @@
             // Find the link that was clicked by matching the onclick attribute
             const activeLink = document.querySelector(`.profile-menu a[onclick*="showTab('${tabName}')"]`);
             if (activeLink) activeLink.classList.add('active');
+            
+            // Load addresses when addresses tab is shown
+            if (tabName === 'addresses') {
+                loadUserAddressesTab();
+            }
         }
 
         // Update profile form submission
