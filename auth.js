@@ -524,9 +524,13 @@ document.addEventListener('click', (e) => {
 // are defined in the HTML file that includes this script
 
 // Export functions for global use
-window.currentUser = () => currentUser;
-window.userProfile = () => userProfile;
-window.userAddresses = () => userAddresses;
+// Use getCurrentUser to avoid circular reference with window.currentUser
+window.getCurrentUser = () => currentUser;
+window.getUserProfile = () => userProfile;
+window.getUserAddresses = () => userAddresses;
+window.currentUser = () => currentUser;  // Keep for backward compatibility
+window.userProfile = () => userProfile;  // Keep for backward compatibility
+window.userAddresses = () => userAddresses;  // Keep for backward compatibility
 window.signOut = signOut;
 window.sendOTP = sendOTP;
 window.verifyOTP = verifyOTP;

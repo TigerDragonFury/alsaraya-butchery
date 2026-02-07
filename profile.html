@@ -671,7 +671,7 @@
     <script>
         // Check if user is logged in
         async function checkAuth() {
-            if (!currentUser || !currentUser()) {
+            if (!window.getCurrentUser || !window.getCurrentUser()) {
                 window.location.href = 'index.html?login=required';
                 return false;
             }
@@ -680,8 +680,8 @@
 
         // Load user profile data
         async function loadUserData() {
-            const user = currentUser();
-            const profile = userProfile();
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
+            const profile = window.getUserProfile ? window.getUserProfile() : null;
             
             if (!user) {
                 await checkAuth();
@@ -719,7 +719,7 @@
         // Load user orders
         async function loadUserOrders() {
             const ordersList = document.getElementById('ordersList');
-            const user = currentUser();
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
             
             if (!user) return;
 
@@ -788,7 +788,7 @@
         // Load user addresses for the tab
         async function loadUserAddressesTab() {
             const addressesGrid = document.getElementById('addressesGrid');
-            const addresses = userAddresses();
+            const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
             
             if (!addresses || addresses.length === 0) {
                 addressesGrid.innerHTML = `
@@ -907,14 +907,14 @@
         async function waitForAuth() {
             return new Promise((resolve) => {
                 let attempts = 0;
-                const checkAuth = setInterval(() => {
+                const checkInterval = setInterval(() => {
                     attempts++;
                     if (typeof firebase !== 'undefined' && firebase.auth) {
-                        clearInterval(checkAuth);
+                        clearInterval(checkInterval);
                         // Give it a moment to check existing session
                         setTimeout(resolve, 500);
                     } else if (attempts > 20) {
-                        clearInterval(checkAuth);
+                        clearInterval(checkInterval);
                         resolve();
                     }
                 }, 100);
