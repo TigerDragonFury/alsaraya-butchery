@@ -1033,8 +1033,8 @@
                 const uaeTimestamp = getUAETime();
                 
                 // Get logged in user if available
-                const user = window.currentUser ? window.currentUser() : null;
-                const userId = user ? (user.uid || user.id) : null;
+                const user = window.getCurrentUser ? window.getCurrentUser() : null;
+                const userId = user ? user.uid : null;
 
                 // Save order to Supabase
                 const { data: orderData, error: orderError } = await supabase
@@ -1223,9 +1223,9 @@
             // Wait for Firebase auth to be ready
             await waitForAuth();
             
-            const user = window.currentUser ? window.currentUser() : null;
-            const profile = window.userProfile ? window.userProfile() : null;
-            const addresses = window.userAddresses ? window.userAddresses() : [];
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
+            const profile = window.getUserProfile ? window.getUserProfile() : null;
+            const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
 
             console.log('Checkout init - User:', user, 'Profile:', profile);
 
@@ -1244,7 +1244,7 @@
                 let attempts = 0;
                 const checkAuth = setInterval(() => {
                     attempts++;
-                    const user = window.currentUser ? window.currentUser() : null;
+                    const user = window.getCurrentUser ? window.getCurrentUser() : null;
                     
                     // Check if auth is initialized
                     if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -1337,10 +1337,10 @@
         }
 
         function selectAddress(addressId) {
-            const user = window.currentUser ? window.currentUser() : null;
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
             if (!user) return;
 
-            const addresses = window.userAddresses ? window.userAddresses() : [];
+            const addresses = window.getUserAddresses ? window.getUserAddresses() : [];
             const address = addresses.find(a => a.id === addressId);
             
             if (!address) return;

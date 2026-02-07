@@ -727,7 +727,7 @@
                 const { data: orders, error } = await supabase
                     .from('orders')
                     .select('*')
-                    .eq('user_id', user.uid || user.id)
+                    .eq('user_id', user.uid)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
@@ -834,7 +834,9 @@
             
             // Update active menu item
             document.querySelectorAll('.profile-menu a').forEach(link => link.classList.remove('active'));
-            event.target.closest('a').classList.add('active');
+            // Find the link that was clicked by matching the onclick attribute
+            const activeLink = document.querySelector(`.profile-menu a[onclick*="showTab('${tabName}')"]`);
+            if (activeLink) activeLink.classList.add('active');
         }
 
         // Update profile form submission
@@ -891,6 +893,16 @@
 
         // Initialize page
         window.addEventListener('load', async () => {
+            // Setup cart button
+            const cartBtn = document.getElementById('cartBtn');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', () => {
+                    if (typeof openCart === 'function') {
+                        openCart();
+                    }
+                });
+            }
+            
             // Wait for auth to initialize
             await waitForAuth();
             await loadUserData();
