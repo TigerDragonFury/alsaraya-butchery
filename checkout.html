@@ -1249,9 +1249,17 @@
             autocomplete.style.width = '100%';
             autocomplete.style.font = 'inherit';
             
-            // Replace input with autocomplete element
-            addressInput.parentNode.insertBefore(autocomplete, addressInput);
-            addressInput.style.display = 'none';
+            // Keep original input visible but styled to look like autocomplete is replacing it
+            const inputParent = addressInput.parentNode;
+            inputParent.style.position = 'relative';
+            
+            // Insert autocomplete element
+            inputParent.insertBefore(autocomplete, addressInput);
+            
+            // Hide the original input but keep it in the form
+            addressInput.style.position = 'absolute';
+            addressInput.style.opacity = '0';
+            addressInput.style.pointerEvents = 'none';
             addressInput.removeAttribute('required');
             
             // Listen for place selection (new event name)
@@ -1307,9 +1315,13 @@
                 if (city && city !== area) addressParts.push(city);
                 if (emirate && emirate !== city) addressParts.push(emirate);
                 
-                addressInput.value = addressParts.join(', ');
+                const fullAddress = addressParts.join(', ');
+                addressInput.value = fullAddress;
                 
-                console.log('Address selected:', { streetNumber, route, area, city, emirate });
+                console.log('Address selected and filled:', fullAddress);
+                
+                // Trigger change event so form knows it's updated
+                addressInput.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
 
@@ -1411,9 +1423,14 @@
             document.getElementById('customerMobile').value = profile.phone_number || user.phoneNumber || '';
             document.getElementById('customerEmail').value = profile.email || '';
 
+            console.log('Populating user data - addresses:', addresses);
+
             // Show saved addresses if available
             if (addresses && addresses.length > 0) {
+                console.log('Displaying', addresses.length, 'saved addresses');
                 displaySavedAddresses(addresses);
+            } else {
+                console.log('No addresses to display');
             }
         }
 

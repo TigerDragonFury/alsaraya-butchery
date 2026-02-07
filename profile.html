@@ -972,9 +972,17 @@
             autocomplete.style.width = '100%';
             autocomplete.style.font = 'inherit';
             
-            // Replace input with autocomplete element
-            addressInput.parentNode.insertBefore(autocomplete, addressInput);
-            addressInput.style.display = 'none';
+            // Keep original input visible but styled to look like autocomplete is replacing it
+            const inputParent = addressInput.parentNode;
+            inputParent.style.position = 'relative';
+            
+            // Insert autocomplete element
+            inputParent.insertBefore(autocomplete, addressInput);
+            
+            // Hide the original input but keep it in the form
+            addressInput.style.position = 'absolute';
+            addressInput.style.opacity = '0';
+            addressInput.style.pointerEvents = 'none';
             addressInput.removeAttribute('required');
             
             // Listen for place selection (new event name)
@@ -1027,10 +1035,13 @@
                 if (area || city) {
                     const areaInput = document.getElementById('addressArea');
                     areaInput.value = area || city;
-                    areaInput.dispatchEvent(new Event('change'));
+                    areaInput.dispatchEvent(new Event('change', { bubbles: true }));
                 }
                 
-                console.log('Address selected:', { streetAddress, area, city, emirate });
+                console.log('Address selected and filled:', { streetAddress, area, city, emirate });
+                
+                // Trigger change event so form knows it's updated
+                addressInput.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
         
