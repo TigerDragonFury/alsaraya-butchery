@@ -819,6 +819,19 @@ window.uploadImageToImgur = async function(input) {
             body: formData
         });
         
+        // Check for rate limiting or server errors
+        if (response.status === 503) {
+            throw new Error('Imgur is temporarily unavailable or rate limit exceeded. Please try again later.');
+        }
+        
+        if (response.status === 429) {
+            throw new Error('Imgur upload limit reached (50 uploads/hour). Please wait and try again.');
+        }
+        
+        if (!response.ok) {
+            throw new Error(`Upload failed with status ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success) {
