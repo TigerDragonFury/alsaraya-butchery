@@ -226,7 +226,7 @@ ul {
    HERO SECTION
    ============================================ */
 .hero-section {
-    margin-top: 115px;
+    margin-top: 88px;
 }
 
 .header.scrolled ~ .hero-section,
@@ -2297,19 +2297,6 @@ ul {
     display: none;
     align-items: center;
     justify-content: center;
-}
-
-.profile-container,
-.addresses-container {
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: var(--white);
-    border-radius: var(--radius-xl);
-    padding: 40px;
-    box-shadow: var(--shadow-xl);
 }
 
 .addresses-container {
