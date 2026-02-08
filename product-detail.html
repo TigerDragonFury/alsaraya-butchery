@@ -13,6 +13,7 @@
 
     <!-- CUSTOM STYLE -->
     <link rel="stylesheet" href="styles2.css">
+    <script src="load-components.js"></script>
 
     <!-- PAGE TITLE -->
     <title>Product Details - Al Saraya Butchery</title>
@@ -33,7 +34,7 @@
         .breadcrumb-section {
             background: var(--light);
             padding: 20px 0;
-            margin-top: 115px;
+            margin-top: 88px;
             border-bottom: 1px solid var(--gray-200);
         }
 
@@ -556,45 +557,7 @@
     <!-- reCAPTCHA Container (required for Firebase phone auth) -->
     <div id="recaptcha-container"></div>
     
-    <!-- Header -->
-    <header class="header" id="header">
-        <div class="header-main">
-            <div class="container">
-                <div class="header-main-content">
-                    <a href="index.html" class="logo">
-                        <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
-                    </a>
-                    <nav class="nav-menu" id="navMenu">
-                        <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="shop.html" class="active">Shop</a></li>
-                            <li><a href="index.html#categories">Categories</a></li>
-                            <li><a href="index.html#popular">Popular</a></li>
-                            <li><a href="tracking.html">Track Order</a></li>
-                            <li><a href="index.html#contact">Contact</a></li>
-                        </ul>
-                    </nav>
-                    <div class="header-actions">
-                        <button class="cart-btn" id="cartBtn">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-count" id="cartCount">0</span>
-                        </button>
-                        <!-- Auth Button Container -->
-                        <div id="authBtnContainer">
-                            <button class="btn-auth" onclick="openAuthModal('login')">
-                                <i class="fas fa-user"></i> Login
-                            </button>
-                        </div>
-                        <button class="mobile-menu-btn" id="mobileMenuBtn">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="header-placeholder"></div>
 
     <!-- Breadcrumb -->
     <section class="breadcrumb-section">
@@ -678,67 +641,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid">
-                    <div class="footer-brand">
-                        <a href="index.html" class="footer-logo">
-                            <img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya">
-                        </a>
-                        <p>Your trusted source for premium quality halal meats since 1995. We're committed to excellence in every cut.</p>
-                        <div class="footer-social">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-whatsapp"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                        </div>
-                    </div>
-                    <div class="footer-links">
-                        <h4>Quick Links</h4>
-                        <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="shop.html">Shop</a></li>
-                            <li><a href="tracking.html">Track Order</a></li>
-                            <li><a href="index.html#contact">Contact</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-links">
-                        <h4>Categories</h4>
-                        <ul>
-                            <li><a href="shop.html">Beef</a></li>
-                            <li><a href="shop.html">Lamb</a></li>
-                            <li><a href="shop.html">Chicken</a></li>
-                            <li><a href="shop.html">Specialty</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-links">
-                        <h4>Support</h4>
-                        <ul>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Delivery Info</a></li>
-                            <li><a href="#">FAQ</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-contact">
-                        <h4>Contact Info</h4>
-                        <ul>
-                            <li><i class="fas fa-map-marker-alt"></i> Al Bateen, Abu Dhabi</li>
-                            <li><i class="fas fa-phone-alt"></i> (02) 333 9111</li>
-                            <li><i class="fas fa-envelope"></i> info@alsarayabutchery.com</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2026 Al Saraya Butchery. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 
     <!-- Floating Add to Cart Bar (Mobile) -->
     <div class="floating-cart-bar">
