@@ -794,8 +794,8 @@ function setupFormHandlers() {
     });
 }
 
-// Image Upload to Imgur
-window.uploadImageToImgur = async function(input) {
+// Image Upload - Routes to Supabase or Imgur based on selection
+window.uploadImage = async function(input) {
     const file = input.files[0];
     if (!file) return;
     
@@ -805,7 +805,55 @@ window.uploadImageToImgur = async function(input) {
         return;
     }
     
-    showNotification('Uploading image...');
+    const provider = document.getElementById('uploadProvider')?.value || 'supabase';
+    
+    if (provider === 'supabase') {
+        await uploadImageToSupabase(file);
+    } else {
+        await uploadImageToImgur(file);
+    }
+};
+
+// Upload to Supabase Storage
+async function uploadImageToSupabase(file) {
+    showNotification('Uploading to Supabase...');
+    
+    try {
+        // Create unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+        
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+        
+        if (error) throw error;
+        
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+        
+        const imageUrl = urlData.publicUrl;
+        document.getElementById('productImageUrl').value = imageUrl;
+        document.getElementById('previewImg').src = imageUrl;
+        document.getElementById('imagePreview').style.display = 'block';
+        showNotification('Image uploaded successfully to Supabase!');
+        
+    } catch (error) {
+        console.error('Error uploading to Supabase:', error);
+        showNotification('Error uploading to Supabase: ' + error.message, 'error');
+    }
+}
+
+// Upload to Imgur
+async function uploadImageToImgur(file) {
+    showNotification('Uploading to Imgur...');
     
     const formData = new FormData();
     formData.append('image', file);

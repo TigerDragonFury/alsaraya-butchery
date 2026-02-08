@@ -259,7 +259,11 @@
                     <label>Product Image</label>
                     <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                         <input type="text" id="productImageUrl" placeholder="Image URL or upload..." style="flex: 1; min-width: 200px;">
-                        <input type="file" id="productImageFile" accept="image/*" style="display: none;" onchange="uploadImageToImgur(this)">
+                        <select id="uploadProvider" style="padding: 0.5rem; border-radius: 4px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <option value="supabase">Supabase (Unlimited)</option>
+                            <option value="imgur">Imgur (50/hour)</option>
+                        </select>
+                        <input type="file" id="productImageFile" accept="image/*" style="display: none;" onchange="uploadImage(this)">
                         <button type="button" class="btn btn-secondary" onclick="document.getElementById('productImageFile').click()" style="white-space: nowrap;">Upload</button>
                         <button type="button" class="btn btn-primary" onclick="openImageSearchModal()" style="white-space: nowrap;">Search Images</button>
                     </div>
