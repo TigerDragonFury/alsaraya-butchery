@@ -620,7 +620,9 @@ function resetAuthForm() {
 async function handleSendOTP() {
     const phoneInput = document.getElementById('loginPhone');
     const phone = phoneInput.value.trim();
-    const sendButton = event.target;
+    
+    // Find the send button (the one that triggered this function)
+    const sendButton = event?.target || document.querySelector('.btn-primary[onclick*="handleSendOTP"]');
     
     if (!phone) {
         showNotification('Please enter your phone number', 'error');
@@ -656,7 +658,9 @@ async function handleSendOTP() {
 async function handleVerifyOTP() {
     const otpInputs = document.querySelectorAll('.otp-input');
     const otp = Array.from(otpInputs).map(input => input.value).join('');
-    const verifyButton = event.target;
+    
+    // Find the verify button (the one that triggered this function)
+    const verifyButton = event?.target || document.querySelector('.btn-primary[onclick*="handleVerifyOTP"]');
     
     if (otp.length !== 6) {
         showNotification('Please enter the 6-digit OTP', 'error');
