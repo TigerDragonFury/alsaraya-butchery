@@ -474,8 +474,8 @@
                 updateCartCountLocal();
             }, 100);
 
-            // Setup event listeners
-            setupEventListeners();
+            // Setup event listeners after header loads
+            window.addEventListener('headerLoaded', setupEventListeners);
         });
 
         // Initialize Swipers

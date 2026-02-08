@@ -29,6 +29,9 @@
                 if (typeof initializeHeader === 'function') {
                     initializeHeader();
                 }
+                
+                // Dispatch custom event to notify that header is loaded
+                window.dispatchEvent(new CustomEvent('headerLoaded'));
             }
         } catch (error) {
             console.error('Error loading header:', error);

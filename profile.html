@@ -906,36 +906,65 @@
 
         // Initialize page
         window.addEventListener('load', async () => {
-            // Setup cart button (desktop & mobile)
-            const cartBtn = document.getElementById('cartBtn');
-            const cartNavBtn = document.getElementById('cartNavBtn');
-            const cartModal = document.getElementById('cartModal');
-            const cartClose = document.getElementById('cartClose');
-            const cartOverlay = document.getElementById('cartOverlay');
-            
-            function openCart() {
-                if (cartModal) {
-                    cartModal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    // Display cart if function exists
-                    if (typeof displayCart === 'function') displayCart();
+            // Initialize header-dependent features after header loads
+            function initializeHeaderFeatures() {
+                // Setup cart button (desktop & mobile)
+                const cartBtn = document.getElementById('cartBtn');
+                const cartNavBtn = document.getElementById('cartNavBtn');
+                const cartModal = document.getElementById('cartModal');
+                const cartClose = document.getElementById('cartClose');
+                const cartOverlay = document.getElementById('cartOverlay');
+                
+                function openCart() {
+                    if (cartModal) {
+                        cartModal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        // Display cart if function exists
+                        if (typeof displayCart === 'function') displayCart();
+                    }
                 }
-            }
-            
-            function closeCart() {
-                if (cartModal) {
-                    cartModal.classList.remove('active');
-                    document.body.style.overflow = '';
+                
+                function closeCart() {
+                    if (cartModal) {
+                        cartModal.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
                 }
+                
+                if (cartBtn) cartBtn.addEventListener('click', openCart);
+                if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openCart();
+                });
+                if (cartClose) cartClose.addEventListener('click', closeCart);
+                if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+                // Mobile menu toggle
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const navMenu = document.getElementById('navMenu');
+                if (mobileMenuBtn && navMenu) {
+                    mobileMenuBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        navMenu.classList.toggle('active');
+                        this.classList.toggle('active');
+                    });
+                    document.addEventListener('click', function(e) {
+                        if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                            navMenu.classList.remove('active');
+                            mobileMenuBtn.classList.remove('active');
+                        }
+                    });
+                }
+
+                // Header scroll effect
+                window.addEventListener('scroll', function() {
+                    const header = document.getElementById('header');
+                    if (header) header.classList.toggle('scrolled', window.scrollY > 50);
+                });
             }
-            
-            if (cartBtn) cartBtn.addEventListener('click', openCart);
-            if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                openCart();
-            });
-            if (cartClose) cartClose.addEventListener('click', closeCart);
-            if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+            // Wait for header to load before initializing
+            window.addEventListener('headerLoaded', initializeHeaderFeatures);
             
             // Wait for auth to initialize
             await waitForAuth();
