@@ -49,6 +49,21 @@ async function initAuth() {
     }
 }
 
+// Listen for header loaded event to update UI if auth state is already available
+window.addEventListener('headerLoaded', function() {
+    // Re-render auth UI now that header elements exist
+    if (currentUser && userProfile) {
+        updateUIForLoggedInUser();
+    } else {
+        updateUIForGuestUser();
+    }
+    
+    // Also update cart count now that header is loaded
+    if (typeof updateCartCount === 'function') {
+        updateCartCount();
+    }
+});
+
 // ============================================
 // PHONE NUMBER AUTHENTICATION (Firebase - FREE)
 // ============================================
