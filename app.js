@@ -298,11 +298,11 @@ function updateCart() {
                     <div class="cart-item-price">${item.price.toFixed(2)} AED / ${item.unit}</div>
                 </div>
                 <div class="cart-item-quantity">
-                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                    <button class="quantity-btn" onclick="event.preventDefault(); updateQuantity(${item.id}, -1); return false;">-</button>
                     <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                    <button class="quantity-btn" onclick="event.preventDefault(); updateQuantity(${item.id}, 1); return false;">+</button>
                 </div>
-                <button class="remove-item" onclick="removeFromCart(${item.id})">×</button>
+                <button class="remove-item" onclick="event.preventDefault(); removeFromCart(${item.id}); return false;">×</button>
             </div>
         `).join('');
     }
