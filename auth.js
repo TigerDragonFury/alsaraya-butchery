@@ -527,12 +527,19 @@ function updateMobileNavAuthState() {
     
     mobileProfileLinks.forEach(link => {
         if (isLoggedIn) {
-            // Logged in - red icon, go to profile
-            link.style.color = 'var(--primary)';
-            link.onclick = null;
+            // Logged in - show pink icon and open dropdown on click
+            link.style.color = 'var(--pink)';
+            link.onclick = (e) => {
+                e.preventDefault();
+                toggleMobileUserMenu();
+                return false;
+            };
+            // Add visual indicator that user is logged in
+            link.classList.add('logged-in-mobile');
         } else {
             // Not logged in - white icon, show login
             link.style.color = '';
+            link.classList.remove('logged-in-mobile');
             link.onclick = (e) => {
                 e.preventDefault();
                 openAuthModal('login');
@@ -540,6 +547,14 @@ function updateMobileNavAuthState() {
             };
         }
     });
+}
+
+// Toggle mobile user menu dropdown
+function toggleMobileUserMenu() {
+    const dropdown = document.getElementById('mobileUserDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
 }
 
 function toggleUserMenu() {
@@ -553,9 +568,17 @@ function toggleUserMenu() {
 document.addEventListener('click', (e) => {
     const userMenuBtn = document.getElementById('userMenuBtn');
     const userDropdown = document.getElementById('userDropdown');
+    const mobileProfileLink = document.querySelector('a[href="profile.html"].mobile-nav-item');
+    const mobileUserDropdown = document.getElementById('mobileUserDropdown');
     
+    // Close desktop dropdown
     if (userDropdown && !userMenuBtn?.contains(e.target) && !userDropdown.contains(e.target)) {
         userDropdown.classList.remove('active');
+    }
+    
+    // Close mobile dropdown
+    if (mobileUserDropdown && !mobileProfileLink?.contains(e.target) && !mobileUserDropdown.contains(e.target)) {
+        mobileUserDropdown.classList.remove('active');
     }
 });
 
