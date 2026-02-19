@@ -148,6 +148,8 @@ ul { list-style: none; }
 }
 .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 700; color: #aaa; cursor: pointer; padding: 0 10px; transition: color .2s; }
 .bottom-nav-item.active { color: var(--pink); }
+.bottom-nav-item.logged-in-mobile { color: var(--pink); }
+.bottom-nav-item.logged-in-mobile svg { fill: var(--pink); stroke: var(--pink); }
 .bottom-nav-item svg { width: 20px; height: 20px; }
 .bottom-nav-cart-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 0 10px; margin-top: -18px; }
 .bottom-nav-cart { background: var(--pink); border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(233,30,140,.4); }

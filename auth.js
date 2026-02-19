@@ -526,19 +526,57 @@ function updateMobileNavAuthState() {
     const isLoggedIn = currentUser && userProfile;
     
     mobileProfileLinks.forEach(link => {
+        const svg = link.querySelector('svg');
+        let textNode = null;
+        
+        // Find the text node (last child that is text)
+        for (let i = link.childNodes.length - 1; i >= 0; i--) {
+            if (link.childNodes[i].nodeType === 3) {
+                textNode = link.childNodes[i];
+                break;
+            }
+        }
+        
         if (isLoggedIn) {
-            // Logged in - show pink icon and open dropdown on click
+            // Logged in - show pink filled icon and open dropdown on click
             link.style.color = 'var(--pink)';
+            
+            // Change SVG: fill pink, stroke pink
+            if (svg) {
+                svg.setAttribute('fill', 'var(--pink)');
+                svg.setAttribute('stroke', 'var(--pink)');
+                svg.style.fill = 'var(--pink)';
+                svg.style.stroke = 'var(--pink)';
+            }
+            
+            // Change text from "Log In" to "Profile"
+            if (textNode && textNode.textContent.trim() === 'Log In') {
+                textNode.textContent = 'Profile';
+            }
+            
             link.onclick = (e) => {
                 e.preventDefault();
                 toggleMobileUserMenu();
                 return false;
             };
-            // Add visual indicator that user is logged in
             link.classList.add('logged-in-mobile');
         } else {
             // Not logged in - white icon, show login
             link.style.color = '';
+            
+            // Reset SVG: no fill, white stroke
+            if (svg) {
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('stroke', 'currentColor');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
+            }
+            
+            // Change text from "Profile" to "Log In"
+            if (textNode && textNode.textContent.trim() === 'Profile') {
+                textNode.textContent = 'Log In';
+            }
+            
             link.classList.remove('logged-in-mobile');
             link.onclick = (e) => {
                 e.preventDefault();
