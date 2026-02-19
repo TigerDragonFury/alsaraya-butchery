@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="foodking2.css">
     <script src="load-components.js"></script>
     <title>Checkout - Al Saraya Butchery</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
@@ -29,9 +29,9 @@
     <style>
         /* Page Hero */
         .page-hero {
-            margin-top: 88px;
+            margin: 0;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            padding: 60px 0;
+            padding: clamp(48px, 8vw, 72px) 0;
             text-align: center;
             color: var(--white);
             position: relative;
@@ -40,31 +40,29 @@
         .page-hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.5;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.6;
         }
         .page-hero h1 {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 3.2rem);
             font-weight: 800;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
             position: relative;
             z-index: 1;
+            letter-spacing: -0.01em;
         }
         .page-hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
+            opacity: 0.92;
             position: relative;
             z-index: 1;
         }
 
         /* Checkout Container */
         .checkout-section-wrapper {
-            padding: 60px 0 80px;
-            background: var(--light);
+            padding: clamp(46px, 6vw, 76px) 0 clamp(64px, 8vw, 108px);
+            background: linear-gradient(to bottom, var(--light) 0%, var(--white) 100%);
             min-height: 60vh;
         }
         .checkout-container {
@@ -78,15 +76,15 @@
 
         /* Checkout Sections */
         .checkout-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: var(--transition);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
+            border-radius: 18px;
+            padding: clamp(1.5rem, 3vw, 2rem);
+            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
+            border: 1px solid rgba(139, 17, 0, 0.12);
+            transition: all 0.25s ease;
         }
         .checkout-card:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 16px 38px rgba(50, 25, 20, 0.12);
             transform: translateY(-2px);
         }
         .checkout-card .section-header {
@@ -245,24 +243,26 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #25D366, #128C7E);
+            padding: 1.1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--white);
             border: none;
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 700;
-            font-family: 'Rubik', sans-serif;
+            font-weight: 800;
+            font-family: 'Tajawal', sans-serif;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.25s ease;
             gap: 0.75rem;
             grid-column: 1 / -1;
             margin-top: 0.5rem;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 8px 18px rgba(139, 17, 0, 0.24);
+            letter-spacing: 0.01em;
         }
         .btn-checkout:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            box-shadow: 0 12px 26px rgba(139, 17, 0, 0.32);
+            filter: brightness(1.05);
         }
         .btn-checkout:disabled {
             opacity: 0.6;
@@ -932,31 +932,6 @@
     </div>
 
     <div id="footer-placeholder"></div>
-
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav" id="mobileNav">
-        <a href="index.html" class="mobile-nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="shop.html" class="mobile-nav-item">
-            <i class="fas fa-store"></i>
-            <span>Shop</span>
-        </a>
-        <a href="#" class="mobile-nav-item cart-nav-item" id="cartNavBtn">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="mobile-cart-count" id="mobileCartCount">0</span>
-            <span>Cart</span>
-        </a>
-        <a href="tracking.html" class="mobile-nav-item">
-            <i class="fas fa-truck"></i>
-            <span>Track</span>
-        </a>
-        <a href="profile.html" class="mobile-nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-    </nav>
 
     <!-- Cart Modal -->
     <div class="cart-modal" id="cartModal">
@@ -2280,41 +2255,41 @@
 
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <button onclick="window.open('${whatsappUrl}', '_blank')" style="
-                            background: linear-gradient(135deg, #25D366, #128C7E);
+                            background: linear-gradient(135deg, #8B1100, #5E0D00);
                             color: white;
                             border: none;
                             padding: 1rem 2rem;
                             border-radius: 12px;
                             font-size: 1rem;
                             font-weight: 600;
-                            font-family: 'Rubik', sans-serif;
+                            font-family: 'Tajawal', sans-serif;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             gap: 0.75rem;
                             transition: transform 0.2s, box-shadow 0.2s;
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(37, 211, 102, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(139, 17, 0, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                             <i class="fab fa-whatsapp" style="font-size: 1.5rem;"></i>
                             Send to WhatsApp
                         </button>
 
                         <button onclick="window.location.href='tracking.html?order=${orderId}'" style="
-                            background: linear-gradient(135deg, #ff0000, #cc0000);
+                            background: linear-gradient(135deg, #8B1100, #5E0D00);
                             color: white;
                             border: none;
                             padding: 1rem 2rem;
                             border-radius: 12px;
                             font-size: 1rem;
                             font-weight: 600;
-                            font-family: 'Rubik', sans-serif;
+                            font-family: 'Tajawal', sans-serif;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             gap: 0.75rem;
                             transition: transform 0.2s, box-shadow 0.2s;
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(255, 0, 0, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(139, 17, 0, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                             <i class="fas fa-truck" style="font-size: 1.2rem;"></i>
                             Track Order
                         </button>
@@ -2327,14 +2302,14 @@
                             border-radius: 12px;
                             font-size: 1rem;
                             font-weight: 600;
-                            font-family: 'Rubik', sans-serif;
+                            font-family: 'Tajawal', sans-serif;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             gap: 0.75rem;
                             transition: transform 0.2s, border-color 0.2s;
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#ff0000'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#E2E8F0'">
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#8B1100'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#E2E8F0'">
                             <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
                             Continue Shopping
                         </button>
@@ -2416,15 +2391,12 @@
                 <h2>Welcome Back!</h2>
                 <p class="auth-subtitle">Sign in to your account</p>
                 <div class="auth-methods">
-                    <button class="auth-google-btn" onclick="signInWithGoogle()">
-                        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-                        Continue with Google
-                    </button>
-                    <div class="auth-divider"><span>or</span></div>
+                    <!-- Phone Number Login -->
                     <div class="auth-form">
                         <div class="form-group"><label>Phone Number</label><div class="phone-input-group"><span class="phone-prefix">+971</span><input type="tel" id="loginPhone" placeholder="50 123 4567" maxlength="11" /></div></div>
                         <button class="btn btn-primary btn-block" onclick="handleSendOTP()">Send OTP</button>
                     </div>
+                    <!-- OTP Verification (Hidden initially) -->
                     <div class="auth-form otp-form" id="otpForm" style="display: none;">
                         <div class="form-group"><label>Enter 6-digit OTP</label><div class="otp-inputs"><input type="text" maxlength="1" class="otp-input" data-index="0" /><input type="text" maxlength="1" class="otp-input" data-index="1" /><input type="text" maxlength="1" class="otp-input" data-index="2" /><input type="text" maxlength="1" class="otp-input" data-index="3" /><input type="text" maxlength="1" class="otp-input" data-index="4" /><input type="text" maxlength="1" class="otp-input" data-index="5" /></div><p class="otp-resend">Didn't receive code? <a href="#" onclick="handleSendOTP(); return false;">Resend</a></p></div>
                         <button class="btn btn-primary btn-block" onclick="handleVerifyOTP()">Verify & Login</button>
@@ -2436,6 +2408,32 @@
     </div>
     <div class="profile-modal" id="profileModal" style="display: none;"><div class="auth-overlay" onclick="closeProfileModal()"></div><div class="profile-container"><button class="auth-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button><h2><i class="fas fa-user"></i> My Profile</h2><form class="profile-form" id="profileForm"><div class="form-group"><label>Full Name</label><input type="text" id="profileName" required /></div><div class="form-group"><label>Email</label><input type="email" id="profileEmail" /></div><div class="form-group"><label>Phone Number</label><input type="tel" id="profilePhone" readonly /></div><button type="submit" class="btn btn-primary btn-block">Update Profile</button></form></div></div>
     <div class="addresses-modal" id="addressesModal" style="display: none;"><div class="auth-overlay" onclick="closeAddressesModal()"></div><div class="addresses-container"><button class="auth-close" onclick="closeAddressesModal()"><i class="fas fa-times"></i></button><div class="addresses-header"><h2><i class="fas fa-map-marker-alt"></i> My Addresses</h2><button class="btn btn-primary" onclick="showAddAddressForm()"><i class="fas fa-plus"></i> Add New</button></div><div class="addresses-list" id="addressesList"></div><div class="address-form-container" id="addressFormContainer" style="display: none;"><h3 id="addressFormTitle">Add New Address</h3><form class="address-form" id="addressForm"><input type="hidden" id="addressId" /><div class="form-row"><div class="form-group"><label>Label</label><select id="addressLabel" required><option value="Home">Home</option><option value="Work">Work</option><option value="Other">Other</option></select></div><div class="form-group"><label>Full Name</label><input type="text" id="addressFullName" required /></div></div><div class="form-row"><div class="form-group"><label>Phone Number</label><input type="tel" id="addressPhone" required /></div><div class="form-group"><label>Area</label><input type="text" id="addressArea" required /></div></div><div class="form-group"><label>Street Address</label><textarea id="addressStreet" rows="2" required></textarea></div><div class="form-row"><div class="form-group"><label>Building</label><input type="text" id="addressBuilding" /></div><div class="form-group"><label>Floor</label><input type="text" id="addressFloor" /></div><div class="form-group"><label>Apartment</label><input type="text" id="addressApartment" /></div></div><div class="form-group"><label>Landmark (Optional)</label><input type="text" id="addressLandmark" /></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="addressDefault" />Set as default address</label></div><div class="form-actions"><button type="button" class="btn btn-outline" onclick="hideAddressForm()">Cancel</button><button type="submit" class="btn btn-primary">Save Address</button></div></form></div></div></div>
+
+    <!-- BOTTOM NAV (mobile) -->
+    <div class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+        </a>
+        <a href="shop.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Menu
+        </a>
+        <a href="#" class="bottom-nav-cart-wrap" id="cartIconBottom">
+            <div class="bottom-nav-cart">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            </div>
+            <span class="bottom-nav-cart-label">Cart <span class="cart-count-badge" id="cartCountMobile">0</span></span>
+        </a>
+        <a href="tracking.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Offers
+        </a>
+        <a href="profile.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Log In
+        </a>
+    </div>
 
 </body>
 </html>

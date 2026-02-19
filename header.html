@@ -1,39 +1,30 @@
 <!-- Header -->
-<header class="header" id="header">
-    <div class="header-main">
-        <div class="container">
-            <div class="header-main-content">
-                <a href="index.html" class="logo">
-                    <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
-                </a>
-                <nav class="nav-menu" id="navMenu">
-                    <ul>
-                        <li><a href="index.html" data-page="index">Home</a></li>
-                        <li><a href="shop.html" data-page="shop">Shop</a></li>
-                        <li><a href="index.html#categories">Categories</a></li>
-                        <li><a href="index.html#popular">Popular</a></li>
-                        <li><a href="tracking.html" data-page="tracking">Track Order</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
-                    </ul>
-                </nav>
-                <div class="header-actions">
-                    <button class="cart-btn" id="cartBtn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-count" id="cartCount">0</span>
-                    </button>
-                    <!-- Auth Button Container -->
-                    <div id="authBtnContainer">
-                        <button class="btn-auth" onclick="openAuthModal('login')">
-                            <i class="fas fa-user"></i> Login
-                        </button>
-                    </div>
-                    <button class="mobile-menu-btn" id="mobileMenuBtn">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
+<nav class="nav-desktop">
+    <div class="nav-inner">
+        <a class="logo" href="index.html">
+            <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" data-page="index">Home</a></li>
+            <li><a href="shop.html" data-page="shop">Menu</a></li>
+            <li><a href="index.html#offers">Offers</a></li>
+        </ul>
+        <div class="nav-right header-actions">
+            <input class="nav-search" type="text" placeholder="Search">
+            <button class="btn-lang">English</button>
+            <button class="btn-cart" id="cartIcon">Cart <span id="cartCount">0</span></button>
+            <div id="authBtnContainer">
+                <button class="btn-auth" onclick="openAuthModal('login')">Log In</button>
             </div>
         </div>
     </div>
-</header>
+</nav>
+
+<nav class="nav-mobile">
+    <div class="nav-mobile-inner">
+        <a class="logo" href="index.html">
+            <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
+        </a>
+        <input class="nav-mobile-search" type="text" placeholder="Search">
+    </div>
+</nav>

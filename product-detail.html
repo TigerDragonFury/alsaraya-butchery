@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
     <!-- CUSTOM STYLE -->
-    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="foodking2.css">
     <script src="load-components.js"></script>
 
     <!-- PAGE TITLE -->
@@ -30,93 +30,321 @@
     <script src="firebase-config.js"></script>
 
     <style>
-        /* Product Detail Page Styles */
-        .breadcrumb-section {
-            background: var(--light);
-            padding: 20px 0;
-            margin-top: 88px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .breadcrumb-section a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .breadcrumb-section a:hover {
-            color: var(--primary);
-        }
-
-        .breadcrumb-section span {
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .breadcrumb-section .separator {
-            color: var(--gray-400);
-            margin: 0 10px;
-        }
-
+        /* Product Detail Page - FoodKing2 Style */
+        
         .product-detail-section {
-            padding: 60px 0 100px;
-            background: var(--light);
+            padding: clamp(32px, 5vw, 60px) 0;
+            background: var(--white);
         }
 
         .product-detail-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 50px;
+            gap: 40px;
             align-items: start;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        /* Product Image */
         .product-detail-image {
+            padding: 24px;
+            background: var(--light-gray);
+            border-radius: 12px;
             position: relative;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            background: var(--white);
-            box-shadow: var(--shadow);
         }
 
         .product-detail-image img {
             width: 100%;
-            height: 450px;
-            object-fit: cover;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
         }
 
-        .product-detail-image .product-badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: var(--primary);
-            color: var(--white);
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* Product Info */
         .product-detail-info {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            box-shadow: var(--shadow);
+            padding: 20px 0;
         }
 
         .product-detail-info h1 {
-            font-size: 32px;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            line-height: 1.2;
         }
 
         .product-meta {
             display: flex;
-            gap: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .product-category-tag {
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .product-stock {
+            font-size: 14px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .product-price-large {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        .product-price-large .unit {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .product-description {
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-description h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .product-description p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0 8px;
+            gap: 8px;
+        }
+
+        .quantity-selector button {
+            background: none;
+            border: none;
+            width: 30px;
+            height: 36px;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .quantity-selector button:hover {
+            color: var(--primary);
+        }
+
+        .quantity-selector input {
+            border: none;
+            width: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .quantity-selector input:focus {
+            outline: none;
+        }
+
+        .btn-add-to-cart {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add-to-cart:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .product-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .back-to-shop {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .back-to-shop:hover {
+            text-decoration: underline;
+        }
+
+        .related-section {
+            padding: 48px 0;
+            background: var(--light-gray);
+        }
+
+        .related-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .related-product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .related-product-img {
+            height: 140px;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            overflow: hidden;
+        }
+
+        .related-product-info {
+            padding: 16px;
+        }
+
+        .related-product-name {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .related-product-price {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .product-price-large {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-section {
+                padding: 24px 0;
+            }
+
+            .product-detail-grid {
+                gap: 16px;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+                    return `
+                        <div class="product-card ref-product-card">
+                            <a href="product-detail.html?id=${product.id}" class="product-image ref-product-image">
+                                <img src="${imageUrl}" alt="${safeName}" loading="lazy" class="ref-product-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                                ${product.badge ? `<span class="product-badge ref-product-badge">${product.badge}</span>` : ''}
+                            </a>
+                            <div class="product-info ref-product-info">
+                                <h4 class="ref-product-name"><a href="product-detail.html?id=${product.id}">${name}</a></h4>
+                                <p class="product-desc ref-product-desc">${product.description || ''}</p>
+                                <div class="ref-product-meta">
+                                    <span class="ref-product-price">${price.toFixed(2)} AED</span>
+                                    <span class="ref-product-unit">/ ${unit}</span>
+                                </div>
+                                <div class="ref-product-actions">
+                                    <button class="ref-add-btn" onclick="addToCartFromDB(${product.id}, '${safeName}', ${price}, '${unit}')">
+                                        <i class="fas fa-shopping-cart"></i> Add To Cart
+                                    </button>
+                                    <a class="ref-wa-btn" href="https://wa.me/971566808565" target="_blank" rel="noopener" aria-label="Order on WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
             margin-bottom: 25px;
         }
 
@@ -147,16 +375,17 @@
         }
 
         .product-price-large {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 800;
             color: var(--primary);
             margin-bottom: 25px;
+            letter-spacing: -0.01em;
         }
 
         .product-price-large .unit {
-            font-size: 18px;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
             color: var(--text-secondary);
-            font-weight: 400;
+            font-weight: 500;
         }
 
         .product-description {
@@ -226,26 +455,27 @@
 
         .btn-add-to-cart {
             flex: 1;
-            padding: 14px 30px;
-            background: var(--primary);
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--white);
             border: none;
-            border-radius: var(--radius);
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
-            font-family: 'Rubik', sans-serif;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            box-shadow: 0 8px 18px rgba(139, 17, 0, 0.24);
         }
 
         .btn-add-to-cart:hover {
-            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 12px 26px rgba(139, 17, 0, 0.32);
+            filter: brightness(1.05);
         }
 
         .btn-add-to-cart:disabled {
@@ -297,22 +527,23 @@
 
         /* Related Products */
         .related-section {
-            padding: 60px 0;
-            background: var(--white);
+            padding: clamp(46px, 6vw, 76px) 0;
+            background: linear-gradient(to bottom, var(--white) 0%, var(--light) 100%);
         }
 
         .related-section h2 {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: clamp(1.6rem, 3vw, 2rem);
+            font-weight: 800;
             color: var(--text-primary);
             text-align: center;
             margin-bottom: 40px;
+            letter-spacing: -0.01em;
         }
 
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: clamp(16px, 2vw, 26px);
         }
 
         .related-grid .product-card {
@@ -502,15 +733,21 @@
         }
 
         /* Responsive */
+        @media (max-width: 1200px) {
+            .related-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
         @media (max-width: 1024px) {
             .related-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
         @media (max-width: 768px) {
             .breadcrumb-section {
-                margin-top: 75px;
+                margin-top: 86px;
             }
 
             .product-detail-section {
@@ -547,7 +784,7 @@
             }
 
             .related-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
                 gap: 15px;
             }
         }
@@ -559,17 +796,6 @@
     
     <div id="header-placeholder"></div>
 
-    <!-- Breadcrumb -->
-    <section class="breadcrumb-section">
-        <div class="container">
-            <a href="index.html">Home</a>
-            <span class="separator">/</span>
-            <a href="shop.html">Shop</a>
-            <span class="separator">/</span>
-            <span id="breadcrumbProduct">Product</span>
-        </div>
-    </section>
-
     <!-- Product Detail Section -->
     <section class="product-detail-section">
         <div class="container">
@@ -577,7 +803,6 @@
                 <!-- Product Image -->
                 <div class="product-detail-image">
                     <img id="productImage" src="" alt="Product Image">
-                    <div id="productBadge" class="product-badge" style="display: none;"></div>
                 </div>
 
                 <!-- Product Information -->
@@ -589,7 +814,8 @@
                     </div>
 
                     <div class="product-price-large">
-                        <span id="productPrice">0.00</span> AED<span class="unit">/<span id="productUnit">kg</span></span>
+                        <span id="productPrice">0.00</span> AED
+                        <span class="unit">/<span id="productUnit">kg</span></span>
                     </div>
 
                     <div class="product-description">
@@ -599,12 +825,12 @@
 
                     <div class="product-actions">
                         <div class="quantity-selector">
-                            <button onclick="decrementQuantity()">-</button>
+                            <button onclick="decrementQuantity()">−</button>
                             <input type="number" id="quantity" value="1" min="1">
                             <button onclick="incrementQuantity()">+</button>
                         </div>
                         <button class="btn-add-to-cart" id="addToCartBtn" onclick="addProductToCart()">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
                     </div>
 
@@ -643,53 +869,251 @@
 
     <div id="footer-placeholder"></div>
 
-    <!-- Floating Add to Cart Bar (Mobile) -->
-    <div class="floating-cart-bar">
-        <div class="floating-cart-content">
-            <div class="floating-cart-info">
-                <div class="floating-product-price">
-                    <span id="floatingPrice">0.00</span> AED
-                    <span class="floating-unit">/<span id="floatingUnit">kg</span></span>
-                </div>
-                <div class="floating-product-name" id="floatingProductName">Product</div>
+    <!-- BOTTOM NAV (mobile) -->
+    <div class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+        </a>
+        <a href="shop.html" class="bottom-nav-item mobile-nav-item active">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Menu
+        </a>
+        <a href="#" class="bottom-nav-cart-wrap" id="cartIconBottom">
+            <div class="bottom-nav-cart">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
             </div>
-            <div class="floating-cart-actions">
-                <div class="floating-quantity-selector">
-                    <button onclick="decrementQuantity()" class="floating-qty-btn">-</button>
-                    <span id="floatingQuantity">1</span>
-                    <button onclick="incrementQuantity()" class="floating-qty-btn">+</button>
+            <span class="bottom-nav-cart-label">Cart <span class="cart-count-badge" id="cartCountMobile">0</span></span>
+        </a>
+        <a href="tracking.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Offers
+        </a>
+        <a href="profile.html" class="bottom-nav-item mobile-nav-item">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Log In
+        </a>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h3>Shopping Cart</h3>
+                <button class="cart-close" id="closeCart">&times;</button>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">0.00 AED</span>
                 </div>
-                <button class="floating-add-to-cart-btn" onclick="addProductToCart()">
-                    <i class="fas fa-cart-plus"></i> Add
-                </button>
+                <button class="btn-checkout" onclick="proceedToCheckout()">Proceed to Checkout</button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav" id="mobileNav">
-        <a href="index.html" class="mobile-nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="shop.html" class="mobile-nav-item active">
-            <i class="fas fa-store"></i>
-            <span>Shop</span>
-        </a>
-        <a href="#" class="mobile-nav-item cart-nav-item" id="cartNavBtn">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="mobile-cart-count" id="mobileCartCount">0</span>
-            <span>Cart</span>
-        </a>
-        <a href="tracking.html" class="mobile-nav-item">
-            <i class="fas fa-truck"></i>
-            <span>Track</span>
-        </a>
-        <a href="profile.html" class="mobile-nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-    </nav>
+    <!-- App JS -->
+    <script src="app.js"></script>
+    
+    <!-- Authentication JS -->
+    <script src="auth.js"></script>
+
+    <script>
+        let currentProduct = null;
+        let currentQuantity = 1;
+
+        // Get product ID from URL
+        function getProductId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // Load product details
+        async function loadProductDetails() {
+            try {
+                const productId = getProductId();
+                if (!productId) {
+                    showError('Product not found');
+                    return;
+                }
+
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error) throw error;
+                if (!data) {
+                    showError('Product not found');
+                    return;
+                }
+
+                currentProduct = data;
+                displayProductDetails(data);
+                loadRelatedProducts(data.category);
+            } catch (err) {
+                console.error('Error loading product:', err);
+                showError('Failed to load product details');
+            }
+        }
+
+        function displayProductDetails(product) {
+            const name = product.name || 'Product';
+            const image = product.image_url || '';
+            const price = parseFloat(product.price) || 0;
+            const category = product.category || 'Uncategorized';
+            const unit = product.unit || 'kg';
+            const desc = product.description || 'No description available';
+            const inStock = product.in_stock !== false;
+
+            document.getElementById('productName').textContent = name;
+            document.getElementById('productImage').src = image || 'https://via.placeholder.com/400x300?text=No+Image';
+            document.getElementById('productImage').alt = name;
+            document.getElementById('productPrice').textContent = price.toFixed(2);
+            const productUnit = document.getElementById('productUnit');
+            if (productUnit) productUnit.textContent = unit;
+            const productCategory = document.getElementById('productCategory');
+            if (productCategory) productCategory.textContent = category;
+            const productStock = document.getElementById('productStock');
+            if (productStock) productStock.textContent = inStock ? '✓ In Stock' : 'Out of Stock';
+            const productDescription = document.getElementById('productDescription');
+            if (productDescription) productDescription.textContent = desc;
+            const categoryDetail = document.getElementById('categoryDetail');
+            if (categoryDetail) categoryDetail.textContent = category;
+            const unitDetail = document.getElementById('unitDetail');
+            if (unitDetail) unitDetail.textContent = unit;
+            const availabilityDetail = document.getElementById('availabilityDetail');
+            if (availabilityDetail) availabilityDetail.textContent = inStock ? 'Available' : 'Not Available';
+            const floatingPrice = document.getElementById('floatingPrice');
+            if (floatingPrice) floatingPrice.textContent = price.toFixed(2);
+            const floatingUnit = document.getElementById('floatingUnit');
+            if (floatingUnit) floatingUnit.textContent = unit;
+            const floatingProductName = document.getElementById('floatingProductName');
+            if (floatingProductName) floatingProductName.textContent = name;
+        }
+
+        async function loadRelatedProducts(category) {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('category', category)
+                    .eq('in_stock', true)
+                    .neq('id', currentProduct.id)
+                    .limit(6);
+
+                if (error) throw error;
+
+                const grid = document.getElementById('relatedProductsGrid');
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px; color:#999;">No related products</div>';
+                    return;
+                }
+
+                grid.innerHTML = data.map(product => `
+                    <a href="product-detail.html?id=${product.id}" class="related-product-card">
+                        <div class="related-product-img">
+                            <img src="${product.image_url || 'https://via.placeholder.com/200x150'}" 
+                                 alt="${product.name}" 
+                                 style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <div class="related-product-info">
+                            <div class="related-product-name">${product.name}</div>
+                            <div class="related-product-price">${parseFloat(product.price).toFixed(2)} AED</div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading related products:', err);
+            }
+        }
+
+        function incrementQuantity() {
+            currentQuantity = Math.min(currentQuantity + 1, 999);
+            updateQuantityDisplay();
+        }
+
+        function decrementQuantity() {
+            currentQuantity = Math.max(currentQuantity - 1, 1);
+            updateQuantityDisplay();
+        }
+
+        function updateQuantityDisplay() {
+            document.getElementById('quantity').value = currentQuantity;
+            const floatingQuantity = document.getElementById('floatingQuantity');
+            if (floatingQuantity) floatingQuantity.textContent = currentQuantity;
+        }
+
+        function addProductToCart() {
+            if (!currentProduct) return;
+
+            const name = currentProduct.name || 'Product';
+            const price = parseFloat(currentProduct.price);
+            const unit = currentProduct.unit || 'kg';
+            const id = currentProduct.id;
+
+            if (typeof addToCartFromDB === 'function') {
+                for (let i = 0; i < currentQuantity; i++) {
+                    addToCartFromDB(id, name, price, currentProduct.category, unit, currentProduct.iiko_product_id);
+                }
+            } else {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existingIndex = cart.findIndex(item => item.id === id);
+
+                if (existingIndex > -1) {
+                    cart[existingIndex].quantity += currentQuantity;
+                } else {
+                    cart.push({ id, name, price, unit, quantity: currentQuantity });
+                }
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+            }
+
+            showNotification(`Added ${currentQuantity} of ${name} to cart!`);
+            currentQuantity = 1;
+            updateQuantityDisplay();
+        }
+
+        function showError(message) {
+            document.querySelector('.product-detail-info').innerHTML = `
+                <div style="padding:32px; text-align:center; color:var(--text-secondary);">
+                    <i class="fas fa-exclamation-circle" style="font-size:48px; color:var(--primary); margin-bottom:16px;"></i>
+                    <h3>${message}</h3>
+                    <a href="shop.html" style="color:var(--primary); text-decoration:underline;">Back to Shop</a>
+                </div>
+            `;
+        }
+
+        // Setup cart modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartNavBtn = document.getElementById('cartIconBottom');
+            const cartClose = document.getElementById('closeCart');
+            const cartModal = document.getElementById('cartModal');
+
+            function openCart() {
+                cartModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                displayCart();
+            }
+
+            function closeCart() {
+                cartModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => { e.preventDefault(); openCart(); });
+            if (cartClose) cartClose.addEventListener('click', closeCart);
+
+            updateCartCount();
+            loadProductDetails();
+        });
+    </script>
+
+</body>
+</html>
 
     <!-- Cart Modal -->
     <div class="cart-modal" id="cartModal">
@@ -713,12 +1137,6 @@
             </div>
         </div>
     </div>
-
-    <!-- App JS -->
-    <script src="app.js"></script>
-    
-    <!-- Authentication JS -->
-    <script src="auth.js"></script>
 
     <script>
         let currentProduct = null;
@@ -823,6 +1241,7 @@
 
                 grid.innerHTML = products.map(product => {
                     const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const unit = product.unit || 'kg';
                     return `
                         <div class="product-card">
                             <a href="product-detail.html?id=${product.id}" class="product-image">
@@ -830,14 +1249,20 @@
                                 ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
                             </a>
                             <div class="product-info">
-                                <h4><a href="product-detail.html?id=${product.id}">${product.name}</a></h4>
+                                <div class="product-title-wrap">
+                                    <h4><a href="product-detail.html?id=${product.id}">${product.name}</a></h4>
+                                    <span class="product-unit-chip">${unit}</span>
+                                </div>
                                 <p class="product-desc">${product.description || ''}</p>
-                                <div class="product-footer">
-                                    <div>
+                                <div class="product-actions-row">
+                                    <div class="product-price-row">
                                         <span class="price">${parseFloat(product.price).toFixed(2)} AED</span>
-                                        <span class="unit">/${product.unit || 'kg'}</span>
+                                        <span class="unit">/${unit}</span>
                                     </div>
-                                    <button class="add-btn" onclick="addToCartFromDB(${product.id}, '${safeName}', ${product.price}, '${product.category}', '${product.unit || 'kg'}')">
+                                    <button class="add-to-cart-wide" onclick="addToCartFromDB(${product.id}, '${safeName}', ${product.price}, '${product.category}', '${unit}')">
+                                        <i class="fas fa-shopping-cart"></i> Add
+                                    </button>
+                                    <button class="add-btn add-to-cart-btn" onclick="addToCartFromDB(${product.id}, '${safeName}', ${product.price}, '${product.category}', '${unit}')" aria-label="Add ${safeName}">
                                         <i class="fas fa-cart-plus"></i>
                                     </button>
                                 </div>
@@ -868,7 +1293,8 @@
 
         function updateFloatingQuantity() {
             const quantity = document.getElementById('quantity').value;
-            document.getElementById('floatingQuantity').textContent = quantity;
+            const floatingQuantity = document.getElementById('floatingQuantity');
+            if (floatingQuantity) floatingQuantity.textContent = quantity;
         }
 
         // Add to cart
@@ -946,7 +1372,7 @@
     </script>
 
     <!-- Authentication Modals -->
-    <div class="auth-modal" id="authModal"><div class="auth-overlay" onclick="closeAuthModal()"></div><div class="auth-container"><button class="auth-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button><div class="auth-tab" id="loginTab"><h2>Welcome Back!</h2><p class="auth-subtitle">Sign in to your account</p><div class="auth-methods"><button class="auth-google-btn" onclick="signInWithGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>Continue with Google</button><div class="auth-divider"><span>or</span></div><div class="auth-form"><div class="form-group"><label>Phone Number</label><div class="phone-input-group"><span class="phone-prefix">+971</span><input type="tel" id="loginPhone" placeholder="50 123 4567" maxlength="11" /></div></div><button class="btn btn-primary btn-block" onclick="handleSendOTP()">Send OTP</button></div><div class="auth-form otp-form" id="otpForm" style="display: none;"><div class="form-group"><label>Enter 6-digit OTP</label><div class="otp-inputs"><input type="text" maxlength="1" class="otp-input" data-index="0" /><input type="text" maxlength="1" class="otp-input" data-index="1" /><input type="text" maxlength="1" class="otp-input" data-index="2" /><input type="text" maxlength="1" class="otp-input" data-index="3" /><input type="text" maxlength="1" class="otp-input" data-index="4" /><input type="text" maxlength="1" class="otp-input" data-index="5" /></div><p class="otp-resend">Didn't receive code? <a href="#" onclick="handleSendOTP(); return false;">Resend</a></p></div><button class="btn btn-primary btn-block" onclick="handleVerifyOTP()">Verify & Login</button></div></div><p class="auth-footer">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></p></div></div></div>
+    <div class="auth-modal" id="authModal"><div class="auth-overlay" onclick="closeAuthModal()"></div><div class="auth-container"><button class="auth-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button><div class="auth-tab" id="loginTab"><h2>Welcome Back!</h2><p class="auth-subtitle">Sign in to your account</p><div class="auth-methods"><div class="auth-form"><div class="form-group"><label>Phone Number</label><div class="phone-input-group"><span class="phone-prefix">+971</span><input type="tel" id="loginPhone" placeholder="50 123 4567" maxlength="11" /></div></div><button class="btn btn-primary btn-block" onclick="handleSendOTP()">Send OTP</button></div><div class="auth-form otp-form" id="otpForm" style="display: none;"><div class="form-group"><label>Enter 6-digit OTP</label><div class="otp-inputs"><input type="text" maxlength="1" class="otp-input" data-index="0" /><input type="text" maxlength="1" class="otp-input" data-index="1" /><input type="text" maxlength="1" class="otp-input" data-index="2" /><input type="text" maxlength="1" class="otp-input" data-index="3" /><input type="text" maxlength="1" class="otp-input" data-index="4" /><input type="text" maxlength="1" class="otp-input" data-index="5" /></div><p class="otp-resend">Didn't receive code? <a href="#" onclick="handleSendOTP(); return false;">Resend</a></p></div><button class="btn btn-primary btn-block" onclick="handleVerifyOTP()">Verify & Login</button></div></div><p class="auth-footer">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></p></div></div></div>
     <div class="profile-modal" id="profileModal" style="display: none;"><div class="auth-overlay" onclick="closeProfileModal()"></div><div class="profile-container"><button class="auth-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button><h2><i class="fas fa-user"></i> My Profile</h2><form class="profile-form" id="profileForm"><div class="form-group"><label>Full Name</label><input type="text" id="profileName" required /></div><div class="form-group"><label>Email</label><input type="email" id="profileEmail" /></div><div class="form-group"><label>Phone Number</label><input type="tel" id="profilePhone" readonly /></div><button type="submit" class="btn btn-primary btn-block">Update Profile</button></form></div></div>
     <div class="addresses-modal" id="addressesModal" style="display: none;"><div class="auth-overlay" onclick="closeAddressesModal()"></div><div class="addresses-container"><button class="auth-close" onclick="closeAddressesModal()"><i class="fas fa-times"></i></button><div class="addresses-header"><h2><i class="fas fa-map-marker-alt"></i> My Addresses</h2><button class="btn btn-primary" onclick="showAddAddressForm()"><i class="fas fa-plus"></i> Add New</button></div><div class="addresses-list" id="addressesList"></div><div class="address-form-container" id="addressFormContainer" style="display: none;"><h3 id="addressFormTitle">Add New Address</h3><form class="address-form" id="addressForm"><input type="hidden" id="addressId" /><div class="form-row"><div class="form-group"><label>Label</label><select id="addressLabel" required><option value="Home">Home</option><option value="Work">Work</option><option value="Other">Other</option></select></div><div class="form-group"><label>Full Name</label><input type="text" id="addressFullName" required /></div></div><div class="form-row"><div class="form-group"><label>Phone Number</label><input type="tel" id="addressPhone" required /></div><div class="form-group"><label>Area</label><input type="text" id="addressArea" required /></div></div><div class="form-group"><label>Street Address</label><textarea id="addressStreet" rows="2" required></textarea></div><div class="form-row"><div class="form-group"><label>Building</label><input type="text" id="addressBuilding" /></div><div class="form-group"><label>Floor</label><input type="text" id="addressFloor" /></div><div class="form-group"><label>Apartment</label><input type="text" id="addressApartment" /></div></div><div class="form-group"><label>Landmark (Optional)</label><input type="text" id="addressLandmark" /></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="addressDefault" />Set as default address</label></div><div class="form-actions"><button type="button" class="btn btn-outline" onclick="hideAddressForm()">Cancel</button><button type="submit" class="btn btn-primary">Save Address</button></div></form></div></div></div>
 

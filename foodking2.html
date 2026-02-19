@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodKing – Tasty Fast Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+:root {
+  --pink: #b00020;
+  --pink-dark: #7a0015;
+  --dark: #111111;
+  --gray: #666;
+  --light-gray: #f5f5f5;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #f5f5f5; }
+body { font-family: 'Nunito', sans-serif; color: #333; background: #fff; }
+a { text-decoration: none; }
+.page-container { max-width: 1200px; margin: 0 auto; background: #fff; }
+.cart-count-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 6px; border-radius: 999px;
+  background: var(--pink); color: #fff; font-size: 11px; font-weight: 800;
+  margin-left: 6px;
+}
+
+/* ===== DESKTOP NAV ===== */
+.nav-desktop {
+  position: sticky; top: 0; z-index: 200;
+  background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.07);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 40px;
+}
+.logo { display: flex; align-items: center; gap: 8px; }
+.logo img { height: 55px; width: auto; display: block; }
+.logo-text { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--pink); font-weight: 900; }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a { color: #333; font-weight: 700; font-size: 15px; transition: color .2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--pink); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-search { border: 1px solid #ddd; border-radius: 20px; padding: 7px 16px; font-family: 'Nunito', sans-serif; font-size: 14px; outline: none; width: 150px; }
+.btn-lang { background: none; border: none; cursor: pointer; font-size: 14px; font-family: 'Nunito', sans-serif; color: #333; font-weight: 600; }
+.btn-cart { background: var(--dark); color: #fff; border: none; border-radius: 20px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-login { background: var(--pink); color: #fff; border: none; border-radius: 20px; padding: 8px 18px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: background .2s; }
+.btn-login:hover { background: var(--pink-dark); }
+
+/* ===== MOBILE NAV ===== */
+.nav-mobile {
+  display: none; position: sticky; top: 0; z-index: 200;
+  background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+.nav-mobile-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+}
+.nav-mobile .logo-text { font-size: 19px; }
+.nav-mobile-search {
+  flex: 1; border: 1px solid #e0e0e0; border-radius: 20px;
+  padding: 8px 14px 8px 34px; font-family: 'Nunito', sans-serif; font-size: 13px;
+  background: #f8f8f8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+  outline: none;
+}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+  background: #fff; border-top: 1px solid #eee;
+  justify-content: space-around; align-items: center; padding: 6px 0 12px;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+}
+.bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 700; color: #aaa; cursor: pointer; padding: 0 10px; transition: color .2s; }
+.bottom-nav-item.active { color: var(--pink); }
+.bottom-nav-item svg { width: 20px; height: 20px; }
+.bottom-nav-cart-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 0 10px; margin-top: -18px; }
+.bottom-nav-cart { background: var(--pink); border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(233,30,140,.4); }
+.bottom-nav-cart svg { width: 20px; height: 20px; color: #fff; }
+.bottom-nav-cart-label { font-size: 9px; font-weight: 700; color: var(--pink); }
+
+/* ===== HERO (desktop) ===== */
+.hero-wrap { margin: 18px auto 0; max-width: 1120px; }
+.hero { background: #fff5fa; border-radius: 20px; padding: 44px 52px 44px 296px; position: relative; overflow: hidden; height: 400px; display: flex; align-items: center; }
+.hero-img-box { position: absolute; left: 0; top: 0; bottom: 0; width: 280px; background: linear-gradient(135deg, #ffd0e8, #ff8ec8); display: flex; align-items: center; justify-content: center; font-size: 72px; border-radius: 20px 0 0 20px; }
+.hero-badge { position: absolute; left: 158px; top: 50%; transform: translateY(-50%) rotate(-10deg); background: var(--pink); color: #fff; width: 76px; height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; font-weight: 900; font-size: 12px; text-align: center; z-index: 2; box-shadow: 0 4px 16px rgba(233,30,140,.4); line-height: 1.3; }
+.hero-badge strong { font-size: 20px; display: block; }
+.hero-content { position: relative; z-index: 1; }
+.hero-content h1 { font-family: 'Playfair Display', serif; font-size: 44px; line-height: 1; color: var(--pink); font-weight: 900; }
+.hero-content h2 { font-size: 22px; font-weight: 700; color: #333; margin: 6px 0 10px; }
+.hero-time { font-size: 14px; color: #555; margin-bottom: 6px; }
+.hero-time strong { color: var(--pink); }
+.hero-delivery { font-size: 15px; font-weight: 800; color: var(--pink); margin-bottom: 14px; }
+.hero-social { display: flex; gap: 8px; }
+.hero-social a { width: 30px; height: 30px; background: #333; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: background .2s; }
+.hero-social a:hover { background: var(--pink); }
+
+/* ===== HERO (mobile) ===== */
+.hero-mobile { display: none; margin: 10px 16px 0; border-radius: 16px; overflow: hidden; background: #fff8e1; }
+.hero-mobile-img { width: 100%; height: 155px; background: linear-gradient(135deg, #ffd0e8, #ff8ec8); display: flex; align-items: center; justify-content: center; font-size: 62px; position: relative; }
+.hero-mobile-badge { position: absolute; left: 12px; bottom: 10px; background: var(--pink); color: #fff; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 900; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(233,30,140,.4); }
+.hero-mobile-badge strong { font-size: 15px; }
+.hero-mobile-content { padding: 14px 16px 16px; }
+.hero-mobile-content h1 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--pink); font-weight: 900; font-style: italic; margin-bottom: 6px; }
+.hero-mobile-meta { font-size: 12px; color: #777; line-height: 1.8; }
+.hero-mobile-meta strong { color: var(--pink); }
+.hero-mobile-social { display: flex; gap: 8px; margin-top: 10px; }
+.hero-mobile-social a { width: 26px; height: 26px; background: #333; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+
+/* ===== SECTIONS ===== */
+section { padding: 30px 40px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.section-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; }
+.view-all { color: var(--pink); font-weight: 700; font-size: 14px; }
+.view-all:hover { text-decoration: underline; }
+
+/* ===== MENU CATS ===== */
+.menu-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; }
+.menu-scroll::-webkit-scrollbar { height: 3px; }
+.menu-scroll::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 2px; }
+
+/* Menu section positioning for desktop */
+#menu {
+  position: sticky;
+  top: 92px;
+  z-index: 190;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.menu-cat {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; min-width: 86px; text-align: center;
+}
+.menu-cat-img {
+  width: 100px; height: 92px; border-radius: 14px;
+  background: #f6f6f6; border: 1px solid #eee;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; font-size: 26px;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.menu-cat:hover .menu-cat-img {
+  border-color: var(--pink); transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);
+}
+.menu-cat span { font-size: 11px; font-weight: 700; color: #333; line-height: 1.2; }
+.menu-cat-img span { font-size: 14px; font-weight: 700; color: #333; line-height: 1.2; }
+
+/* ===== FOOD GRID ===== */
+.food-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.food-card { border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; background: #fff; transition: transform .2s, box-shadow .2s; }
+.food-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.1); }
+.food-card-img { width: 100%; height: 148px; background: linear-gradient(135deg, #ffd6ec, #ffe4f2); display: flex; align-items: center; justify-content: center; font-size: 38px; }
+.food-card-body { padding: 12px; }
+.food-card-title { font-weight: 800; font-size: 14px; color: #222; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.info-dot { width: 14px; height: 14px; background: #bbb; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 900; flex-shrink: 0; }
+.food-card-desc { font-size: 12px; color: var(--gray); line-height: 1.5; margin-bottom: 10px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.food-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.price { font-size: 16px; font-weight: 900; color: #222; }
+.price-old { font-size: 12px; color: #bbb; text-decoration: line-through; margin-right: 4px; }
+.btn-add { background: none; border: 1.5px solid var(--pink); color: var(--pink); border-radius: 20px; padding: 4px 12px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: background .2s, color .2s; }
+.btn-add:hover { background: var(--pink); color: #fff; }
+.btn-add::before { content: '+'; font-size: 14px; }
+
+/* ===== PROMO ROW (desktop) ===== */
+.promo-row { display: flex; gap: 16px; padding: 0 40px 30px; }
+.promo-left { flex: 1; background: var(--light-gray); border-radius: 14px; min-height: 90px; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 13px; }
+.promo-right { flex: 1; background: linear-gradient(135deg, #fff8e8, #fff3d0); border: 1px solid #ffe082; border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.promo-right h3 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--pink); margin-bottom: 4px; }
+.promo-right p { font-size: 13px; color: #555; }
+.promo-right p strong { color: var(--pink); }
+.btn-order { background: var(--pink); color: #fff; border: none; border-radius: 20px; padding: 9px 20px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; white-space: nowrap; transition: background .2s; }
+.btn-order:hover { background: var(--pink-dark); }
+
+/* ===== PROMO (mobile) ===== */
+.promo-mobile { display: none; margin: 0 16px 16px; background: linear-gradient(135deg, #fff8e8, #fff3d0); border: 1px solid #ffe082; border-radius: 14px; padding: 16px 18px; }
+.promo-mobile h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--pink); margin-bottom: 4px; }
+.promo-mobile p { font-size: 12px; color: #555; margin-bottom: 12px; }
+.promo-mobile p strong { color: var(--pink); }
+
+/* ===== POPULAR GRID (desktop) ===== */
+.popular-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.popular-card { display: flex; gap: 12px; border: 1px solid #eee; border-radius: 14px; padding: 12px; background: #fff; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+.popular-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.08); }
+.popular-img { width: 76px; height: 76px; border-radius: 10px; background: linear-gradient(135deg, #ffd6ec, #ffe4f2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.popular-info { flex: 1; min-width: 0; }
+.popular-title { font-weight: 800; font-size: 13px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+.popular-desc { font-size: 11px; color: var(--gray); line-height: 1.4; margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.popular-footer { display: flex; align-items: center; justify-content: space-between; }
+
+/* ===== POPULAR LIST (mobile) ===== */
+.popular-list { display: none; flex-direction: column; }
+.popular-list-item { display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #f2f2f2; }
+.popular-list-item:last-child { border-bottom: none; }
+.popular-list-img { width: 72px; height: 72px; border-radius: 10px; background: linear-gradient(135deg, #ffd6ec, #ffe4f2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.popular-list-info { flex: 1; min-width: 0; }
+.popular-list-title { font-weight: 800; font-size: 14px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+.popular-list-desc { font-size: 12px; color: var(--gray); line-height: 1.4; margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.popular-list-footer { display: flex; align-items: center; justify-content: space-between; }
+
+/* ===== FOOTER ===== */
+footer { background: var(--pink); color: #fff; margin-top: 40px; }
+.footer-container { max-width: 1200px; margin: 0 auto; padding: 44px 40px 24px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 28px; }
+.footer-logo-row { display: flex; align-items: center; gap: 8px; font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; margin-bottom: 10px; }
+.footer-logo-row img { height: 30px; width: auto; display: block; }
+.footer-desc { font-size: 13px; opacity: .85; margin-bottom: 14px; }
+.newsletter { display: flex; }
+.newsletter input { flex: 1; border: none; border-radius: 20px 0 0 20px; padding: 10px 14px; font-family: 'Nunito', sans-serif; font-size: 13px; outline: none; }
+.newsletter button { background: #333; color: #fff; border: none; border-radius: 0 20px 20px 0; padding: 10px 16px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.footer-follow { font-size: 12px; opacity: .8; margin: 14px 0 8px; }
+.footer-social { display: flex; gap: 8px; }
+.footer-social a { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; transition: background .2s; }
+.footer-social a:hover { background: rgba(255,255,255,.4); }
+.footer-col h4 { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 9px; }
+.footer-col a { color: rgba(255,255,255,.85); font-size: 13px; }
+.footer-col a:hover { color: #fff; }
+.app-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.app-btn { background: #222; color: #fff; border-radius: 8px; padding: 7px 13px; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; }
+.app-btn:hover { background: #000; }
+.contact-info { font-size: 12px; opacity: .85; }
+.contact-info div { margin-bottom: 5px; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.2); padding-top: 14px; text-align: center; font-size: 12px; opacity: .65; }
+
+/* ===== CART MODAL ===== */
+.cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .2s; z-index: 400; }
+.cart-modal.active { opacity: 1; visibility: visible; }
+.cart-drawer { background: #fff; width: min(520px, 92vw); max-height: 80vh; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.cart-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #eee; }
+.cart-header h3 { font-size: 18px; font-weight: 800; }
+.cart-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #999; }
+.cart-items { padding: 12px 18px; overflow: auto; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.cart-item:last-child { border-bottom: none; }
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-title { font-weight: 800; font-size: 13px; margin-bottom: 4px; }
+.cart-item-price { font-size: 12px; color: #777; }
+.cart-item-quantity { display: flex; align-items: center; gap: 6px; }
+.quantity-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 800; }
+.remove-item { background: none; border: none; font-size: 18px; color: #999; cursor: pointer; }
+.cart-footer { border-top: 1px solid #eee; padding: 14px 18px; }
+.cart-total { display: flex; align-items: center; justify-content: space-between; font-weight: 900; margin-bottom: 12px; }
+.btn-checkout { width: 100%; background: var(--pink); color: #fff; border: none; border-radius: 20px; padding: 10px 16px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; }
+.btn-checkout:hover { background: var(--pink-dark); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .food-grid { grid-template-columns: repeat(3, 1fr); }
+  .popular-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .nav-desktop { display: none; }
+  .nav-mobile { display: flex; }
+  .bottom-nav { display: flex; }
+
+  #menu {
+    position: static;
+    top: auto;
+    z-index: auto;
+  }
+
+  .hero-wrap { display: none; }
+  .hero-mobile { display: block; }
+
+  section { padding: 18px 16px; }
+  .section-header h2 { font-size: 18px; }
+
+  .menu-cat-img { width: 62px; height: 62px; font-size: 22px; }
+  .menu-cat { min-width: 66px; }
+  .menu-cat span { font-size: 10px; }
+
+  .food-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .food-card-img { height: 118px; font-size: 30px; }
+  .food-card-body { padding: 10px; }
+  .food-card-title { font-size: 12px; }
+  .food-card-desc { font-size: 11px; }
+  .price { font-size: 14px; }
+  .btn-add { font-size: 11px; padding: 3px 10px; }
+
+  .promo-row { display: none; }
+  .promo-mobile { display: block; }
+
+  .popular-grid { display: none; }
+  .popular-list { display: flex; flex-direction: column; padding-bottom: 120px; }
+
+  .footer-container { padding: 28px 16px 90px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 26px; }
+  .footer-logo-row { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- DESKTOP NAV -->
+<nav class="nav-desktop">
+  <div class="nav-inner">
+    <a class="logo" href="#"><img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya"></a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Menu</a></li>
+      <li><a href="#">Offers</a></li>
+    </ul>
+    <div class="nav-right">
+      <input class="nav-search" type="text" placeholder="Search">
+      <button class="btn-lang">🌐 English</button>
+      <button class="btn-cart" id="cartIcon">🛒 <span id="cartCount">0</span></button>
+      <button class="btn-login">👤 Log In</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<nav class="nav-mobile">
+  <div class="nav-mobile-inner">
+    <a class="logo" href="#"><img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya"></a>
+    <input class="nav-mobile-search" type="text" placeholder="Search">
+  </div>
+</nav>
+
+<div class="page-container">
+
+<!-- DESKTOP HERO -->
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="hero-img-box">🍕</div>
+    <div class="hero-badge"><strong>50%</strong>OFF</div>
+    <div class="hero-content">
+      <h1>BEST<br>OFFER</h1>
+      <h2>Tasty Fast Food</h2>
+      <p class="hero-time">Open Everyday &nbsp;<strong>10:00 AM – 11:00 PM</strong></p>
+      <p class="hero-delivery">🚚 Free Home Delivery</p>
+      <div class="hero-social">
+        <a href="#">📱</a><a href="#">🐦</a><a href="#">📸</a><a href="#">📘</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE HERO -->
+<div class="hero-mobile">
+  <div class="hero-mobile-img">
+    🍕
+    <div class="hero-mobile-badge"><strong>50%</strong>&nbsp;OFF</div>
+  </div>
+  <div class="hero-mobile-content">
+    <h1>DELICIOUS<br>PIZZA</h1>
+    <div class="hero-mobile-meta">
+      Open Everyday &nbsp;<strong>10:00 AM – 11:00 PM</strong><br>
+      <strong>🚚 Free Home Delivery</strong>
+    </div>
+    <div class="hero-mobile-social">
+      <a href="#">📘</a><a href="#">🐦</a><a href="#">📸</a>
+    </div>
+  </div>
+</div>
+
+<!-- OUR MENU -->
+<section id="menu">
+  <div class="section-header">
+    <h2>Our Menu</h2>
+    <a class="view-all" href="#">View All</a>
+  </div>
+  <div class="menu-scroll" id="categoryScroll">
+    <div class="menu-cat"><div class="menu-cat-img">⏳<span>Loading...</span></div></div>
+  </div>
+</section>
+
+<!-- FEATURED ITEMS -->
+<section>
+  <div class="section-header"><h2>Featured Items</h2></div>
+  <div class="food-grid" id="featuredGrid">
+    <div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #999;">⏳ Loading products...</div>
+  </div>
+</section>
+
+<!-- PROMO (desktop) -->
+<div class="promo-row">
+  <div class="promo-left">📢 Banner Ad</div>
+  <div class="promo-right">
+    <div>
+      <h3>Savory and Satisfying</h3>
+      <p>Flat <strong>5% off</strong> on Veg &amp; Non-veg Burgers</p>
+    </div>
+    <button class="btn-order">Order Now</button>
+  </div>
+</div>
+
+<!-- PROMO (mobile) -->
+<div class="promo-mobile">
+  <h3>Savory and Satisfying</h3>
+  <p>Flat <strong>5% off</strong> on Veg &amp; Non-veg Burgers</p>
+  <button class="btn-order">Order Now</button>
+</div>
+
+<!-- MOST POPULAR -->
+<section>
+  <div class="section-header"><h2>Most Popular Items</h2></div>
+
+  <!-- Desktop 3-col -->
+  <div class="popular-grid" id="popularGrid">
+    <div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #999;">⏳ Loading popular items...</div>
+  </div>
+
+  <!-- Mobile single-column list -->
+  <div class="popular-list" id="popularList">
+    <div style="text-align: center; padding: 24px; color: #999;">⏳ Loading popular items...</div>
+  </div>
+</section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-container">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo-row"><img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya"></div>
+      <p class="footer-desc">Subscribe to our newsletter to get latest updates</p>
+      <div class="newsletter">
+        <input type="email" placeholder="Your email address">
+        <button>Subscribe</button>
+      </div>
+      <p class="footer-follow">Follow Us On</p>
+      <div class="footer-social">
+        <a href="#">📘</a><a href="#">✖</a><a href="#">📌</a><a href="#">▶️</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Useful Links</h4>
+      <ul>
+        <li><a href="#">Cookies Policy</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Download Our Apps</h4>
+      <div class="app-btns">
+        <a class="app-btn" href="#">▶ Google Play</a>
+        <a class="app-btn" href="#">🍎 App Store</a>
+      </div>
+      <div class="contact-info">
+        <div>✉️ info@inilabs.net</div>
+        <div>📞 +13333846282</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© FoodKing by INLabs 2026, All Rights Reserved</div>
+  </div>
+</footer>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <div class="bottom-nav-item active">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </div>
+  <div class="bottom-nav-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Menu
+  </div>
+  <div class="bottom-nav-cart-wrap" id="cartIconBottom">
+    <div class="bottom-nav-cart">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </div>
+    <span class="bottom-nav-cart-label">Cart <span class="cart-count-badge" id="cartCountMobile">0</span></span>
+  </div>
+  <div class="bottom-nav-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Offers
+  </div>
+  <div class="bottom-nav-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Log In
+  </div>
+</div>
+
+<!-- Cart Modal -->
+<div class="cart-modal" id="cartModal">
+  <div class="cart-drawer">
+    <div class="cart-header">
+      <h3>Shopping Cart</h3>
+      <button class="cart-close" id="closeCart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cartTotal">0.00 AED</span>
+      </div>
+      <button class="btn-checkout" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="auth.js"></script>
+<script>
+  function escapeAttr(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function formatPrice(value) {
+    const num = Number(value) || 0;
+    return num.toFixed(2);
+  }
+
+  function renderProductCard(product) {
+    const name = escapeAttr(product.name || 'Product');
+    const desc = escapeAttr((product.description || '').slice(0, 90));
+    const price = formatPrice(product.price);
+    const icon = product.icon || '🥩';
+    const image = product.image_url || '';
+    const category = escapeAttr(product.category || '');
+    const unit = escapeAttr(product.unit || '');
+    const iikoId = escapeAttr(product.iiko_product_id || '');
+    const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
+
+    return `
+      <div class="food-card">
+        <div class="food-card-img" ${imageStyle}>${icon}</div>
+        <div class="food-card-body">
+          <div class="food-card-title">${name}</div>
+          <div class="food-card-desc">${desc}</div>
+          <div class="food-card-footer">
+            <span class="price">${price} AED</span>
+            <button class="btn-add" data-id="${product.id}" data-name="${name}" data-price="${price}" data-category="${category}" data-unit="${unit}" data-iiko="${iikoId}">Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPopularCard(product) {
+    const name = escapeAttr(product.name || 'Product');
+    const desc = escapeAttr((product.description || '').slice(0, 70));
+    const price = formatPrice(product.price);
+    const icon = product.icon || '🥩';
+    const image = product.image_url || '';
+    const category = escapeAttr(product.category || '');
+    const unit = escapeAttr(product.unit || '');
+    const iikoId = escapeAttr(product.iiko_product_id || '');
+    const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
+
+    const desktop = `
+      <div class="popular-card">
+        <div class="popular-img" ${imageStyle}>${icon}</div>
+        <div class="popular-info">
+          <div class="popular-title">${name}</div>
+          <div class="popular-desc">${desc}</div>
+          <div class="popular-footer">
+            <span class="price">${price} AED</span>
+            <button class="btn-add" data-id="${product.id}" data-name="${name}" data-price="${price}" data-category="${category}" data-unit="${unit}" data-iiko="${iikoId}">Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const mobile = `
+      <div class="popular-list-item">
+        <div class="popular-list-img" ${imageStyle}>${icon}</div>
+        <div class="popular-list-info">
+          <div class="popular-list-title">${name}</div>
+          <div class="popular-list-desc">${desc}</div>
+          <div class="popular-list-footer">
+            <span class="price">${price} AED</span>
+            <button class="btn-add" data-id="${product.id}" data-name="${name}" data-price="${price}" data-category="${category}" data-unit="${unit}" data-iiko="${iikoId}">Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    return { desktop, mobile };
+  }
+
+
+  async function loadCategories() {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+
+      const container = document.getElementById('categoryScroll');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="menu-cat"><div class="menu-cat-img">📦<span>No categories</span></div></div>';
+        return;
+      }
+
+      container.innerHTML = data.map((cat) => `
+        <div class="menu-cat" onclick="window.location.href='shop.html?category=${cat.slug || cat.id}'">
+            <div class="menu-cat-img">${cat.icon || '🥩'}<span>${escapeAttr(cat.name)}</span></div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+      document.getElementById('categoryScroll').innerHTML = '<div class="menu-cat"><div class="menu-cat-img">❌<span>Error</span></div></div>';
+    }
+  }
+
+  async function loadFeatured() {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+      if (error) throw error;
+
+      const container = document.getElementById('featuredGrid');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 24px; color:#999;">No products available</div>';
+        return;
+      }
+
+      container.innerHTML = data.map(renderProductCard).join('');
+    } catch (err) {
+      console.error('Failed to load featured products:', err);
+      document.getElementById('featuredGrid').innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 24px; color:#f44;">Error loading products</div>';
+    }
+  }
+
+  async function loadPopular() {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+
+      const grid = document.getElementById('popularGrid');
+      const list = document.getElementById('popularList');
+
+      if (!data || data.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 24px; color:#999;">No popular items</div>';
+        list.innerHTML = '<div style="text-align:center; padding: 24px; color:#999;">No popular items</div>';
+        return;
+      }
+
+      const desktopCards = [];
+      const mobileCards = [];
+      data.forEach((item) => {
+        const card = renderPopularCard(item);
+        desktopCards.push(card.desktop);
+        mobileCards.push(card.mobile);
+      });
+
+      grid.innerHTML = desktopCards.join('');
+      list.innerHTML = mobileCards.join('');
+    } catch (err) {
+      console.error('Failed to load popular products:', err);
+      document.getElementById('popularGrid').innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 24px; color:#f44;">Error loading products</div>';
+      document.getElementById('popularList').innerHTML = '<div style="text-align:center; padding: 24px; color:#f44;">Error loading products</div>';
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const btn = event.target.closest('.btn-add[data-id]');
+    if (!btn) return;
+
+    const id = Number(btn.dataset.id);
+    const name = btn.dataset.name;
+    const price = Number(btn.dataset.price);
+    const category = btn.dataset.category || '';
+    const unit = btn.dataset.unit || '';
+    const iikoId = btn.dataset.iiko || null;
+
+    if (typeof addToCartFromDB === 'function') {
+      addToCartFromDB(id, name, price, category, unit, iikoId, 1);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof supabase === 'undefined') {
+      console.error('Supabase client not initialized.');
+      return;
+    }
+
+    loadCategories();
+    loadFeatured();
+    loadPopular();
+    if (typeof updateCartCount === 'function') {
+      updateCartCount();
+    }
+  });
+</script>
+
+</body>
+</html>

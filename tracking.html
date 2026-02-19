@@ -32,28 +32,29 @@
     <style>
         /* Tracking page specific styles */
         .page-hero {
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%),
+            background: linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.54) 100%),
                         url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200') center/cover;
-            padding: 120px 0 80px;
+            padding: clamp(68px, 10vw, 98px) 0 clamp(56px, 8vw, 78px);
             text-align: center;
-            margin-top: 88px;
+            margin-top: 142px;
         }
 
         .page-hero h1 {
             color: #fff;
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.01em;
         }
 
         .page-hero p {
-            color: rgba(255,255,255,0.9);
-            font-size: 18px;
+            color: rgba(255,255,255,0.92);
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
         }
 
         .tracking-section {
-            padding: 60px 0 100px;
-            background: var(--light);
+            padding: clamp(46px, 6vw, 76px) 0 clamp(64px, 8vw, 108px);
+            background: linear-gradient(to bottom, var(--light) 0%, var(--white) 100%);
         }
 
         .tracking-container {
@@ -62,18 +63,20 @@
         }
 
         .tracking-form {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            box-shadow: var(--shadow);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
+            border-radius: 18px;
+            padding: clamp(32px, 5vw, 44px);
+            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
             margin-bottom: 30px;
+            border: 1px solid rgba(139, 17, 0, 0.12);
         }
 
         .tracking-form h3 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+            font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 5px;
+            letter-spacing: -0.01em;
         }
 
         .tracking-form .subtitle {
@@ -113,39 +116,42 @@
         .track-btn {
             width: 100%;
             padding: 16px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--white);
             border: none;
-            border-radius: var(--radius);
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
-            font-family: 'Rubik', sans-serif;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            box-shadow: 0 8px 18px rgba(139, 17, 0, 0.24);
         }
 
         .track-btn:hover {
-            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 12px 26px rgba(139, 17, 0, 0.32);
+            filter: brightness(1.05);
         }
 
         /* Order Cards */
         .order-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 25px;
-            box-shadow: var(--shadow);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
             margin-bottom: 20px;
-            transition: var(--transition);
+            transition: all 0.25s ease;
+            border: 1px solid rgba(139, 17, 0, 0.12);
         }
 
         .order-card:hover {
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 16px 38px rgba(50, 25, 20, 0.12);
+            transform: translateY(-2px);
         }
 
         .order-header {

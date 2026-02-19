@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FONTS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+
+    <!-- CUSTOM STYLE -->
+    <link rel="stylesheet" href="styles2.css">
+    <script src="load-components.js"></script>
+
+    <!-- PAGE TITLE -->
+    <title>Al Saraya - Premium Halal Butchery</title>
+
+    <!-- FAV ICON -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
+
+    <!-- Supabase (for database) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Firebase (for FREE phone authentication) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- reCAPTCHA container (invisible) -->
+    <div id="recaptcha-container"></div>
+    
+    <div id="header-placeholder"></div>
+
+    <!-- Hero Slider Section - FoodKing Style -->
+    <section class="fk-hero-section">
+        <div class="swiper fk-hero-slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="fk-hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('https://i.imgur.com/aDEnvBR.jpeg');">
+                        <div class="container">
+                            <div class="fk-hero-content">
+                                <h1 class="fk-hero-title">Premium Halal<br><span>Quality Meat</span></h1>
+                                <p class="fk-hero-desc">Fresh, halal-certified cuts delivered to your doorstep</p>
+                                <a href="shop.html" class="fk-hero-btn">
+                                    Order Now <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="fk-hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('https://i.imgur.com/MyHhL1b.jpeg');">
+                        <div class="container">
+                            <div class="fk-hero-content">
+                                <h1 class="fk-hero-title">Finest Cuts<br><span>Best Prices</span></h1>
+                                <p class="fk-hero-desc">From our butcher's block to your kitchen</p>
+                                <a href="shop.html" class="fk-hero-btn">
+                                    Shop Now <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="fk-hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('https://i.imgur.com/Yn0rT7s.jpeg');">
+                        <div class="container">
+                            <div class="fk-hero-content">
+                                <h1 class="fk-hero-title">Fresh Daily<br><span>100% Halal</span></h1>
+                                <p class="fk-hero-desc">Experience the taste of excellence</p>
+                                <a href="shop.html" class="fk-hero-btn">
+                                    Browse Menu <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </section>
+
+    <!-- Our Menu Section - Category Tabs -->
+    <section class="fk-menu-section" id="categories">
+        <div class="container">
+            <div class="fk-section-header">
+                <h2 class="fk-section-title">Our Menu</h2>
+                <p class="fk-section-desc">Choose from our wide selection of premium meats</p>
+            </div>
+            <div class="fk-category-tabs">
+                <div class="fk-tabs-wrapper" id="categoryTabs">
+                    <!-- Category tabs loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Items Section -->
+    <section class="fk-featured-section" id="featured">
+        <div class="container">
+            <div class="fk-section-header">
+                <h2 class="fk-section-title">Featured Items</h2>
+                <p class="fk-section-desc">Our most popular selections</p>
+            </div>
+            <div class="fk-products-grid" id="featuredProducts">
+                <!-- Featured products loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotional Banners -->
+    <section class="fk-promo-banners">
+        <div class="container">
+            <div class="fk-promo-grid">
+                <div class="fk-promo-card" style="background-image: linear-gradient(rgba(139,17,0,0.85), rgba(139,17,0,0.9)), url('https://i.imgur.com/OkGOI8h.jpeg');">
+                    <div class="fk-promo-content">
+                        <h3>Premium Quality</h3>
+                        <p>Fresh cuts prepared daily with expert care</p>
+                        <a href="shop.html" class="fk-promo-link">Shop Now <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="fk-promo-card" style="background-image: linear-gradient(rgba(216,155,42,0.85), rgba(216,155,42,0.9)), url('https://i.imgur.com/zy3MaNw.jpeg');">
+                    <div class="fk-promo-content">
+                        <h3>Same-Day Delivery</h3>
+                        <p>Order before 5PM for delivery today</p>
+                        <a href="shop.html" class="fk-promo-link">Order Now <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Most Popular Items Section -->
+    <section class="fk-popular-section" id="popular">
+        <div class="container">
+            <div class="fk-section-header">
+                <h2 class="fk-section-title">Most Popular Items</h2>
+                <p class="fk-section-desc">Our customers' favorite cuts</p>
+            </div>
+            <div class="fk-products-grid" id="popularProducts">
+                <!-- Popular products loaded dynamically -->
+            </div>
+            <div class="fk-view-all">
+                <a href="shop.html" class="fk-view-all-btn">
+                    View All Products <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="fk-newsletter-section">
+        <div class="container">
+            <div class="fk-newsletter-content">
+                <h2>Subscribe to Our Newsletter</h2>
+                <p>Get weekly deals and special offers delivered to your inbox</p>
+                <form class="fk-newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="fk-newsletter-btn">
+                        Subscribe <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="shop.html" class="mobile-nav-item">
+            <i class="fas fa-store"></i>
+            <span>Shop</span>
+        </a>
+        <a href="#" class="mobile-nav-item cart-nav-item" id="cartNavBtn">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="mobile-cart-count" id="mobileCartCount">0</span>
+            <span>Cart</span>
+        </a>
+        <a href="tracking.html" class="mobile-nav-item">
+            <i class="fas fa-truck"></i>
+            <span>Track</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items loaded dynamically -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">0.00 AED</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <!-- App JS -->
+    <script src="app.js"></script>
+    
+    <!-- Authentication JS -->
+    <script src="auth.js"></script>
+
+    <script>
+        // Use supabase from app.js (already initialized)
+
+        // Wait for DOM and scripts to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Swipers after DOM ready
+            initSwipers();
+
+            // Load data
+            setTimeout(() => {
+                loadCategoryTabs();
+                loadFeaturedProducts();
+                loadPopularProducts();
+                updateCartCountLocal();
+            }, 100);
+
+            // Setup event listeners after header loads
+            window.addEventListener('headerLoaded', setupEventListeners);
+        });
+
+        // Initialize Swipers
+        function initSwipers() {
+            // Hero slider - FoodKing style
+            new Swiper('.fk-hero-slider', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.fk-hero-slider .swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.fk-hero-slider .swiper-button-next',
+                    prevEl: '.fk-hero-slider .swiper-button-prev',
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                }
+            });
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Mobile Menu Toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+
+            if (mobileMenuBtn && navMenu) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    }
+                });
+
+                // Close menu when clicking a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    });
+                });
+            }
+
+            // Cart Modal
+            const cartModal = document.getElementById('cartModal');
+            const cartBtn = document.getElementById('cartBtn');
+            const cartClose = document.getElementById('cartClose');
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartNavBtn = document.getElementById('cartNavBtn');
+
+            if (cartBtn) cartBtn.addEventListener('click', openCartModal);
+            if (cartNavBtn) cartNavBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openCartModal();
+            });
+            if (cartClose) cartClose.addEventListener('click', closeCartModal);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCartModal);
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (header) {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                }
+            });
+
+            // Contact form
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (typeof showNotification === 'function') {
+                        showNotification('Thank you! We\'ll get back to you soon.');
+                    } else {
+                        alert('Thank you! We\'ll get back to you soon.');
+                    }
+                    this.reset();
+                });
+            }
+
+            // Newsletter form
+            const newsletterForm = document.getElementById('newsletterForm');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (typeof showNotification === 'function') {
+                        showNotification('Thank you for subscribing!');
+                    } else {
+                        alert('Thank you for subscribing!');
+                    }
+                    this.reset();
+                });
+            }
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href.length > 1) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            const headerHeight = document.getElementById('header')?.offsetHeight || 80;
+                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+        }
+
+        // Cart Modal Functions
+        function openCartModal() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                displayCartLocal();
+            }
+        }
+
+        function closeCartModal() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Load Categories as Tabs
+        async function loadCategoryTabs() {
+            try {
+                const { data: categories, error } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .order('name');
+
+                if (error) throw error;
+
+                const tabsWrapper = document.getElementById('categoryTabs');
+                if (!tabsWrapper) return;
+
+                if (!categories || categories.length === 0) {
+                    tabsWrapper.innerHTML = '<div class="fk-category-tab active">All Products</div>';
+                    return;
+                }
+
+                // Add "All" tab first
+                let tabsHTML = '<a href="shop.html" class="fk-category-tab">All Products</a>';
+                
+                // Add category tabs
+                tabsHTML += categories.map(cat => `
+                    <a href="shop.html?category=${cat.slug || ''}" class="fk-category-tab">
+                        ${cat.icon || '🥩'} ${cat.name}
+                    </a>
+                `).join('');
+
+                tabsWrapper.innerHTML = tabsHTML;
+
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                const tabsWrapper = document.getElementById('categoryTabs');
+                if (tabsWrapper) {
+                    tabsWrapper.innerHTML = '<div class="fk-category-tab">Error loading categories</div>';
+                }
+            }
+        }
+
+        // Load Featured Products
+        async function loadFeaturedProducts() {
+            const grid = document.getElementById('featuredProducts');
+            if (!grid) return;
+
+            // Show loading state
+            grid.innerHTML = '<p class="fk-loading">Loading products...</p>';
+
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('in_stock', true)
+                    .order('created_at', { ascending: false })
+                    .limit(8);
+
+                if (error) throw error;
+
+                if (!products || products.length === 0) {
+                    grid.innerHTML = '<p class="fk-no-products">No products available</p>';
+                    return;
+                }
+
+                grid.innerHTML = products.map(product => {
+                    const name = product.name || 'Product';
+                    const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const price = parseFloat(product.price) || 0;
+                    const unit = product.unit || 'kg';
+                    const imageUrl = product.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
+                    const description = product.description || '';
+                    const shortDesc = description.length > 60 ? description.substring(0, 60) + '...' : description;
+
+                    return `
+                        <div class="fk-product-card">
+                            <a href="product-detail.html?id=${product.id}" class="fk-product-image">
+                                <img src="${imageUrl}" alt="${safeName}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                            </a>
+                            <div class="fk-product-info">
+                                <h4 class="fk-product-name"><a href="product-detail.html?id=${product.id}">${name}</a></h4>
+                                ${shortDesc ? `<p class="fk-product-desc">${shortDesc}</p>` : ''}
+                                <div class="fk-product-footer">
+                                    <div class="fk-product-price">
+                                        <span class="price">${price.toFixed(2)} AED</span>
+                                        <span class="unit">/ ${unit}</span>
+                                    </div>
+                                    <button class="fk-add-btn" onclick="addToCartLocal(${product.id}, '${safeName}', ${price}, '${unit}')">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading featured products:', error);
+                grid.innerHTML = '<p class="fk-no-products">Error loading products. Please refresh.</p>';
+            }
+        }
+
+        // Load Popular Products
+        async function loadPopularProducts() {
+            const grid = document.getElementById('popularProducts');
+            if (!grid) return;
+
+            // Show loading state
+            grid.innerHTML = '<p class="fk-loading">Loading products...</p>';
+
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('in_stock', true)
+                    .order('created_at', { ascending: false })
+                    .limit(6);
+
+                if (error) throw error;
+
+                if (!products || products.length === 0) {
+                    grid.innerHTML = '<p class="fk-no-products">No products available</p>';
+                    return;
+                }
+
+                grid.innerHTML = products.map(product => {
+                    const name = product.name || 'Product';
+                    const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const price = parseFloat(product.price) || 0;
+                    const unit = product.unit || 'kg';
+                    const imageUrl = product.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
+                    const description = product.description || '';
+                    const shortDesc = description.length > 60 ? description.substring(0, 60) + '...' : description;
+
+                    return `
+                        <div class="fk-product-card">
+                            <a href="product-detail.html?id=${product.id}" class="fk-product-image">
+                                <img src="${imageUrl}" alt="${safeName}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                            </a>
+                            <div class="fk-product-info">
+                                <h4 class="fk-product-name"><a href="product-detail.html?id=${product.id}">${name}</a></h4>
+                                ${shortDesc ? `<p class="fk-product-desc">${shortDesc}</p>` : ''}
+                                <div class="fk-product-footer">
+                                    <div class="fk-product-price">
+                                        <span class="price">${price.toFixed(2)} AED</span>
+                                        <span class="unit">/ ${unit}</span>
+                                    </div>
+                                    <button class="fk-add-btn" onclick="addToCartLocal(${product.id}, '${safeName}', ${price}, '${unit}')">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                grid.innerHTML = '<p class="fk-no-products">Error loading products. Please refresh.</p>';
+            }
+        }
+
+        // Local Cart Functions (fallback if app.js not loaded)
+        function addToCartLocal(id, name, price, unit) {
+            // Try to use app.js function first
+            if (typeof addToCartFromDB === 'function') {
+                addToCartFromDB(id, name, price, '', unit);
+                return;
+            }
+
+            // Fallback local implementation
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingIndex = cart.findIndex(item => item.id === id);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: price,
+                    unit: unit,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCountLocal();
+
+            // Show notification
+            if (typeof showNotification === 'function') {
+                showNotification(`${name} added to cart!`);
+            } else {
+                console.log(`${name} added to cart!`);
+            }
+        }
+
+        function updateCartCountLocal() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+            const cartCount = document.getElementById('cartCount');
+            const mobileCartCount = document.getElementById('mobileCartCount');
+
+            if (cartCount) cartCount.textContent = count;
+            if (mobileCartCount) mobileCartCount.textContent = count;
+        }
+
+        function displayCartLocal() {
+            // Try to use app.js function first
+            if (typeof displayCart === 'function') {
+                displayCart();
+                return;
+            }
+
+            // Fallback local implementation
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            if (!cartItems || !cartTotal) return;
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; padding: 40px; color: #6c757d;">Your cart is empty</p>';
+                cartTotal.textContent = '0.00 AED';
+                return;
+            }
+
+            let total = 0;
+            cartItems.innerHTML = cart.map((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px; font-size: 15px;">${item.name}</h4>
+                            <p style="margin: 0; font-size: 13px; color: #6c757d;">${item.price.toFixed(2)} AED × ${item.quantity}</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: 600; color: #ff0000;">${itemTotal.toFixed(2)} AED</span>
+                            <button onclick="removeFromCartLocal(${index})" style="background: #ff4444; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer;">×</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            cartTotal.textContent = total.toFixed(2) + ' AED';
+        }
+
+        function removeFromCartLocal(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCountLocal();
+            displayCartLocal();
+        }
+
+        // Make functions globally available
+        window.openCartModal = openCartModal;
+        window.closeCartModal = closeCartModal;
+        window.addToCartLocal = addToCartLocal;
+        window.removeFromCartLocal = removeFromCartLocal;
+    </script>
+
+    <!-- Authentication Modals -->
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-overlay" onclick="closeAuthModal()"></div>
+        <div class="auth-container">
+            <button class="auth-close" onclick="closeAuthModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <!-- Login Tab -->
+            <div class="auth-tab" id="loginTab">
+                <h2>Welcome Back!</h2>
+                <p class="auth-subtitle">Sign in to your account</p>
+                
+                <div class="auth-methods">
+                    <!-- Google Sign In -->
+                    <button class="auth-google-btn" onclick="signInWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 18 18">
+                            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
+                            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                    
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+                    
+                    <!-- Phone Number Login -->
+                    <div class="auth-form">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <div class="phone-input-group">
+                                <span class="phone-prefix">+971</span>
+                                <input type="tel" id="loginPhone" placeholder="50 123 4567" maxlength="11" />
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" onclick="handleSendOTP()">
+                            Send OTP
+                        </button>
+                    </div>
+                    
+                    <!-- OTP Verification (Hidden initially) -->
+                    <div class="auth-form otp-form" id="otpForm" style="display: none;">
+                        <div class="form-group">
+                            <label>Enter 6-digit OTP</label>
+                            <div class="otp-inputs">
+                                <input type="text" maxlength="1" class="otp-input" data-index="0" />
+                                <input type="text" maxlength="1" class="otp-input" data-index="1" />
+                                <input type="text" maxlength="1" class="otp-input" data-index="2" />
+                                <input type="text" maxlength="1" class="otp-input" data-index="3" />
+                                <input type="text" maxlength="1" class="otp-input" data-index="4" />
+                                <input type="text" maxlength="1" class="otp-input" data-index="5" />
+                            </div>
+                            <p class="otp-resend">
+                                Didn't receive code? <a href="#" onclick="handleSendOTP(); return false;">Resend</a>
+                            </p>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" onclick="handleVerifyOTP()">
+                            Verify & Login
+                        </button>
+                    </div>
+                </div>
+                
+                <p class="auth-footer">
+                    By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal" style="display: none;">
+        <div class="auth-overlay" onclick="closeProfileModal()"></div>
+        <div class="profile-container">
+            <button class="auth-close" onclick="closeProfileModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2><i class="fas fa-user"></i> My Profile</h2>
+            
+            <form class="profile-form" id="profileForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="profileName" required />
+                </div>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="profileEmail" />
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="profilePhone" readonly />
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    Update Profile
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Addresses Modal -->
+    <div class="addresses-modal" id="addressesModal" style="display: none;">
+        <div class="auth-overlay" onclick="closeAddressesModal()"></div>
+        <div class="addresses-container">
+            <button class="auth-close" onclick="closeAddressesModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="addresses-header">
+                <h2><i class="fas fa-map-marker-alt"></i> My Addresses</h2>
+                <button class="btn btn-primary" onclick="showAddAddressForm()">
+                    <i class="fas fa-plus"></i> Add New
+                </button>
+            </div>
+            
+            <div class="addresses-list" id="addressesList">
+                <!-- Addresses will be loaded here -->
+            </div>
+            
+            <!-- Add/Edit Address Form (Hidden initially) -->
+            <div class="address-form-container" id="addressFormContainer" style="display: none;">
+                <h3 id="addressFormTitle">Add New Address</h3>
+                <form class="address-form" id="addressForm">
+                    <input type="hidden" id="addressId" />
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Label</label>
+                            <select id="addressLabel" required>
+                                <option value="Home">Home</option>
+                                <option value="Work">Work</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="addressFullName" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="addressPhone" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Area</label>
+                            <input type="text" id="addressArea" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <textarea id="addressStreet" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Building</label>
+                            <input type="text" id="addressBuilding" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Floor</label>
+                            <input type="text" id="addressFloor" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Apartment</label>
+                            <input type="text" id="addressApartment" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Landmark (Optional)</label>
+                        <input type="text" id="addressLandmark" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="addressDefault" />
+                            Set as default address
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="hideAddressForm()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Save Address
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note: All modal control functions are defined in auth.js -->
+
+</body>
+</html>

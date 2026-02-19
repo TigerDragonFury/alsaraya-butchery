@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="foodking2.css">
     <script src="load-components.js"></script>
     <title>My Profile - Al Saraya Butchery</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/gWdOYdW.png">
@@ -35,9 +35,9 @@
         }
         
         .page-hero {
-            margin-top: 88px;
+            margin-top: 142px;
             background: linear-gradient(135deg, var(--profile-gradient-start) 0%, var(--profile-gradient-end) 100%);
-            padding: 80px 0;
+            padding: clamp(56px, 9vw, 88px) 0;
             text-align: center;
             color: var(--white);
             position: relative;
@@ -56,23 +56,24 @@
         }
         
         .page-hero h1 {
-            font-size: 3rem;
+            font-size: clamp(2.2rem, 5.5vw, 3.4rem);
             font-weight: 800;
             margin-bottom: 0.75rem;
             position: relative;
             z-index: 1;
             text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            letter-spacing: -0.015em;
         }
         
         .page-hero p {
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
             opacity: 0.95;
             position: relative;
             z-index: 1;
         }
         
         .profile-section {
-            padding: 80px 0 100px;
+            padding: clamp(56px, 8vw, 88px) 0 clamp(64px, 8vw, 108px);
             background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
             min-height: 60vh;
         }
@@ -93,19 +94,19 @@
         }
         
         .profile-sidebar {
-            background: var(--white);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: var(--profile-card-shadow);
+            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
             height: fit-content;
             position: sticky;
-            top: 100px;
-            border: 1px solid rgba(0,0,0,0.05);
+            top: 120px;
+            border: 1px solid rgba(139, 17, 0, 0.08);
             transition: all 0.3s ease;
         }
         
         .profile-sidebar:hover {
-            box-shadow: var(--profile-card-shadow-hover);
+            box-shadow: 0 16px 38px rgba(50, 25, 20, 0.12);
             transform: translateY(-2px);
         }
         

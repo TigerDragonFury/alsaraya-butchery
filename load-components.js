@@ -18,7 +18,7 @@
                 
                 // Set active navigation link
                 const currentPage = getCurrentPage();
-                const navLinks = document.querySelectorAll('.nav-menu a[data-page]');
+                const navLinks = document.querySelectorAll('.nav-menu a[data-page], .nav-links a[data-page]');
                 navLinks.forEach(link => {
                     if (link.getAttribute('data-page') === currentPage) {
                         link.classList.add('active');
