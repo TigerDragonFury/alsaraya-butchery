@@ -515,8 +515,8 @@
                   </div>
                 `).join('');
                 
-                // Auto-scroll category list on mobile
-                setTimeout(() => autoScrollCategoryList(), 100);
+                // Auto-scroll category list on mobile (no delay needed)
+                autoScrollCategoryList();
             } catch (err) {
                 console.error('Failed to load categories:', err);
                 document.getElementById('categoryScroll').innerHTML = '<div class="menu-cat"><div class="menu-cat-img">❌<span>Error</span></div></div>';
@@ -528,11 +528,13 @@
             const activeCategory = container.querySelector('.menu-cat.active');
             
             if (activeCategory && window.innerWidth <= 768) {
-                // Scroll to active category if it exists
-                activeCategory.scrollIntoView({
-                    behavior: 'smooth',
-                    inline: 'center',
-                    block: 'nearest'
+                // Use requestAnimationFrame for smooth scrolling
+                requestAnimationFrame(() => {
+                    activeCategory.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                        block: 'nearest'
+                    });
                 });
             }
         }
@@ -612,53 +614,61 @@
         }
 
         function setupCategoryObserver() {
-            // Use scroll listener with robust detection for scroll direction changes
-            let scrollTimeout;
+            // Use requestAnimationFrame for smooth, frame-synced updates
+            let animationFrameId = null;
+            let lastActiveSlug = null;
             
             function detectActiveCategory() {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    const sections = document.querySelectorAll('.category-section');
-                    const stickyHeaderHeight = 106; // Header + padding
-                    let activeSlug = null;
+                const sections = document.querySelectorAll('.category-section');
+                const stickyHeaderHeight = 106; // Header + padding
+                let activeSlug = null;
 
-                    // First pass: Find section that contains the sticky header line
-                    for (let section of sections) {
+                // First pass: Find section that contains the sticky header line
+                for (let section of sections) {
+                    const rect = section.getBoundingClientRect();
+                    // If sticky header line (106px) is within this section's bounds
+                    if (rect.top < stickyHeaderHeight && rect.bottom > stickyHeaderHeight) {
+                        activeSlug = section.dataset.categorySlug;
+                        break;
+                    }
+                }
+
+                // Second pass: If no section contains header line, find closest one
+                if (!activeSlug) {
+                    let closestDistance = Infinity;
+                    sections.forEach(section => {
                         const rect = section.getBoundingClientRect();
-                        // If sticky header line (106px) is within this section's bounds
-                        if (rect.top < stickyHeaderHeight && rect.bottom > stickyHeaderHeight) {
-                            activeSlug = section.dataset.categorySlug;
-                            break;
-                        }
-                    }
-
-                    // Second pass: If no section contains header line, find closest one
-                    if (!activeSlug) {
-                        let closestDistance = Infinity;
-                        sections.forEach(section => {
-                            const rect = section.getBoundingClientRect();
-                            // Only consider sections that are visible (rough check)
-                            if (rect.bottom > 0 && rect.top < window.innerHeight) {
-                                const distance = Math.abs(rect.top - stickyHeaderHeight);
-                                if (distance < closestDistance) {
-                                    closestDistance = distance;
-                                    activeSlug = section.dataset.categorySlug;
-                                }
+                        // Only consider sections that are visible (rough check)
+                        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+                            const distance = Math.abs(rect.top - stickyHeaderHeight);
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                activeSlug = section.dataset.categorySlug;
                             }
-                        });
-                    }
+                        }
+                    });
+                }
 
-                    if (activeSlug) {
-                        updateActiveCategoryMenu(activeSlug);
-                    }
-                }, 50); // Debounce to reduce repaints
+                // Only update if the active category changed
+                if (activeSlug && activeSlug !== lastActiveSlug) {
+                    lastActiveSlug = activeSlug;
+                    updateActiveCategoryMenu(activeSlug);
+                }
+            }
+
+            function onScroll() {
+                // Cancel previous frame request and schedule new one
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                animationFrameId = requestAnimationFrame(detectActiveCategory);
             }
 
             // Detect on page load
             setTimeout(detectActiveCategory, 200);
             
-            // Detect on scroll
-            window.addEventListener('scroll', detectActiveCategory, false);
+            // Detect on scroll with requestAnimationFrame for maximum smoothness
+            window.addEventListener('scroll', onScroll, { passive: true });
         }
 
         function updateActiveCategoryMenu(activeSlug) {
@@ -676,15 +686,13 @@
                 const stickyHeaderHeight = 106;
                 const sectionTop = section.getBoundingClientRect().top + window.scrollY - stickyHeaderHeight;
                 
+                // Manually update active category immediately
+                updateActiveCategoryMenu(slug);
+                
                 window.scrollTo({
                     top: sectionTop,
                     behavior: 'smooth'
                 });
-
-                // Manually update active category immediately
-                setTimeout(() => {
-                    updateActiveCategoryMenu(slug);
-                }, 100);
             }
         }
 
