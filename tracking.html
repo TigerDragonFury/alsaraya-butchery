@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
     <!-- CUSTOM STYLE -->
-    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="foodking2.css">
     <script src="load-components.js"></script>
 
     <!-- PAGE TITLE -->
@@ -53,8 +53,8 @@
         }
 
         .tracking-section {
-            padding: clamp(46px, 6vw, 76px) 0 clamp(64px, 8vw, 108px);
-            background: linear-gradient(to bottom, var(--light) 0%, var(--white) 100%);
+            padding: clamp(46px, 6vw, 76px) 20px clamp(64px, 8vw, 108px);
+            background: var(--white);
         }
 
         .tracking-container {
@@ -63,94 +63,100 @@
         }
 
         .tracking-form {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
-            border-radius: 18px;
-            padding: clamp(32px, 5vw, 44px);
-            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
+            background: #fff;
+            border-radius: 16px;
+            padding: clamp(28px, 5vw, 40px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             margin-bottom: 30px;
-            border: 1px solid rgba(139, 17, 0, 0.12);
+            border: 1px solid #e8e8e8;
         }
 
         .tracking-form h3 {
-            font-size: clamp(1.15rem, 2vw, 1.35rem);
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 5px;
-            letter-spacing: -0.01em;
+            margin-bottom: 8px;
         }
 
         .tracking-form .subtitle {
             color: var(--text-secondary);
             font-size: 14px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
         .tracking-form .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .tracking-form label {
             display: block;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tracking-form input {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius);
+            padding: 12px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-            font-family: 'Rubik', sans-serif;
-            transition: var(--transition);
+            font-family: inherit;
+            transition: all 0.3s ease;
         }
 
         .tracking-form input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 0 3px rgba(200, 50, 25, 0.1);
+            background: #fafafa;
         }
 
         .track-btn {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
+            padding: 14px 16px;
+            background: var(--primary);
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: 700;
-            font-family: 'Tajawal', sans-serif;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 18px rgba(139, 17, 0, 0.24);
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(200, 50, 25, 0.2);
         }
 
         .track-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 26px rgba(139, 17, 0, 0.32);
-            filter: brightness(1.05);
+            box-shadow: 0 6px 16px rgba(200, 50, 25, 0.3);
+            background: var(--primary-dark);
+        }
+
+        .track-btn:active {
+            transform: translateY(0);
         }
 
         /* Order Cards */
         .order-card {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 238, 0.96));
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 12px 30px rgba(50, 25, 20, 0.08);
-            margin-bottom: 20px;
-            transition: all 0.25s ease;
-            border: 1px solid rgba(139, 17, 0, 0.12);
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
         }
 
         .order-card:hover {
-            box-shadow: 0 16px 38px rgba(50, 25, 20, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
 
@@ -158,27 +164,27 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .order-id {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary);
         }
 
         .order-date {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .order-status {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: capitalize;
         }
@@ -216,54 +222,55 @@
         .order-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 18px;
         }
 
         .order-info-item {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .order-info-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .order-info-value {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-primary);
         }
 
         .order-total {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--primary);
         }
 
         .order-items {
-            padding-top: 15px;
-            border-top: 1px solid var(--gray-200);
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
         }
 
         .order-items h4 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .order-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            font-size: 14px;
-            border-bottom: 1px solid var(--gray-100);
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
         }
 
         .order-item:last-child {
@@ -277,73 +284,75 @@
 
         .item-details {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .order-notes {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--gray-200);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
         }
 
         .order-notes label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             display: block;
+            letter-spacing: 0.5px;
         }
 
         .order-notes p {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-primary);
         }
 
         .no-orders {
             text-align: center;
-            padding: 60px 30px;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
+            padding: 50px 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .no-orders-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.6;
         }
 
         .no-orders h3 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .no-orders p {
             color: var(--text-secondary);
-            font-size: 15px;
+            font-size: 14px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .page-hero {
-                padding: 100px 0 60px;
+                padding: 100px 20px 60px;
                 margin-top: 75px;
             }
 
             .page-hero h1 {
-                font-size: 32px;
+                font-size: 28px;
             }
 
             .tracking-section {
-                padding: 40px 15px 100px;
+                padding: 32px 16px 120px;
             }
 
             .tracking-form {
-                padding: 25px;
+                padding: 20px;
             }
 
             .order-info {
@@ -352,8 +361,12 @@
 
             .item-details {
                 flex-direction: column;
-                gap: 3px;
+                gap: 2px;
                 text-align: right;
+            }
+
+            .order-card {
+                padding: 16px;
             }
         }
     </style>
