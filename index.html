@@ -202,7 +202,7 @@
             return `
               <a href="product-detail.html?id=${product.id}" class="product-link">
                 <div class="food-card">
-                  <div class="food-card-img" ${imageStyle}>${icon}</div>
+                  <div class="food-card-img" ${imageStyle}></div>
                   <div class="food-card-body">
                     <div class="food-card-title">${name}</div>
                     <div class="food-card-desc">${desc}</div>
@@ -230,7 +230,7 @@
             const desktop = `
               <a href="product-detail.html?id=${product.id}" class="product-link">
               <div class="popular-card">
-                <div class="popular-img" ${imageStyle}>${icon}</div>
+                <div class="popular-img" ${imageStyle}></div>
                 <div class="popular-info">
                   <div class="popular-title">${name}</div>
                   <div class="popular-desc">${desc}</div>
@@ -246,7 +246,7 @@
             const mobile = `
               <a href="product-detail.html?id=${product.id}" class="product-link">
               <div class="popular-list-item">
-                <div class="popular-list-img" ${imageStyle}>${icon}</div>
+                <div class="popular-list-img" ${imageStyle}></div>
                 <div class="popular-list-info">
                   <div class="popular-list-title">${name}</div>
                   <div class="popular-list-desc">${desc}</div>
@@ -279,7 +279,7 @@
 
                 container.innerHTML = data.map((cat) => {
                     const iconDisplay = cat.icon_type === 'image' && cat.image_url
-                        ? `<img src="${cat.image_url}" alt="${escapeAttr(cat.name)}" style="width: 100%; height: 100%; object-fit: cover;">`
+                        ? `<img src="${cat.image_url}" alt="${escapeAttr(cat.name)}" style="width: 100%; height: 100%;">`
                         : (cat.icon || '🥩');
                     return `
                   <div class="menu-cat" onclick="window.location.href='shop.html?category=${cat.slug || cat.id}'">

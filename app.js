@@ -522,3 +522,105 @@ function proceedToCheckout() {
     }
     window.location.href = 'checkout.html';
 }
+
+// ===== SEARCH FUNCTIONALITY =====
+function escapeAttr(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+let searchTimeout;
+
+function debounceSearch(callback, delay = 300) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(callback, delay);
+}
+
+async function performSearch(query, resultsContainer) {
+    if (!query.trim()) {
+        resultsContainer.classList.remove('active');
+        resultsContainer.innerHTML = '';
+        return;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('id, name, price, image_url, category')
+            .ilike('name', `%${query}%`)
+            .eq('in_stock', true)
+            .limit(8);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            resultsContainer.innerHTML = '<div class="search-no-results">No products found</div>';
+            resultsContainer.classList.add('active');
+            return;
+        }
+
+        const html = data.map(product => `
+            <div class="search-result-item" onclick="window.location.href='product-detail.html?id=${product.id}'">
+                ${product.image_url ? `<img src="${product.image_url}" alt="${escapeAttr(product.name)}" class="search-result-img">` : ''}
+                <div class="search-result-name">${escapeAttr(product.name)}</div>
+                <div class="search-result-price">${Number(product.price).toFixed(2)} AED</div>
+            </div>
+        `).join('');
+
+        resultsContainer.innerHTML = html;
+        resultsContainer.classList.add('active');
+    } catch (err) {
+        console.error('Search error:', err);
+        resultsContainer.innerHTML = '<div class="search-no-results">Search error</div>';
+    }
+}
+
+// Setup search functionality
+function initializeSearch() {
+    const desktopSearch = document.querySelector('.nav-search');
+    const mobileSearch = document.querySelector('.nav-mobile-search');
+    const desktopResults = document.getElementById('desktopSearchResults');
+    const mobileResults = document.getElementById('mobileSearchResults');
+
+    if (desktopSearch) {
+        desktopSearch.addEventListener('input', (e) => {
+            debounceSearch(() => {
+                performSearch(e.target.value, desktopResults);
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!desktopSearch.contains(e.target) && !desktopResults.contains(e.target)) {
+                desktopResults.classList.remove('active');
+            }
+        });
+    }
+
+    if (mobileSearch) {
+        mobileSearch.addEventListener('input', (e) => {
+            debounceSearch(() => {
+                performSearch(e.target.value, mobileResults);
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!mobileSearch.contains(e.target) && !mobileResults.contains(e.target)) {
+                mobileResults.classList.remove('active');
+            }
+        });
+    }
+}
+
+// Initialize search when header is loaded
+window.addEventListener('headerLoaded', initializeSearch);
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Try to initialize search immediately (if header already loaded)
+    const desktopSearch = document.querySelector('.nav-search');
+    if (desktopSearch) {
+        initializeSearch();
+    }
+});

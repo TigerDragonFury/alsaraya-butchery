@@ -448,7 +448,7 @@
             return `
               <a href="product-detail.html?id=${product.id}" class="product-link">
               <div class="popular-card">
-                <div class="popular-img" ${imageStyle}>${icon}</div>
+                <div class="popular-img" ${imageStyle}></div>
                 <div class="popular-info">
                   <div class="popular-title">${name}</div>
                   <div class="popular-desc">${desc}</div>
@@ -511,7 +511,7 @@
 
                 container.innerHTML = allCategories.map((cat, idx) => {
                     const iconDisplay = cat.icon_type === 'image' && cat.image_url
-                        ? `<img src="${cat.image_url}" alt="${escapeAttr(cat.name)}" style="width: 100%; height: 100%; object-fit: cover;">`
+                        ? `<img src="${cat.image_url}" alt="${escapeAttr(cat.name)}" style="width: 100%; height: 100%;">`
                         : (cat.icon || '🥩');
                     return `
                   <div class="menu-cat" data-category-slug="${cat.slug || cat.id}" onclick="scrollToCategory('${cat.slug || cat.id}')">

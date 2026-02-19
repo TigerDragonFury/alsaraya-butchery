@@ -10,7 +10,10 @@
             <li><a href="tracking.html">Tracking</a></li>
         </ul>
         <div class="nav-right header-actions">
-            <input class="nav-search" type="text" placeholder="Search">
+            <div class="nav-search-wrapper">
+                <input class="nav-search" type="text" placeholder="Search">
+                <div class="search-results-container" id="desktopSearchResults"></div>
+            </div>
             <button class="btn-lang">English</button>
             <button class="btn-cart" id="cartIcon">Cart <span id="cartCount">0</span></button>
             <div id="authBtnContainer">
@@ -25,6 +28,9 @@
         <a class="logo" href="index.html">
             <img src="https://i.imgur.com/3PRDEK0.png" alt="Al Saraya">
         </a>
-        <input class="nav-mobile-search" type="text" placeholder="Search">
+        <div class="nav-mobile-search-wrapper">
+            <input class="nav-mobile-search" type="text" placeholder="Search">
+            <div class="search-results-container" id="mobileSearchResults"></div>
+        </div>
     </div>
 </nav>
