@@ -612,9 +612,14 @@ window.generateSlug = function() {
 function displayCategories(categories) {
     const grid = document.getElementById('categoriesGrid');
     
-    grid.innerHTML = categories.map((cat) => `
+    grid.innerHTML = categories.map((cat) => {
+        const iconDisplay = cat.icon_type === 'image' && cat.image_url 
+            ? `<img src="${cat.image_url}" alt="${cat.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+            : cat.icon || '📦';
+        
+        return `
         <div class="category-card">
-            <div class="category-icon">${cat.icon}</div>
+            <div class="category-icon">${iconDisplay}</div>
             <h3>${cat.name}</h3>
             <p>${cat.description}</p>
             <div class="category-actions">
@@ -622,7 +627,7 @@ function displayCategories(categories) {
                 <button class="btn-sm btn-danger" onclick="deleteCategory(${cat.id})">Delete</button>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 window.editCategory = function(categoryId) {
@@ -655,6 +660,8 @@ window.openCategoryModal = function(categoryId = null) {
 
     form.reset();
     document.getElementById('categoryId').value = '';
+    document.getElementById('categoryIconType').value = 'emoji';
+    toggleCategoryIconType();
 
     if (categoryId !== null) {
         const category = allCategories.find(c => c.id === categoryId);
@@ -663,7 +670,18 @@ window.openCategoryModal = function(categoryId = null) {
             document.getElementById('categoryId').value = category.id;
             document.getElementById('categoryName').value = category.name;
             document.getElementById('categorySlug').value = category.slug;
-            document.getElementById('categoryIcon').value = category.icon || '';
+            
+            // Set icon type and display appropriate field
+            const iconType = category.icon_type || 'emoji';
+            document.getElementById('categoryIconType').value = iconType;
+            toggleCategoryIconType();
+            
+            if (iconType === 'emoji') {
+                document.getElementById('categoryIcon').value = category.icon || '';
+            } else {
+                document.getElementById('categoryImageUrl').value = category.image_url || '';
+            }
+            
             document.getElementById('categoryDescription').value = category.description || '';
         }
     } else {
@@ -671,6 +689,20 @@ window.openCategoryModal = function(categoryId = null) {
     }
 
     modal.classList.add('active');
+}
+
+window.toggleCategoryIconType = function() {
+    const iconType = document.getElementById('categoryIconType').value;
+    const emojiGroup = document.getElementById('categoryEmojiGroup');
+    const imageGroup = document.getElementById('categoryImageGroup');
+    
+    if (iconType === 'emoji') {
+        emojiGroup.style.display = 'block';
+        imageGroup.style.display = 'none';
+    } else {
+        emojiGroup.style.display = 'none';
+        imageGroup.style.display = 'block';
+    }
 }
 
 window.closeCategoryModal = function() {
@@ -757,12 +789,23 @@ function setupFormHandlers() {
         e.preventDefault();
 
         const categoryId = document.getElementById('categoryId').value;
+        const iconType = document.getElementById('categoryIconType').value;
+        
         const categoryData = {
             name: document.getElementById('categoryName').value,
             slug: document.getElementById('categorySlug').value,
-            icon: document.getElementById('categoryIcon').value || '📦',
+            icon_type: iconType,
             description: document.getElementById('categoryDescription').value || null
         };
+        
+        // Set icon or image_url based on type selected
+        if (iconType === 'emoji') {
+            categoryData.icon = document.getElementById('categoryIcon').value || '📦';
+            categoryData.image_url = null;
+        } else {
+            categoryData.image_url = document.getElementById('categoryImageUrl').value || null;
+            categoryData.icon = null;
+        }
 
         try {
             if (categoryId) {

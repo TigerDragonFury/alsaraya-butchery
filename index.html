@@ -277,11 +277,15 @@
                     return;
                 }
 
-                container.innerHTML = data.map((cat) => `
+                container.innerHTML = data.map((cat) => {
+                    const iconDisplay = cat.icon_type === 'image' && cat.image_url
+                        ? `<img src="${cat.image_url}" alt="${escapeAttr(cat.name)}" style="width: 100%; height: 100%; object-fit: cover;">`
+                        : (cat.icon || '🥩');
+                    return `
                   <div class="menu-cat" onclick="window.location.href='shop.html?category=${cat.slug || cat.id}'">
-                      <div class="menu-cat-img">${cat.icon || '🥩'}<span>${escapeAttr(cat.name)}</span></div>
+                      <div class="menu-cat-img">${iconDisplay}<span>${escapeAttr(cat.name)}</span></div>
                   </div>
-                `).join('');
+                `}).join('');
             } catch (err) {
                 console.error('Failed to load categories:', err);
                 document.getElementById('categoryScroll').innerHTML = '<div class="menu-cat"><div class="menu-cat-img">❌<span>Error</span></div></div>';

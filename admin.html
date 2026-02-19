@@ -326,8 +326,20 @@
                     <small style="color: var(--cool-gray); font-size: 0.75rem;">Used in URLs and for filtering</small>
                 </div>
                 <div class="form-group">
+                    <label>Icon Type</label>
+                    <select id="categoryIconType" style="padding: 0.75rem; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" onchange="toggleCategoryIconType()">
+                        <option value="emoji">Emoji</option>
+                        <option value="image">Image URL</option>
+                    </select>
+                </div>
+                <div class="form-group" id="categoryEmojiGroup">
                     <label>Icon (Emoji)</label>
                     <input type="text" id="categoryIcon" placeholder="e.g., 🥩" maxlength="4">
+                </div>
+                <div class="form-group" id="categoryImageGroup" style="display: none;">
+                    <label>Icon Image URL</label>
+                    <input type="text" id="categoryImageUrl" placeholder="Image URL (e.g., https://example.com/image.jpg)">
+                    <small style="color: var(--cool-gray); font-size: 0.75rem;">Full URL or relative path to image file</small>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
