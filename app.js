@@ -292,20 +292,62 @@ function updateCart() {
         cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
     } else {
         cartItems.innerHTML = cart.map(item => `
-            <div class="cart-item">
+            <div class="cart-item" data-product-id="${item.id}">
                 <div class="cart-item-info">
                     <div class="cart-item-title">${item.name}</div>
                     <div class="cart-item-price">${item.price.toFixed(2)} AED / ${item.unit}</div>
                 </div>
                 <div class="cart-item-quantity">
-                    <button class="quantity-btn" onclick="event.preventDefault(); updateQuantity(${item.id}, -1); return false;">-</button>
+                    <button class="quantity-btn qty-minus" data-id="${item.id}">-</button>
                     <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="event.preventDefault(); updateQuantity(${item.id}, 1); return false;">+</button>
+                    <button class="quantity-btn qty-plus" data-id="${item.id}">+</button>
                 </div>
-                <button class="remove-item" onclick="event.preventDefault(); removeFromCart(${item.id}); return false;">×</button>
+                <button class="remove-item" data-id="${item.id}">×</button>
             </div>
         `).join('');
+        
+        // Add event listeners to buttons
+        attachCartButtonListeners();
     }
+}
+
+// Attach event listeners to cart buttons
+function attachCartButtonListeners() {
+    const cartItems = document.getElementById('cartItems');
+    if (!cartItems) return;
+    
+    // Quantity minus buttons
+    cartItems.querySelectorAll('.qty-minus').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = Number(btn.dataset.id);
+            console.log('Minus clicked for:', id);
+            updateQuantity(id, -1);
+        });
+    });
+    
+    // Quantity plus buttons
+    cartItems.querySelectorAll('.qty-plus').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = Number(btn.dataset.id);
+            console.log('Plus clicked for:', id);
+            updateQuantity(id, 1);
+        });
+    });
+    
+    // Remove buttons
+    cartItems.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = Number(btn.dataset.id);
+            console.log('Remove clicked for:', id);
+            removeFromCart(id);
+        });
+    });
 }
 
 // Display Cart (alias for updateCart - used by other pages)
@@ -315,7 +357,10 @@ function displayCart() {
 
 // Update Quantity
 function updateQuantity(productId, change) {
-    const item = cart.find(i => i.id === productId);
+    console.log('updateQuantity called:', productId, change);
+    productId = Number(productId);
+    const item = cart.find(i => Number(i.id) === productId);
+    console.log('found item:', item);
     if (item) {
         item.quantity += change;
         if (item.quantity <= 0) {
@@ -329,7 +374,10 @@ function updateQuantity(productId, change) {
 
 // Remove from Cart
 function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+    console.log('removeFromCart called:', productId);
+    productId = Number(productId);
+    cart = cart.filter(item => Number(item.id) !== productId);
+    console.log('cart after remove:', cart);
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCart();
 }
