@@ -94,7 +94,7 @@
         <section id="menu">
             <div class="section-header">
                 <h2>Our Menu</h2>
-                <a class="view-all" href="shop.html">View All</a>
+                <a class="view-all" href="/shop/">View All</a>
             </div>
             <div class="menu-scroll" id="categoryScroll">
                 <div class="menu-cat"><div class="menu-cat-img">⏳<span>Loading...</span></div></div>
@@ -148,11 +148,11 @@
 
     <!-- BOTTOM NAV (mobile) -->
     <div class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item mobile-nav-item active">
+        <a href="/" class="bottom-nav-item mobile-nav-item active">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Home
         </a>
-        <a href="shop.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/shop/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             Menu
         </a>
@@ -162,11 +162,11 @@
             </div>
             <span class="bottom-nav-cart-label">Cart <span class="cart-count-badge" id="cartCountMobile">0</span></span>
         </a>
-        <a href="tracking.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/tracking/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
             Track
         </a>
-        <a href="profile.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/profile/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Log In
         </a>
@@ -174,13 +174,13 @@
 
     <!-- Mobile User Menu Dropdown -->
     <div class="mobile-user-dropdown" id="mobileUserDropdown">
-        <a href="profile.html">
+        <a href="/profile/">
             <i class="fas fa-user"></i> My Profile
         </a>
-        <a href="profile.html?tab=addresses">
+        <a href="/profile/?tab=addresses">
             <i class="fas fa-map-marker-alt"></i> My Addresses
         </a>
-        <a href="profile.html?tab=orders">
+        <a href="/profile/?tab=orders">
             <i class="fas fa-shopping-bag"></i> My Orders
         </a>
         <a href="#" onclick="signOut(); return false;">
@@ -236,9 +236,10 @@
         }
 
         function buildProductUrl(product) {
+            const category = encodeURIComponent(slugifyProductName(product?.category || 'meat'));
             const id = encodeURIComponent(product?.id ?? '');
             const name = encodeURIComponent(slugifyProductName(product?.name));
-            return `product-detail.html?id=${id}&name=${name}`;
+            return `/${category}/${name}/${id}/`;
         }
 
         function renderProductCard(product) {

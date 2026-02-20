@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    { "source": "/shop", "destination": "/shop.html" },
+    { "source": "/shop/", "destination": "/shop.html" },
+    { "source": "/tracking", "destination": "/tracking.html" },
+    { "source": "/tracking/", "destination": "/tracking.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/checkout/", "destination": "/checkout.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/profile/", "destination": "/profile.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin/", "destination": "/admin.html" },
+    { "source": "/:category/:name/:id", "destination": "/product-detail.html?id=:id&name=:name&category=:category" },
+    { "source": "/:category/:name/:id/", "destination": "/product-detail.html?id=:id&name=:name&category=:category" }
+  ]
+}

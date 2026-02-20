@@ -520,7 +520,7 @@ function proceedToCheckout() {
         showNotification('Your cart is empty!');
         return;
     }
-    window.location.href = 'checkout.html';
+    window.location.href = '/checkout/';
 }
 
 // ===== SEARCH FUNCTIONALITY =====
@@ -549,9 +549,10 @@ function slugifyProductName(value) {
 }
 
 function buildProductUrl(product) {
+    const category = encodeURIComponent(slugifyProductName(product?.category || 'meat'));
     const id = encodeURIComponent(product?.id ?? '');
     const name = encodeURIComponent(slugifyProductName(product?.name));
-    return `product-detail.html?id=${id}&name=${name}`;
+    return `/${category}/${name}/${id}/`;
 }
 
 async function performSearch(query, resultsContainer) {

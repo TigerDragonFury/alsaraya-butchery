@@ -19,7 +19,7 @@
         <title>Product Details | Al Saraya Butchery Abu Dhabi</title>
         <meta name="description" id="meta-description" content="Buy fresh halal meat and chicken online from Al Saraya Butchery in Abu Dhabi.">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-        <link rel="canonical" id="canonical-link" href="https://alsarayabutcheryllc.com/product-detail.html">
+        <link rel="canonical" id="canonical-link" href="https://alsarayabutcheryllc.com/product/">
 
         <meta property="og:type" content="product">
         <meta property="og:site_name" content="Al Saraya Butchery">
@@ -361,32 +361,6 @@
             .related-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-                    return `
-                        <div class="product-card ref-product-card">
-                            <a href="${buildProductUrl(product)}" class="product-image ref-product-image">
-                                <img src="${imageUrl}" alt="${safeName}" loading="lazy" class="ref-product-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-                                ${product.badge ? `<span class="product-badge ref-product-badge">${product.badge}</span>` : ''}
-                            </a>
-                            <div class="product-info ref-product-info">
-                                <h4 class="ref-product-name"><a href="${buildProductUrl(product)}">${name}</a></h4>
-                                <p class="product-desc ref-product-desc">${product.description || ''}</p>
-                                <div class="ref-product-meta">
-                                    <span class="ref-product-price">${price.toFixed(2)} AED</span>
-                                    <span class="ref-product-unit">/ ${unit}</span>
-                                </div>
-                                <div class="ref-product-actions">
-                                    <button class="ref-add-btn" onclick="addToCartFromDB(${product.id}, '${safeName}', ${price}, '${unit}')">
-                                        <i class="fas fa-shopping-cart"></i> Add To Cart
-                                    </button>
-                                    <a class="ref-wa-btn" href="https://wa.me/971566808565" target="_blank" rel="noopener" aria-label="Order on WhatsApp">
-                                        <i class="fab fa-whatsapp"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-            margin-bottom: 25px;
         }
 
         .product-category-tag {
@@ -890,7 +864,7 @@
                         </div>
                     </div>
 
-                    <a href="shop.html" class="back-to-shop">
+                    <a href="/shop/" class="back-to-shop">
                         <i class="fas fa-arrow-left"></i> Back to Shop
                     </a>
                 </div>
@@ -912,11 +886,11 @@
 
     <!-- BOTTOM NAV (mobile) -->
     <div class="bottom-nav">
-        <a href="index.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Home
         </a>
-        <a href="shop.html" class="bottom-nav-item mobile-nav-item active">
+        <a href="/shop/" class="bottom-nav-item mobile-nav-item active">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             Menu
         </a>
@@ -926,11 +900,11 @@
             </div>
             <span class="bottom-nav-cart-label">Cart <span class="cart-count-badge" id="cartCountMobile">0</span></span>
         </a>
-        <a href="tracking.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/tracking/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
             Track
         </a>
-        <a href="profile.html" class="bottom-nav-item mobile-nav-item">
+        <a href="/profile/" class="bottom-nav-item mobile-nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Log In
         </a>
@@ -938,13 +912,13 @@
 
     <!-- Mobile User Menu Dropdown -->
     <div class="mobile-user-dropdown" id="mobileUserDropdown">
-        <a href="profile.html">
+        <a href="/profile/">
             <i class="fas fa-user"></i> My Profile
         </a>
-        <a href="profile.html?tab=addresses">
+        <a href="/profile/?tab=addresses">
             <i class="fas fa-map-marker-alt"></i> My Addresses
         </a>
-        <a href="profile.html?tab=orders">
+        <a href="/profile/?tab=orders">
             <i class="fas fa-shopping-bag"></i> My Orders
         </a>
         <a href="#" onclick="signOut(); return false;">
@@ -983,7 +957,24 @@
         // Get product ID from URL
         function getProductId() {
             const params = new URLSearchParams(window.location.search);
-            return params.get('id');
+            const queryId = params.get('id');
+            if (queryId) return queryId;
+
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            const pathId = pathSegments[pathSegments.length - 1];
+            if (pathId && /^\d+$/.test(pathId)) {
+                return pathId;
+            }
+
+            return null;
+        }
+
+        function getPathProductSlug() {
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            if (pathSegments.length >= 2) {
+                return pathSegments[pathSegments.length - 2];
+            }
+            return null;
         }
 
         function slugifyProductName(value) {
@@ -996,9 +987,10 @@
         }
 
         function buildProductUrl(product) {
+            const categorySlug = encodeURIComponent(slugifyProductName(product?.category || 'meat'));
             const id = encodeURIComponent(product?.id ?? getProductId() ?? '');
             const nameSlug = encodeURIComponent(slugifyProductName(product?.name));
-            return `product-detail.html?id=${id}&name=${nameSlug}`;
+            return `/${categorySlug}/${nameSlug}/${id}/`;
         }
 
         function deslugifyProductName(slug) {
@@ -1027,7 +1019,7 @@
 
         function applySeoFromQueryFallback() {
             const params = new URLSearchParams(window.location.search);
-            const rawName = params.get('name');
+            const rawName = params.get('name') || getPathProductSlug();
             const id = params.get('id');
             if (!rawName) return;
 
@@ -1035,7 +1027,9 @@
             if (!decodedName) return;
 
             const siteUrl = 'https://alsarayabutcheryllc.com';
-            const fallbackUrl = `${siteUrl}/product-detail.html?id=${encodeURIComponent(id || '')}&name=${encodeURIComponent(slugifyProductName(decodedName))}`;
+            const fallbackId = id || getProductId() || '';
+            const fallbackCategory = encodeURIComponent(slugifyProductName(params.get('category') || 'meat'));
+            const fallbackUrl = `${siteUrl}/${fallbackCategory}/${encodeURIComponent(slugifyProductName(decodedName))}/${encodeURIComponent(fallbackId)}/`;
             const fallbackTitle = `${decodedName} | Al Saraya Butchery Abu Dhabi`;
 
             document.title = fallbackTitle;
@@ -1057,7 +1051,7 @@
 
         function updateProductSeo(product) {
             const siteUrl = 'https://alsarayabutcheryllc.com';
-            const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
+            const productUrl = `${siteUrl}${buildProductUrl(product)}`;
             const productName = product.name || 'Fresh Halal Meat';
             const seoTitle = `${productName} | Al Saraya Butchery Abu Dhabi`;
             const unit = product.unit || 'kg';
@@ -1290,7 +1284,7 @@
                 <div style="padding:32px; text-align:center; color:var(--text-secondary);">
                     <i class="fas fa-exclamation-circle" style="font-size:48px; color:var(--primary); margin-bottom:16px;"></i>
                     <h3>${message}</h3>
-                    <a href="shop.html" style="color:var(--primary); text-decoration:underline;">Back to Shop</a>
+                    <a href="/shop/" style="color:var(--primary); text-decoration:underline;">Back to Shop</a>
                 </div>
             `;
         }
@@ -1356,10 +1350,17 @@
 
         // Get product ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
+        let productId = urlParams.get('id');
+        if (!productId) {
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            const pathId = pathSegments[pathSegments.length - 1];
+            if (pathId && /^\d+$/.test(pathId)) {
+                productId = pathId;
+            }
+        }
 
         if (!productId) {
-            window.location.href = 'shop.html';
+            window.location.href = '/shop/';
         }
 
         function slugifyProductName(value) {
@@ -1372,14 +1373,15 @@
         }
 
         function buildProductUrl(product) {
+            const categorySlug = encodeURIComponent(slugifyProductName(product?.category || 'meat'));
             const id = encodeURIComponent(product?.id ?? productId ?? '');
             const nameSlug = encodeURIComponent(slugifyProductName(product?.name));
-            return `product-detail.html?id=${id}&name=${nameSlug}`;
+            return `/${categorySlug}/${nameSlug}/${id}/`;
         }
 
         function updateProductSeo(product) {
             const siteUrl = 'https://alsarayabutcheryllc.com';
-            const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
+            const productUrl = `${siteUrl}${buildProductUrl(product)}`;
             const productName = product.name || 'Fresh Halal Meat';
             const seoTitle = `${productName} | Al Saraya Butchery Abu Dhabi`;
             const unit = product.unit || 'kg';
@@ -1475,7 +1477,7 @@
                 if (error || !product) {
                     console.error('Error loading product:', error);
                     alert('Product not found');
-                    window.location.href = 'shop.html';
+                    window.location.href = '/shop/';
                     return;
                 }
 
@@ -1528,7 +1530,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error loading product details');
-                window.location.href = 'shop.html';
+                window.location.href = '/shop/';
             }
         }
 
