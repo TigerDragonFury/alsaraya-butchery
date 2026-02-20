@@ -1295,9 +1295,13 @@
             `;
         }
 
+        const primaryApplySeoFromQueryFallback = applySeoFromQueryFallback;
+        const primaryLoadProductDetails = loadProductDetails;
+
         // Setup cart modal
         document.addEventListener('DOMContentLoaded', function() {
-            applySeoFromQueryFallback();
+            window.__alSarayaPrimaryProductScript = true;
+            primaryApplySeoFromQueryFallback();
 
             const cartNavBtn = document.getElementById('cartIconBottom');
             const cartClose = document.getElementById('closeCart');
@@ -1318,7 +1322,7 @@
             if (cartClose) cartClose.addEventListener('click', closeCart);
 
             updateCartCount();
-            loadProductDetails();
+            primaryLoadProductDetails();
         });
     </script>
 
@@ -1616,6 +1620,10 @@
 
         // Setup event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            if (window.__alSarayaPrimaryProductScript) {
+                return;
+            }
+
             loadProductDetails();
             updateFloatingQuantity();
 
