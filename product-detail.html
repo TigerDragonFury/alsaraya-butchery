@@ -979,6 +979,89 @@
             return params.get('id');
         }
 
+        function slugifyProductName(value) {
+            return String(value || 'product')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function buildProductUrl(product) {
+            const id = encodeURIComponent(product?.id ?? getProductId() ?? '');
+            const nameSlug = encodeURIComponent(slugifyProductName(product?.name));
+            return `product-detail.html?id=${id}&name=${nameSlug}`;
+        }
+
+        function updateProductSeo(product) {
+            const siteUrl = 'https://alsarayabutcheryllc.com';
+            const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
+            const productName = product.name || 'Fresh Halal Meat';
+            const seoTitle = `${productName} | Al Saraya Butchery Abu Dhabi`;
+            const unit = product.unit || 'kg';
+            const productDescription = product.description || `Buy ${productName} fresh from Al Saraya Butchery in Abu Dhabi.`;
+            const productImage = product.image_url || 'https://i.imgur.com/MyHhL1b.jpeg';
+            const productPrice = Number(product.price || 0).toFixed(2);
+            const availability = product.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
+            const richDescription = `${productDescription} Price: ${productPrice} AED per ${unit}.`;
+
+            document.title = seoTitle;
+
+            const metaDescription = document.getElementById('meta-description');
+            const canonical = document.getElementById('canonical-link');
+            const ogTitle = document.getElementById('meta-og-title');
+            const ogDescription = document.getElementById('meta-og-description');
+            const ogUrl = document.getElementById('meta-og-url');
+            const ogImage = document.getElementById('meta-og-image');
+            const ogPriceAmount = document.getElementById('meta-og-price-amount');
+            const ogPriceCurrency = document.getElementById('meta-og-price-currency');
+            const twTitle = document.getElementById('meta-twitter-title');
+            const twDescription = document.getElementById('meta-twitter-description');
+            const twImage = document.getElementById('meta-twitter-image');
+
+            if (metaDescription) metaDescription.setAttribute('content', richDescription);
+            if (canonical) canonical.setAttribute('href', productUrl);
+            if (ogTitle) ogTitle.setAttribute('content', seoTitle);
+            if (ogDescription) ogDescription.setAttribute('content', richDescription);
+            if (ogUrl) ogUrl.setAttribute('content', productUrl);
+            if (ogImage) ogImage.setAttribute('content', productImage);
+            if (ogPriceAmount) ogPriceAmount.setAttribute('content', productPrice);
+            if (ogPriceCurrency) ogPriceCurrency.setAttribute('content', 'AED');
+            if (twTitle) twTitle.setAttribute('content', seoTitle);
+            if (twDescription) twDescription.setAttribute('content', richDescription);
+            if (twImage) twImage.setAttribute('content', productImage);
+
+            const schemaEl = document.getElementById('product-jsonld');
+            if (schemaEl) {
+                schemaEl.textContent = JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'Product',
+                    name: productName,
+                    image: [productImage],
+                    description: productDescription,
+                    category: product.category || 'Meat',
+                    sku: String(product.id || ''),
+                    brand: {
+                        '@type': 'Brand',
+                        name: 'Al Saraya Butchery'
+                    },
+                    offers: {
+                        '@type': 'Offer',
+                        url: productUrl,
+                        priceCurrency: 'AED',
+                        price: productPrice,
+                        availability,
+                        seller: {
+                            '@type': 'Organization',
+                            name: 'Al Saraya Butchery'
+                        },
+                        itemCondition: 'https://schema.org/NewCondition'
+                    }
+                });
+            }
+        }
+
         // Load product details
         async function loadProductDetails() {
             try {
@@ -1017,6 +1100,8 @@
             const unit = product.unit || 'kg';
             const desc = product.description || 'No description available';
             const inStock = product.in_stock !== false;
+
+            updateProductSeo(product);
 
             document.getElementById('productName').textContent = name;
             document.getElementById('productImage').src = image || 'https://via.placeholder.com/400x300?text=No+Image';
