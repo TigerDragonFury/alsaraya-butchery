@@ -19,14 +19,16 @@
         <title>Fresh Meat & Chicken Product | Al Saraya Butchery Abu Dhabi</title>
         <meta name="description" id="meta-description" content="Buy fresh halal meat and chicken online from Al Saraya Butchery in Abu Dhabi.">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-        <link rel="canonical" id="canonical-link" href="https://alsarayabutchery.com/product-detail.html">
+        <link rel="canonical" id="canonical-link" href="https://alsarayabutcheryllc.com/product-detail.html">
 
         <meta property="og:type" content="product">
         <meta property="og:site_name" content="Al Saraya Butchery">
         <meta property="og:title" id="meta-og-title" content="Fresh Meat & Chicken Product | Al Saraya Butchery Abu Dhabi">
         <meta property="og:description" id="meta-og-description" content="Fresh halal meat and chicken from Al Saraya Butchery.">
-        <meta property="og:url" id="meta-og-url" content="https://alsarayabutchery.com/product-detail.html">
+        <meta property="og:url" id="meta-og-url" content="https://alsarayabutcheryllc.com/product-detail.html">
         <meta property="og:image" id="meta-og-image" content="https://i.imgur.com/MyHhL1b.jpeg">
+        <meta property="product:price:currency" id="meta-og-price-currency" content="AED">
+        <meta property="product:price:amount" id="meta-og-price-amount" content="0.00">
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" id="meta-twitter-title" content="Fresh Meat & Chicken Product | Al Saraya Butchery">
@@ -355,12 +357,12 @@
 
                     return `
                         <div class="product-card ref-product-card">
-                            <a href="product-detail.html?id=${product.id}" class="product-image ref-product-image">
+                            <a href="${buildProductUrl(product)}" class="product-image ref-product-image">
                                 <img src="${imageUrl}" alt="${safeName}" loading="lazy" class="ref-product-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                                 ${product.badge ? `<span class="product-badge ref-product-badge">${product.badge}</span>` : ''}
                             </a>
                             <div class="product-info ref-product-info">
-                                <h4 class="ref-product-name"><a href="product-detail.html?id=${product.id}">${name}</a></h4>
+                                <h4 class="ref-product-name"><a href="${buildProductUrl(product)}">${name}</a></h4>
                                 <p class="product-desc ref-product-desc">${product.description || ''}</p>
                                 <div class="ref-product-meta">
                                     <span class="ref-product-price">${price.toFixed(2)} AED</span>
@@ -1061,7 +1063,7 @@
                 }
 
                 grid.innerHTML = data.map(product => `
-                    <a href="product-detail.html?id=${product.id}" class="related-product-card">
+                    <a href="${buildProductUrl(product)}" class="related-product-card">
                         <div class="related-product-img">
                             <img src="${product.image_url || 'https://via.placeholder.com/200x150'}" 
                                  alt="${product.name}" 
@@ -1197,9 +1199,24 @@
             window.location.href = 'shop.html';
         }
 
+        function slugifyProductName(value) {
+            return String(value || 'product')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function buildProductUrl(product) {
+            const id = encodeURIComponent(product?.id ?? productId ?? '');
+            const nameSlug = encodeURIComponent(slugifyProductName(product?.name));
+            return `product-detail.html?id=${id}&name=${nameSlug}`;
+        }
+
         function updateProductSeo(product) {
-            const siteUrl = 'https://alsarayabutchery.com';
-            const productUrl = `${siteUrl}/product-detail.html?id=${encodeURIComponent(product.id)}`;
+            const siteUrl = 'https://alsarayabutcheryllc.com';
+            const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
             const productName = product.name || 'Fresh Halal Meat';
             const unit = product.unit || 'kg';
             const productDescription = product.description || `Buy ${productName} fresh from Al Saraya Butchery in Abu Dhabi.`;
@@ -1221,16 +1238,21 @@
             const ogDescription = document.getElementById('meta-og-description');
             const ogUrl = document.getElementById('meta-og-url');
             const ogImage = document.getElementById('meta-og-image');
+            const ogPriceAmount = document.getElementById('meta-og-price-amount');
+            const ogPriceCurrency = document.getElementById('meta-og-price-currency');
             const twTitle = document.getElementById('meta-twitter-title');
             const twDescription = document.getElementById('meta-twitter-description');
             const twImage = document.getElementById('meta-twitter-image');
+            const richDescription = `${productDescription} Price: ${productPrice} AED per ${unit}.`;
 
             if (ogTitle) ogTitle.setAttribute('content', `${productName} | Al Saraya Butchery`);
-            if (ogDescription) ogDescription.setAttribute('content', productDescription);
+            if (ogDescription) ogDescription.setAttribute('content', richDescription);
             if (ogUrl) ogUrl.setAttribute('content', productUrl);
             if (ogImage) ogImage.setAttribute('content', productImage);
+            if (ogPriceAmount) ogPriceAmount.setAttribute('content', productPrice);
+            if (ogPriceCurrency) ogPriceCurrency.setAttribute('content', 'AED');
             if (twTitle) twTitle.setAttribute('content', `${productName} | Al Saraya Butchery`);
-            if (twDescription) twDescription.setAttribute('content', productDescription);
+            if (twDescription) twDescription.setAttribute('content', richDescription);
             if (twImage) twImage.setAttribute('content', productImage);
 
             const schemaEl = document.getElementById('product-jsonld');
@@ -1242,6 +1264,7 @@
                     image: [productImage],
                     description: productDescription,
                     category: product.category || 'Meat',
+                    sku: String(product.id || ''),
                     brand: {
                         '@type': 'Brand',
                         name: 'Al Saraya Butchery'
@@ -1252,6 +1275,10 @@
                         priceCurrency: 'AED',
                         price: productPrice,
                         availability,
+                        seller: {
+                            '@type': 'Organization',
+                            name: 'Al Saraya Butchery'
+                        },
                         itemCondition: 'https://schema.org/NewCondition'
                     }
                 });
@@ -1352,13 +1379,13 @@
                     const unit = product.unit || 'kg';
                     return `
                         <div class="product-card">
-                            <a href="product-detail.html?id=${product.id}" class="product-image">
+                            <a href="${buildProductUrl(product)}" class="product-image">
                                 <img src="${product.image_url || defaultImage}" alt="${safeName}" loading="lazy">
                                 ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
                             </a>
                             <div class="product-info">
                                 <div class="product-title-wrap">
-                                    <h4><a href="product-detail.html?id=${product.id}">${product.name}</a></h4>
+                                    <h4><a href="${buildProductUrl(product)}">${product.name}</a></h4>
                                     <span class="product-unit-chip">${unit}</span>
                                 </div>
                                 <p class="product-desc">${product.description || ''}</p>

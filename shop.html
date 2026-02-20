@@ -20,13 +20,13 @@
         <meta name="description" content="Browse fresh halal chicken, beef, lamb, and premium meat cuts at Al Saraya Butchery. Buy meat online in Abu Dhabi with fast delivery.">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
         <meta name="keywords" content="buy meat online Abu Dhabi, fresh chicken Abu Dhabi, halal butcher shop, premium meat delivery">
-        <link rel="canonical" href="https://alsarayabutchery.com/shop.html">
+        <link rel="canonical" href="https://alsarayabutcheryllc.com/shop.html">
 
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Al Saraya Butchery">
         <meta property="og:title" content="Shop Fresh Meat & Chicken | Al Saraya Butchery Abu Dhabi">
         <meta property="og:description" content="Order fresh halal meat and chicken online from Al Saraya Butchery.">
-        <meta property="og:url" content="https://alsarayabutchery.com/shop.html">
+        <meta property="og:url" content="https://alsarayabutcheryllc.com/shop.html">
         <meta property="og:image" content="https://i.imgur.com/MyHhL1b.jpeg">
 
         <meta name="twitter:card" content="summary_large_image">
@@ -39,7 +39,7 @@
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "Al Saraya Butchery Shop",
-            "url": "https://alsarayabutchery.com/shop.html",
+            "url": "https://alsarayabutcheryllc.com/shop.html",
             "description": "Shop fresh halal meat and chicken online in Abu Dhabi.",
             "about": {
                 "@type": "Thing",
@@ -48,7 +48,7 @@
             "isPartOf": {
                 "@type": "WebSite",
                 "name": "Al Saraya Butchery",
-                "url": "https://alsarayabutchery.com/"
+                "url": "https://alsarayabutcheryllc.com/"
             }
         }
         </script>
@@ -469,6 +469,21 @@
             return num.toFixed(2);
         }
 
+        function slugifyProductName(value) {
+            return String(value || 'product')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function buildProductUrl(product) {
+            const id = encodeURIComponent(product?.id ?? '');
+            const name = encodeURIComponent(slugifyProductName(product?.name));
+            return `product-detail.html?id=${id}&name=${name}`;
+        }
+
         function renderProductCard(product) {
             const name = escapeAttr(product.name || 'Product');
             const desc = escapeAttr((product.description || '').slice(0, 70));
@@ -481,7 +496,7 @@
             const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
 
             return `
-              <a href="product-detail.html?id=${product.id}" class="product-link">
+              <a href="${buildProductUrl(product)}" class="product-link">
               <div class="popular-card">
                 <div class="popular-img" ${imageStyle}></div>
                 <div class="popular-info">
@@ -509,7 +524,7 @@
             const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
 
             return `
-              <a href="product-detail.html?id=${product.id}" class="product-link">
+              <a href="${buildProductUrl(product)}" class="product-link">
               <div class="popular-list-item">
                 <div class="popular-list-img" ${imageStyle}>${icon}</div>
                 <div class="popular-list-info">

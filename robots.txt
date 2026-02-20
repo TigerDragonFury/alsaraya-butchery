@@ -6,4 +6,4 @@ Disallow: /profile.html
 Disallow: /test-stripe-payment.html
 Disallow: /bulk-image-upload.html
 
-Sitemap: https://alsarayabutchery.com/sitemap.xml
+Sitemap: https://alsarayabutcheryllc.com/sitemap.xml

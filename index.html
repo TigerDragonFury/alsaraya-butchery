@@ -20,13 +20,13 @@
         <meta name="description" content="Order fresh halal meat, premium chicken, lamb, and beef online from Al Saraya Butchery in Abu Dhabi. Same-day delivery, expert cuts, and trusted quality.">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
         <meta name="keywords" content="butchery Abu Dhabi, fresh meat online, buy chicken online, halal meat delivery, fresh chicken, lamb, beef, meat shop near me">
-        <link rel="canonical" href="https://alsarayabutchery.com/">
+        <link rel="canonical" href="https://alsarayabutcheryllc.com/">
 
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Al Saraya Butchery">
         <meta property="og:title" content="Al Saraya Butchery Abu Dhabi | Buy Fresh Halal Meat & Chicken Online">
         <meta property="og:description" content="Fresh halal meat and chicken delivered in Abu Dhabi. Shop premium cuts from Al Saraya Butchery.">
-        <meta property="og:url" content="https://alsarayabutchery.com/">
+        <meta property="og:url" content="https://alsarayabutcheryllc.com/">
         <meta property="og:image" content="https://i.imgur.com/MyHhL1b.jpeg">
 
         <meta name="twitter:card" content="summary_large_image">
@@ -39,7 +39,7 @@
             "@context": "https://schema.org",
             "@type": "Store",
             "name": "Al Saraya Butchery",
-            "url": "https://alsarayabutchery.com/",
+            "url": "https://alsarayabutcheryllc.com/",
             "image": "https://i.imgur.com/MyHhL1b.jpeg",
             "description": "Premium halal butchery in Abu Dhabi offering fresh meat and chicken with online ordering and delivery.",
             "telephone": "+971566808565",
@@ -226,6 +226,21 @@
             return num.toFixed(2);
         }
 
+        function slugifyProductName(value) {
+            return String(value || 'product')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function buildProductUrl(product) {
+            const id = encodeURIComponent(product?.id ?? '');
+            const name = encodeURIComponent(slugifyProductName(product?.name));
+            return `product-detail.html?id=${id}&name=${name}`;
+        }
+
         function renderProductCard(product) {
             const name = escapeAttr(product.name || 'Product');
             const desc = escapeAttr((product.description || '').slice(0, 90));
@@ -238,7 +253,7 @@
             const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
 
             return `
-              <a href="product-detail.html?id=${product.id}" class="product-link">
+              <a href="${buildProductUrl(product)}" class="product-link">
                 <div class="food-card">
                   <div class="food-card-img" ${imageStyle}></div>
                   <div class="food-card-body">
@@ -266,7 +281,7 @@
             const imageStyle = image ? `style="background-image:url('${image}'); background-size:cover; background-position:center;"` : '';
 
             const desktop = `
-              <a href="product-detail.html?id=${product.id}" class="product-link">
+              <a href="${buildProductUrl(product)}" class="product-link">
               <div class="popular-card">
                 <div class="popular-img" ${imageStyle}></div>
                 <div class="popular-info">
@@ -282,7 +297,7 @@
             `;
 
             const mobile = `
-              <a href="product-detail.html?id=${product.id}" class="product-link">
+              <a href="${buildProductUrl(product)}" class="product-link">
               <div class="popular-list-item">
                 <div class="popular-list-img" ${imageStyle}></div>
                 <div class="popular-list-info">

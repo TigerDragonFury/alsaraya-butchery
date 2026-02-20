@@ -539,6 +539,21 @@ function debounceSearch(callback, delay = 300) {
     searchTimeout = setTimeout(callback, delay);
 }
 
+function slugifyProductName(value) {
+    return String(value || 'product')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+}
+
+function buildProductUrl(product) {
+    const id = encodeURIComponent(product?.id ?? '');
+    const name = encodeURIComponent(slugifyProductName(product?.name));
+    return `product-detail.html?id=${id}&name=${name}`;
+}
+
 async function performSearch(query, resultsContainer) {
     if (!query.trim()) {
         resultsContainer.classList.remove('active');
@@ -563,7 +578,7 @@ async function performSearch(query, resultsContainer) {
         }
 
         const html = data.map(product => `
-            <div class="search-result-item" onclick="window.location.href='product-detail.html?id=${product.id}'">
+            <div class="search-result-item" onclick="window.location.href='${buildProductUrl(product)}'">
                 ${product.image_url ? `<img src="${product.image_url}" alt="${escapeAttr(product.name)}" class="search-result-img">` : ''}
                 <div class="search-result-name">${escapeAttr(product.name)}</div>
                 <div class="search-result-price">${Number(product.price).toFixed(2)} AED</div>
