@@ -482,13 +482,13 @@ function updateUIForLoggedInUser() {
                     <i class="fas fa-user-circle"></i>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
-                    <a href="profile.html">
+                    <a href="/profile/">
                         <i class="fas fa-user"></i> My Profile
                     </a>
-                    <a href="profile.html?tab=addresses">
+                    <a href="/profile/?tab=addresses">
                         <i class="fas fa-map-marker-alt"></i> My Addresses
                     </a>
-                    <a href="profile.html?tab=orders">
+                    <a href="/profile/?tab=orders">
                         <i class="fas fa-shopping-bag"></i> My Orders
                     </a>
                     <a href="#" onclick="signOut(); return false;">
@@ -522,7 +522,7 @@ function updateUIForGuestUser() {
 
 // Update mobile navigation profile button based on auth state
 function updateMobileNavAuthState() {
-    const mobileProfileLinks = document.querySelectorAll('a[href="profile.html"].mobile-nav-item');
+    const mobileProfileLinks = document.querySelectorAll('a[href="/profile/"].mobile-nav-item');
     const isLoggedIn = currentUser && userProfile;
     
     mobileProfileLinks.forEach(link => {
@@ -606,7 +606,7 @@ function toggleUserMenu() {
 document.addEventListener('click', (e) => {
     const userMenuBtn = document.getElementById('userMenuBtn');
     const userDropdown = document.getElementById('userDropdown');
-    const mobileProfileLink = document.querySelector('a[href="profile.html"].mobile-nav-item');
+    const mobileProfileLink = document.querySelector('a[href="/profile/"].mobile-nav-item');
     const mobileUserDropdown = document.getElementById('mobileUserDropdown');
     
     // Close desktop dropdown
