@@ -1128,7 +1128,7 @@
             const mobileTotalAmount = document.getElementById('mobileTotalAmount');
 
             if (cart.length === 0) {
-                orderItemsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Your cart is empty. <a href="shop.html" style="color: var(--primary);">Continue shopping</a></p>';
+                orderItemsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Your cart is empty. <a href="/shop/" style="color: var(--primary);">Continue shopping</a></p>';
                 if (mobileItemsList) mobileItemsList.innerHTML = '';
                 if (mobileItemCount) mobileItemCount.textContent = '0 items';
                 if (mobileTotalAmount) mobileTotalAmount.textContent = '0.00 AED';
@@ -2274,7 +2274,7 @@
                             Send to WhatsApp
                         </button>
 
-                        <button onclick="window.location.href='tracking.html?order=${orderId}'" style="
+                        <button onclick="window.location.href='/tracking/?order=${orderId}'" style="
                             background: linear-gradient(135deg, #8B1100, #5E0D00);
                             color: white;
                             border: none;
@@ -2294,7 +2294,7 @@
                             Track Order
                         </button>
 
-                        <button onclick="window.location.href='shop.html'" style="
+                        <button onclick="window.location.href='/shop/'" style="
                             background: white;
                             color: #1E293B;
                             border: 2px solid #E2E8F0;
