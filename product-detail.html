@@ -16,24 +16,31 @@
     <script src="load-components.js"></script>
 
         <!-- PAGE TITLE -->
-        <title>Fresh Meat & Chicken Product | Al Saraya Butchery Abu Dhabi</title>
+        <title>Product Details | Al Saraya Butchery Abu Dhabi</title>
         <meta name="description" id="meta-description" content="Buy fresh halal meat and chicken online from Al Saraya Butchery in Abu Dhabi.">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
         <link rel="canonical" id="canonical-link" href="https://alsarayabutcheryllc.com/product-detail.html">
 
         <meta property="og:type" content="product">
         <meta property="og:site_name" content="Al Saraya Butchery">
-        <meta property="og:title" id="meta-og-title" content="Fresh Meat & Chicken Product | Al Saraya Butchery Abu Dhabi">
+        <meta property="og:title" id="meta-og-title" content="Product Details | Al Saraya Butchery Abu Dhabi">
         <meta property="og:description" id="meta-og-description" content="Fresh halal meat and chicken from Al Saraya Butchery.">
         <meta property="og:url" id="meta-og-url" content="https://alsarayabutcheryllc.com/product-detail.html">
         <meta property="og:image" id="meta-og-image" content="https://i.imgur.com/MyHhL1b.jpeg">
         <meta property="product:price:currency" id="meta-og-price-currency" content="AED">
         <meta property="product:price:amount" id="meta-og-price-amount" content="0.00">
+        <meta property="og:price:currency" id="meta-og-price-currency-alt" content="AED">
+        <meta property="og:price:amount" id="meta-og-price-amount-alt" content="0.00">
+        <meta itemprop="priceCurrency" id="meta-itemprop-price-currency" content="AED">
+        <meta itemprop="price" id="meta-itemprop-price" content="0.00">
+        <meta name="keywords" id="meta-keywords" content="fresh meat, halal meat, chicken, butcher shop Abu Dhabi">
 
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" id="meta-twitter-title" content="Fresh Meat & Chicken Product | Al Saraya Butchery">
+        <meta name="twitter:title" id="meta-twitter-title" content="Product Details | Al Saraya Butchery Abu Dhabi">
         <meta name="twitter:description" id="meta-twitter-description" content="Order fresh halal meat and chicken online in Abu Dhabi.">
         <meta name="twitter:image" id="meta-twitter-image" content="https://i.imgur.com/MyHhL1b.jpeg">
+        <meta name="twitter:label1" id="meta-twitter-label1" content="Price">
+        <meta name="twitter:data1" id="meta-twitter-data1" content="0.00 AED">
 
         <script type="application/ld+json" id="product-jsonld">
         {
@@ -994,6 +1001,60 @@
             return `product-detail.html?id=${id}&name=${nameSlug}`;
         }
 
+        function deslugifyProductName(slug) {
+            return String(slug || '')
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase())
+                .trim();
+        }
+
+        function buildSeoKeywordsFromTitle(title) {
+            const titleText = String(title || '').toLowerCase().trim();
+            const words = titleText.split(/\s+/).filter(Boolean);
+            const meaningfulWords = words.filter(word => word.length > 2);
+            const baseTerms = [
+                titleText,
+                `${titleText} abu dhabi`,
+                `${titleText} price`,
+                `buy ${titleText}`,
+                'halal meat abu dhabi',
+                'fresh chicken abu dhabi',
+                'butcher shop abu dhabi'
+            ];
+            const wordTerms = meaningfulWords.map(word => `${word} meat`).slice(0, 4);
+            return [...new Set([...baseTerms, ...wordTerms])].join(', ');
+        }
+
+        function applySeoFromQueryFallback() {
+            const params = new URLSearchParams(window.location.search);
+            const rawName = params.get('name');
+            const id = params.get('id');
+            if (!rawName) return;
+
+            const decodedName = deslugifyProductName(decodeURIComponent(rawName));
+            if (!decodedName) return;
+
+            const siteUrl = 'https://alsarayabutcheryllc.com';
+            const fallbackUrl = `${siteUrl}/product-detail.html?id=${encodeURIComponent(id || '')}&name=${encodeURIComponent(slugifyProductName(decodedName))}`;
+            const fallbackTitle = `${decodedName} | Al Saraya Butchery Abu Dhabi`;
+
+            document.title = fallbackTitle;
+
+            const metaDescription = document.getElementById('meta-description');
+            const canonical = document.getElementById('canonical-link');
+            const ogTitle = document.getElementById('meta-og-title');
+            const ogUrl = document.getElementById('meta-og-url');
+            const twTitle = document.getElementById('meta-twitter-title');
+
+            if (metaDescription) {
+                metaDescription.setAttribute('content', `Buy ${decodedName} online from Al Saraya Butchery in Abu Dhabi. Fresh quality and fast delivery.`);
+            }
+            if (canonical) canonical.setAttribute('href', fallbackUrl);
+            if (ogTitle) ogTitle.setAttribute('content', fallbackTitle);
+            if (ogUrl) ogUrl.setAttribute('content', fallbackUrl);
+            if (twTitle) twTitle.setAttribute('content', fallbackTitle);
+        }
+
         function updateProductSeo(product) {
             const siteUrl = 'https://alsarayabutcheryllc.com';
             const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
@@ -1016,9 +1077,15 @@
             const ogImage = document.getElementById('meta-og-image');
             const ogPriceAmount = document.getElementById('meta-og-price-amount');
             const ogPriceCurrency = document.getElementById('meta-og-price-currency');
+            const ogPriceAmountAlt = document.getElementById('meta-og-price-amount-alt');
+            const ogPriceCurrencyAlt = document.getElementById('meta-og-price-currency-alt');
+            const itempropPrice = document.getElementById('meta-itemprop-price');
+            const itempropPriceCurrency = document.getElementById('meta-itemprop-price-currency');
             const twTitle = document.getElementById('meta-twitter-title');
             const twDescription = document.getElementById('meta-twitter-description');
             const twImage = document.getElementById('meta-twitter-image');
+            const twData1 = document.getElementById('meta-twitter-data1');
+            const keywordsMeta = document.getElementById('meta-keywords');
 
             if (metaDescription) metaDescription.setAttribute('content', richDescription);
             if (canonical) canonical.setAttribute('href', productUrl);
@@ -1028,9 +1095,15 @@
             if (ogImage) ogImage.setAttribute('content', productImage);
             if (ogPriceAmount) ogPriceAmount.setAttribute('content', productPrice);
             if (ogPriceCurrency) ogPriceCurrency.setAttribute('content', 'AED');
+            if (ogPriceAmountAlt) ogPriceAmountAlt.setAttribute('content', productPrice);
+            if (ogPriceCurrencyAlt) ogPriceCurrencyAlt.setAttribute('content', 'AED');
+            if (itempropPrice) itempropPrice.setAttribute('content', productPrice);
+            if (itempropPriceCurrency) itempropPriceCurrency.setAttribute('content', 'AED');
             if (twTitle) twTitle.setAttribute('content', seoTitle);
             if (twDescription) twDescription.setAttribute('content', richDescription);
             if (twImage) twImage.setAttribute('content', productImage);
+            if (twData1) twData1.setAttribute('content', `${productPrice} AED`);
+            if (keywordsMeta) keywordsMeta.setAttribute('content', buildSeoKeywordsFromTitle(productName));
 
             const schemaEl = document.getElementById('product-jsonld');
             if (schemaEl) {
@@ -1224,6 +1297,8 @@
 
         // Setup cart modal
         document.addEventListener('DOMContentLoaded', function() {
+            applySeoFromQueryFallback();
+
             const cartNavBtn = document.getElementById('cartIconBottom');
             const cartClose = document.getElementById('closeCart');
             const cartModal = document.getElementById('cartModal');
@@ -1326,9 +1401,15 @@
             const ogImage = document.getElementById('meta-og-image');
             const ogPriceAmount = document.getElementById('meta-og-price-amount');
             const ogPriceCurrency = document.getElementById('meta-og-price-currency');
+            const ogPriceAmountAlt = document.getElementById('meta-og-price-amount-alt');
+            const ogPriceCurrencyAlt = document.getElementById('meta-og-price-currency-alt');
+            const itempropPrice = document.getElementById('meta-itemprop-price');
+            const itempropPriceCurrency = document.getElementById('meta-itemprop-price-currency');
             const twTitle = document.getElementById('meta-twitter-title');
             const twDescription = document.getElementById('meta-twitter-description');
             const twImage = document.getElementById('meta-twitter-image');
+            const twData1 = document.getElementById('meta-twitter-data1');
+            const keywordsMeta = document.getElementById('meta-keywords');
             const richDescription = `${productDescription} Price: ${productPrice} AED per ${unit}.`;
 
             if (ogTitle) ogTitle.setAttribute('content', seoTitle);
@@ -1337,9 +1418,17 @@
             if (ogImage) ogImage.setAttribute('content', productImage);
             if (ogPriceAmount) ogPriceAmount.setAttribute('content', productPrice);
             if (ogPriceCurrency) ogPriceCurrency.setAttribute('content', 'AED');
+            if (ogPriceAmountAlt) ogPriceAmountAlt.setAttribute('content', productPrice);
+            if (ogPriceCurrencyAlt) ogPriceCurrencyAlt.setAttribute('content', 'AED');
+            if (itempropPrice) itempropPrice.setAttribute('content', productPrice);
+            if (itempropPriceCurrency) itempropPriceCurrency.setAttribute('content', 'AED');
             if (twTitle) twTitle.setAttribute('content', seoTitle);
             if (twDescription) twDescription.setAttribute('content', richDescription);
             if (twImage) twImage.setAttribute('content', productImage);
+            if (twData1) twData1.setAttribute('content', `${productPrice} AED`);
+            if (keywordsMeta && typeof buildSeoKeywordsFromTitle === 'function') {
+                keywordsMeta.setAttribute('content', buildSeoKeywordsFromTitle(productName));
+            }
 
             const schemaEl = document.getElementById('product-jsonld');
             if (schemaEl) {
