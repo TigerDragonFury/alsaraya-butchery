@@ -1218,13 +1218,14 @@
             const siteUrl = 'https://alsarayabutcheryllc.com';
             const productUrl = `${siteUrl}/${buildProductUrl(product)}`;
             const productName = product.name || 'Fresh Halal Meat';
+            const seoTitle = `${productName} | Al Saraya Butchery Abu Dhabi`;
             const unit = product.unit || 'kg';
             const productDescription = product.description || `Buy ${productName} fresh from Al Saraya Butchery in Abu Dhabi.`;
             const productImage = product.image_url || 'https://i.imgur.com/MyHhL1b.jpeg';
             const productPrice = Number(product.price || 0).toFixed(2);
             const availability = product.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
 
-            document.title = `${productName} | Buy Fresh Meat & Chicken - Al Saraya Butchery`;
+            document.title = seoTitle;
 
             const metaDescription = document.getElementById('meta-description');
             if (metaDescription) {
@@ -1245,13 +1246,13 @@
             const twImage = document.getElementById('meta-twitter-image');
             const richDescription = `${productDescription} Price: ${productPrice} AED per ${unit}.`;
 
-            if (ogTitle) ogTitle.setAttribute('content', `${productName} | Al Saraya Butchery`);
+            if (ogTitle) ogTitle.setAttribute('content', seoTitle);
             if (ogDescription) ogDescription.setAttribute('content', richDescription);
             if (ogUrl) ogUrl.setAttribute('content', productUrl);
             if (ogImage) ogImage.setAttribute('content', productImage);
             if (ogPriceAmount) ogPriceAmount.setAttribute('content', productPrice);
             if (ogPriceCurrency) ogPriceCurrency.setAttribute('content', 'AED');
-            if (twTitle) twTitle.setAttribute('content', `${productName} | Al Saraya Butchery`);
+            if (twTitle) twTitle.setAttribute('content', seoTitle);
             if (twDescription) twDescription.setAttribute('content', richDescription);
             if (twImage) twImage.setAttribute('content', productImage);
 
