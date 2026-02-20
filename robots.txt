@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /profile.html
+Disallow: /test-stripe-payment.html
+Disallow: /bulk-image-upload.html
+
+Sitemap: https://alsarayabutchery.com/sitemap.xml
