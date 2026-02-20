@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Al Saraya Butchery</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="foodking2.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/foodking2.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav id="navbar">
         <div class="container">
-            <a href="index.html" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"> <span style="font-size: 0.75rem; color: var(--primary-red); margin-left: 0.5rem;">ADMIN</span></a>
+            <a href="/" class="logo"><img src="https://i.imgur.com/gWdOYdW.png" alt="Al Saraya Butchery" class="logo-img"> <span style="font-size: 0.75rem; color: var(--primary-red); margin-left: 0.5rem;">ADMIN</span></a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#dashboard" onclick="closeMenu()">Dashboard</a></li>
                 <li><a href="#products" onclick="closeMenu()">Products</a></li>
                 <li><a href="#orders" onclick="closeMenu()">Orders</a></li>
                 <li><a href="#categories" onclick="closeMenu()">Categories</a></li>
-                <li><a href="index.html" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Logout</a></li>
+                <li><a href="/" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Logout</a></li>
             </ul>
             <div class="mobile-menu" id="menuToggle">
                 <span></span>
@@ -402,7 +402,10 @@
         </a>
     </nav>
 
-    <script src="app.js"></script>
-    <script src="admin.js"></script>
+    <!-- App JS (Supabase init) -->
+    <script src="/app.js"></script>
+    <!-- Admin JS -->
+    <script src="/admin.js"></script>
+
 </body>
 </html>
