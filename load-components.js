@@ -10,7 +10,7 @@
     // Load header
     async function loadHeader() {
         try {
-            const response = await fetch('header.html');
+            const response = await fetch('/header.html');
             const html = await response.text();
             const headerPlaceholder = document.getElementById('header-placeholder');
             if (headerPlaceholder) {
@@ -41,7 +41,7 @@
     // Load footer
     async function loadFooter() {
         try {
-            const response = await fetch('footer.html');
+            const response = await fetch('/footer.html');
             const html = await response.text();
             const footerPlaceholder = document.getElementById('footer-placeholder');
             if (footerPlaceholder) {
